@@ -10,6 +10,7 @@ import shutil
 import subprocess as sp
 import tarfile
 import urllib.request
+from kernel_policy import validate as validate_kernel_policy
 
 ROOT = Path(__file__).resolve().parents[1]
 PINS = json.loads((ROOT / 'config/pins.json').read_text())
@@ -95,7 +96,7 @@ def unpack(archive, dest):
     dest.mkdir(parents=True, exist_ok=False)
     with tarfile.open(archive) as t: t.extractall(dest, filter='data')
 
-def kernel_config(src, out):
+def kernel_config(src, out, refresh=False):
     if sha(ROOT/'config/firecracker-v1.17.0-aarch64.config') != PINS['kernel_config_sha256']:
         raise ValueError('upstream CI config mismatch')
     target = ROOT/'config/kernel.config'
@@ -112,13 +113,24 @@ def kernel_config(src, out):
         run(cfg+['--enable','DEBUG_INFO_NONE'])
     run(['make','-C',src,f'O={out}','ARCH=arm64','olddefconfig'])
     text = (out/'.config').read_text()
+    validate_kernel_policy(out/'.config')
     for name in (ROOT/'config/required-builtins.txt').read_text().split():
         if f'CONFIG_{name}=y\n' not in text: raise ValueError(f'missing built-in: {name}')
     if re.search(r'^CONFIG_\w+=m$',text,re.M) or 'CONFIG_MODULES=y' in text:
         raise ValueError('modules must be disabled')
-    if target.exists() and target.read_bytes() != (out/'.config').read_bytes():
+    if target.exists() and not refresh and target.read_bytes() != (out/'.config').read_bytes():
         raise ValueError('resolved kernel.config drift')
-    if not target.exists(): shutil.copyfile(out/'.config',target)
+    if refresh or not target.exists(): shutil.copyfile(out/'.config',target)
+
+def configure(cache, work):
+    fetch(PINS['kernel']['url'],cache/'linux.tar.xz',PINS['kernel']['sha256'])
+    work.mkdir(parents=True,exist_ok=False)
+    try:
+        unpack(cache/'linux.tar.xz',work/'linux-source')
+        obj=work/'linux-obj'; obj.mkdir()
+        kernel_config(work/'linux-source'/f"linux-{PINS['kernel']['version']}",obj,refresh=True)
+    finally:
+        shutil.rmtree(work)
 
 def copy_elf(source, tree, pool):
     """Read dependency metadata; never execute ldd or downloaded programs."""
@@ -252,7 +264,7 @@ def build(cache, work, out, jobs, reuse_kernel=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['prepare','build'])
+    parser.add_argument('action',choices=['prepare','build','configure'])
     parser.add_argument('--cache',type=Path,required=True)
     parser.add_argument('--work',type=Path)
     parser.add_argument('--out',type=Path)
@@ -261,4 +273,5 @@ if __name__ == '__main__':
     parser.add_argument('--reuse-kernel',action='store_true',help='development: resume only this output directory after a rootfs failure; never share it between independent builds')
     args = parser.parse_args()
     if args.action == 'prepare': prepare(args.cache.resolve(),args.kiln_repo.resolve())
+    elif args.action == 'configure': configure(args.cache.resolve(),args.work.resolve())
     else: build(args.cache.resolve(),args.work.resolve(),args.out.resolve(),args.jobs,args.reuse_kernel)

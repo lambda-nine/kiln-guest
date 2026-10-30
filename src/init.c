@@ -18,6 +18,7 @@
 #include <sys/signalfd.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <time.h>
@@ -44,6 +45,15 @@ static void put(const char *path, const char *value) {
     size_t len = strlen(value);
     if (fd < 0 || write(fd, value, len) != (ssize_t)len) die(path);
     if (close(fd)) die("close");
+}
+static void put_if_present(const char *path, const char *value) {
+    /* Compiling an interface out also removes its sysctl. Other failures
+       are fatal; a kernel with the interface must apply the restriction. */
+    if (access(path, F_OK)) {
+        if (errno == ENOENT) return;
+        die(path);
+    }
+    put(path, value);
 }
 static void linkfd(const char *target, const char *path) {
     if (symlink(target, path) && errno != EEXIST) die(path);
@@ -127,6 +137,18 @@ static void network(void) {
     close(fd);
 }
 static void tests(bool net) {
+    check("kexec-load-absent", syscall(SYS_kexec_load, 0, 0, NULL, 0) == -1 && errno == ENOSYS);
+    check("kexec-file-absent", syscall(SYS_kexec_file_load, -1, -1, 0, NULL, 0) == -1 && errno == ENOSYS);
+    const char *kexec = "/proc/sys/kernel/kexec_load_disabled";
+    FILE *kf = fopen(kexec, "r");
+    if (!kf) check("kexec-sysctl-compiled-out", errno == ENOENT);
+    else {
+        int value = 0; int n = fscanf(kf, "%d", &value); fclose(kf);
+        check("kexec-sysctl-disabled", n == 1 && value == 1);
+        int fd = open(kexec, O_WRONLY|O_CLOEXEC);
+        check("kexec-sysctl-irreversible", fd >= 0 && write(fd, "0\n", 2) == -1);
+        close(fd);
+    }
     check("readonly", RUN("run", "--read-only", "--", "sh", "-c",
         "! touch /etc/should-fail && touch /workspace/ok") == 0);
     check("limits", RUN("run", "--memory", "64M", "--pids", "16", "--disk", "16M", "--", "sh", "-c",
@@ -162,6 +184,7 @@ int main(void) {
     setenv("LANG", "C", 1);
     setvbuf(stdout, NULL, _IOLBF, 0); setvbuf(stderr, NULL, _IOLBF, 0);
     mountfs("proc", "/proc", "proc", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
+    put_if_present("/proc/sys/kernel/kexec_load_disabled", "1\n");
     mountfs("sysfs", "/sys", "sysfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
     /* devtmpfs is mounted by the kernel; refuse a missing console/device tree. */
     if (access("/dev/vdb", F_OK)) die("work disk");
