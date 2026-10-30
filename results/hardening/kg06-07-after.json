@@ -1,0 +1,6 @@
+{
+  "must pin an independently approved manifest digest": true,
+  "before creating any host resource": true,
+  "Snapshots are disabled": true,
+  "two restores from one seed": true
+}

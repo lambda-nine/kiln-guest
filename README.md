@@ -167,14 +167,27 @@ Landlock are not a hostile multi-tenant boundary on their own. A compromised
 guest must still face host-owned per-session TAP/egress controls and resource
 limits. Do not put provider credentials in this image or tool sandboxes.
 
-Snapshots are trusted VMM input. Accept only backend-created snapshots pinned
-to compatible VMM, CPU/GIC, kernel/rootfs and a matching private work-disk
-version. Never reuse a tenant-used snapshot seed across tenants. A trusted
-unassigned seed must establish new identity, entropy and credentials after
-restore and reconnect vsock; snapshotting cannot undo external side effects.
+KG-06 is a hard Phase 1b admission requirement: the host must pin an independently approved manifest digest
+(or an authenticated release identity that resolves to that digest). Before
+creating any host resource, it must validate the entire manifest schema,
+architecture/version, exact artifact set and safe names against that approved
+identity, then every artifact's length and digest. Coordinated image/manifest
+substitution must fail before creating any host resource. `scripts/verify.py`
+checks reproducibility and internal consistency; it provides no admission
+authenticity. Phase 1b must add adversarial admission tests; there is no backend
+admission implementation in this repository.
 
-Phase 1b's `FirecrackerRuntime` needs to validate schema and every artifact
-digest before allocation; journal per-session ownership and manifests;
+KG-07 is a hard Phase 1b restore requirement. Snapshots are disabled until a
+mandatory restore handshake proves fresh host-provided entropy, per-session
+identity and fresh credentials before any tenant work or readiness. Bind every
+snapshot to approved VMM/CPU/GIC, kernel/rootfs and the matching private disk
+version. A test with two restores from one seed must demonstrate distinct
+identity and random output, and refusal on disk-version mismatch or an
+incomplete handshake. Never reuse a tenant-used seed across tenants. Snapshot
+restore cannot undo external side effects. This repository only cold-boots;
+it implements no restore/reseed path.
+
+Phase 1b's `FirecrackerRuntime` must also journal per-session ownership and manifests;
 reserve total guest memory plus VMM overhead and disk; launch dedicated
 jailer identities with outer cgroups/PID isolation; attach a private quota
 disk and host-filtered TAP; and configure per-session addressing. The future
