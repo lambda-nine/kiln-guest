@@ -1,0 +1,473 @@
+# KG-04/05 baseline. Recorded 2026-10-30T20:04:30Z on Darwin arm64; no VM session in this step.
+
+$ python3 /Users/estradafamily/Projects/lambda-nine/reviews/poc-guest/stale-stage.py   # models extract-over-existing in the wrapper at a599132
+README=current
+DELETED_INPUT_RETAINED=true
+STALE_CONTENT=CONFIG_STALE_INPUT=y
+
+$ git show HEAD:scripts/lima.py | grep -n 'tar.*-xf\|repo ~/kiln'   # the wrapper's baseline stage
+39:            shell('mkdir -p ~/kiln-guest-build/repo ~/kiln-guest-build/cache')
+40:            p = sp.Popen(['limactl','shell','--workdir','/tmp','kiln','sudo','tar','-xf','-','-C','/home/estradafamily.guest/kiln-guest-build/repo'],stdin=sp.PIPE)
+
+$ git show HEAD:scripts/lima.py | grep -n CARGO_HOME; git show HEAD:scripts/build.py | grep -n "'cargo','build'\|out.mkdir\|reuse-kernel"   # shared cargo home, overlay output
+73:            env='sudo env PATH="$PATH" CARGO_HOME="$HOME/kiln-guest-build/cache/cargo" '
+160:    run(['cargo','build','--locked','--release','--target','aarch64-unknown-linux-gnu'],cwd=kiln,env=env)
+232:    work.mkdir(parents=True,exist_ok=False); out.mkdir(parents=True,exist_ok=reuse_kernel)
+273:    parser.add_argument('--reuse-kernel',action='store_true',help='development: resume only this output directory after a rootfs failure; never share it between independent builds')
+
+# Raw log of /Users/estradafamily/Projects/lambda-nine/reviews/poc-guest/cargo-cache-run.sh, captured in the kiln Lima VM by the guest break-it review at 2026-10-30T15:41:01 and not rerun here.
+# Disposable CARGO_HOME; an unpacked registry crate was edited, then 'cargo build --locked --offline' compiled the edit (TAMPERED_CARGO_SOURCE_WAS_COMPILED).
+   Compiling itoa v1.0.15
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:2:1
+  |
+2 | //! [![github]](https://github.com/dtolnay/itoa)&ensp;[![crates-io]](https://crates.io/crates/itoa)&ensp;[![docs-rs]](https://docs.rs/itoa)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+2 - //! [![github]](https://github.com/dtolnay/itoa)&ensp;[![crates-io]](https://crates.io/crates/itoa)&ensp;[![docs-rs]](https://docs.rs/itoa)
+2 + // [![github]](https://github.com/dtolnay/itoa)&ensp;[![crates-io]](https://crates.io/crates/itoa)&ensp;[![docs-rs]](https://docs.rs/itoa)
+  |
+
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:3:1
+  |
+3 | //!
+  | ^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+3 - //!
+3 + //
+  |
+
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:4:1
+  |
+4 | //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+4 - //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
+4 + // [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
+  |
+
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:5:1
+  |
+5 | //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+5 - //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
+5 + // [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
+  |
+
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:6:1
+  |
+6 | //! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+6 - //! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
+6 + // [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
+  |
+
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:7:1
+  |
+7 | //!
+  | ^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+7 - //!
+7 + //
+  |
+
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:8:1
+  |
+8 | //! <br>
+  | ^^^^^^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+8 - //! <br>
+8 + // <br>
+  |
+
+error[E0753]: expected outer doc comment
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:9:1
+  |
+9 | //!
+  | ^^^
+  |
+  = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+  |
+9 - //!
+9 + //
+  |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:10:1
+   |
+10 | //! This crate provides a fast conversion of integer primitives to decimal
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+10 - //! This crate provides a fast conversion of integer primitives to decimal
+10 + // This crate provides a fast conversion of integer primitives to decimal
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:11:1
+   |
+11 | //! strings. The implementation comes straight from [libcore] but avoids the
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+11 - //! strings. The implementation comes straight from [libcore] but avoids the
+11 + // strings. The implementation comes straight from [libcore] but avoids the
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:12:1
+   |
+12 | //! performance penalty of going through [`core::fmt::Formatter`].
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+12 - //! performance penalty of going through [`core::fmt::Formatter`].
+12 + // performance penalty of going through [`core::fmt::Formatter`].
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:13:1
+   |
+13 | //!
+   | ^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+13 - //!
+13 + //
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:14:1
+   |
+14 | //! See also [`ryu`] for printing floating point primitives.
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+14 - //! See also [`ryu`] for printing floating point primitives.
+14 + // See also [`ryu`] for printing floating point primitives.
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:15:1
+   |
+15 | //!
+   | ^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+15 - //!
+15 + //
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:16:1
+   |
+16 | //! [libcore]: https://github.com/rust-lang/rust/blob/b8214dc6c6fc20d0a660fb5700dca9ebf51ebe89/src/libcore/fmt/num.rs#L201-L254
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+16 - //! [libcore]: https://github.com/rust-lang/rust/blob/b8214dc6c6fc20d0a660fb5700dca9ebf51ebe89/src/libcore/fmt/num.rs#L201-L254
+16 + // [libcore]: https://github.com/rust-lang/rust/blob/b8214dc6c6fc20d0a660fb5700dca9ebf51ebe89/src/libcore/fmt/num.rs#L201-L254
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:17:1
+   |
+17 | //! [`ryu`]: https://github.com/dtolnay/ryu
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+17 - //! [`ryu`]: https://github.com/dtolnay/ryu
+17 + // [`ryu`]: https://github.com/dtolnay/ryu
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:18:1
+   |
+18 | //!
+   | ^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+18 - //!
+18 + //
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:19:1
+   |
+19 | //! # Example
+   | ^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+19 - //! # Example
+19 + // # Example
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:20:1
+   |
+20 | //!
+   | ^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+20 - //!
+20 + //
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:21:1
+   |
+21 | //! ```
+   | ^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+21 - //! ```
+21 + // ```
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:22:1
+   |
+22 | //! fn main() {
+   | ^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+22 - //! fn main() {
+22 + // fn main() {
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:23:1
+   |
+23 | //!     let mut buffer = itoa::Buffer::new();
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+23 - //!     let mut buffer = itoa::Buffer::new();
+23 + //     let mut buffer = itoa::Buffer::new();
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:24:1
+   |
+24 | //!     let printed = buffer.format(128u64);
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+24 - //!     let printed = buffer.format(128u64);
+24 + //     let printed = buffer.format(128u64);
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:25:1
+   |
+25 | //!     assert_eq!(printed, "128");
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+25 - //!     assert_eq!(printed, "128");
+25 + //     assert_eq!(printed, "128");
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:26:1
+   |
+26 | //! }
+   | ^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+26 - //! }
+26 + // }
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:27:1
+   |
+27 | //! ```
+   | ^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+27 - //! ```
+27 + // ```
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:28:1
+   |
+28 | //!
+   | ^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+28 - //!
+28 + //
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:29:1
+   |
+29 | //! # Performance (lower is better)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+29 - //! # Performance (lower is better)
+29 + // # Performance (lower is better)
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:30:1
+   |
+30 | //!
+   | ^^^
+   |
+   = note: inner doc comments like this (starting with `//!` or `/*!`) can only appear before items
+help: you might have meant to write a regular comment
+   |
+30 - //!
+30 + //
+   |
+
+error[E0753]: expected outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:31:1
+   |
+31 | //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+46 | mod udiv128;
+   | ------------ the inner doc comment doesn't annotate this module
+   |
+help: to annotate the module, change the doc comment from inner to outer style
+   |
+31 - //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
+31 + /// ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
+   |
+
+error: an inner attribute is not permitted following an outer doc comment
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:33:1
+   |
+31 | //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
+   | ----------------------------------------------------------------------------------------- previous doc comment
+32 |
+33 | #![doc(html_root_url = "https://docs.rs/itoa/1.0.15")]
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not permitted following an outer doc comment
+...
+46 | mod udiv128;
+   | ------------ the inner attribute doesn't annotate this module
+   |
+   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files
+
+error: an inner attribute is not permitted following an outer attribute
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:34:1
+   |
+31 | //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
+   | ----------------------------------------------------------------------------------------- previous outer attribute
+...
+34 | #![no_std]
+   | ^^^^^^^^^^ not permitted following an outer attribute
+...
+46 | mod udiv128;
+   | ------------ the inner attribute doesn't annotate this module
+   |
+   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files
+
+error: an inner attribute is not permitted following an outer attribute
+  --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:35:1
+   |
+31 |   //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
+   |   ----------------------------------------------------------------------------------------- previous outer attribute
+...
+35 | / #![allow(
+36 | |     clippy::cast_lossless,
+37 | |     clippy::cast_possible_truncation,
+38 | |     clippy::cast_possible_wrap,
+...  |
+43 | |     clippy::unreadable_literal
+44 | | )]
+   | |__^ not permitted following an outer attribute
+45 |
+46 |   mod udiv128;
+   |   ------------ the inner attribute doesn't annotate this module
+   |
+   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files
+help: to annotate the module, change the attribute from inner to outer style
+   |
+35 - #![allow(
+35 + #[allow(
+   |
+
+error: TAMPERED_CARGO_SOURCE_WAS_COMPILED
+ --> /home/estradafamily.guest/kiln-guest-build/poc-cargo-cache/home/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:1:1
+  |
+1 | compile_error!("TAMPERED_CARGO_SOURCE_WAS_COMPILED");
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0753`.
+error: could not compile `itoa` (lib) due to 34 previous errors

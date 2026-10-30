@@ -1,26 +1,22 @@
 #!/usr/bin/env python3
 """Linux/aarch64 builder. Run prepare once, then build in two clean directories."""
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import subprocess as sp
+import sys
 import tarfile
 import urllib.request
+from inputs import cargo_arguments, cargo_environment, publish_new_directory, sha, vendor_crates, verify_source
 from kernel_policy import validate as validate_kernel_policy
 
 ROOT = Path(__file__).resolve().parents[1]
 PINS = json.loads((ROOT / 'config/pins.json').read_text())
 EPOCH = str(PINS['source_date_epoch'])
-
-def sha(path):
-    h = hashlib.sha256()
-    with open(path, 'rb') as f:
-        for data in iter(lambda: f.read(1024*1024), b''): h.update(data)
-    return h.hexdigest()
 
 def run(argv, **kwargs):
     print('+', ' '.join(map(str, argv)), flush=True)
@@ -47,6 +43,16 @@ def toolchain():
             'packages': output(['dpkg-query','-W','-f=${Package}=${Version}\n',
                 'gcc','gcc-13','binutils','libc6','libc6-dev','make','flex','bison',
                 'libssl-dev','libelf-dev','bc','squashfs-tools','xfsprogs'])}
+
+def reconcile_lock(existing, current, pinned_source):
+    """An existing lock follows a reviewed kiln pin; the toolchain and debs never move here.
+    To repin those, delete config/build-lock.json locally and review the regenerated diff."""
+    if existing is None: return current
+    if {**existing,'kiln_source_sha256':current['kiln_source_sha256']} != current:
+        raise ValueError('prepare would change build-lock.json; review an intentional repin separately')
+    if current['kiln_source_sha256'] not in (existing['kiln_source_sha256'],pinned_source):
+        raise ValueError('kiln source differs from build-lock.json and pins.json')
+    return current
 
 def prepare(cache, kiln_repo):
     cache.mkdir(parents=True, exist_ok=True)
@@ -88,9 +94,8 @@ def prepare(cache, kiln_repo):
     lock = {'schema':1, 'toolchain':toolchain(), 'debs':debs,
             'kiln_source_sha256':sha(source)}
     existing = ROOT/'config/build-lock.json'
-    if existing.exists() and json.loads(existing.read_text()) != lock:
-        raise ValueError('prepare would change build-lock.json; review an intentional repin separately')
-    writejson(existing, lock)
+    writejson(existing, reconcile_lock(json.loads(existing.read_text()) if existing.exists() else None,
+                                       lock, PINS.get('kiln_source_sha256')))
 
 def unpack(archive, dest):
     dest.mkdir(parents=True, exist_ok=False)
@@ -158,12 +163,14 @@ def copy_elf(source, tree, pool):
         copy_elf(sorted(candidates)[0],tree,pool)
 
 def rootfs(work, cache, out, lock):
+    if sha(cache/'kiln.tar') != lock['kiln_source_sha256']: raise ValueError('kiln source mismatch')
     kiln = work/'kiln'; unpack(cache/'kiln.tar',kiln)
-    env = os.environ.copy()
+    cargo = vendor_crates(kiln,cache,work)
+    env = cargo_environment(os.environ,work)
     env.update({'KILN_BUILD_COMMIT':PINS['kiln_commit'], 'CARGO_INCREMENTAL':'0',
         'CARGO_TARGET_DIR':str(kiln/'target'),
         'RUSTFLAGS':f'--remap-path-prefix={work}=/build -C target-feature=+crt-static -C strip=symbols -C link-arg=-Wl,--build-id=none'})
-    run(['cargo','build','--locked','--release','--target','aarch64-unknown-linux-gnu'],cwd=kiln,env=env)
+    run(['cargo','build',*cargo_arguments(work/'vendor'),'--release','--target','aarch64-unknown-linux-gnu'],cwd=kiln,env=env)
     binary = kiln/'target/aarch64-unknown-linux-gnu/release/kiln'
     if 'INTERP' in output(['readelf','-l',binary]): raise ValueError('kiln static link failed')
     shutil.copyfile(binary,out/'kiln')
@@ -222,11 +229,46 @@ def rootfs(work, cache, out, lock):
     run(['mksquashfs',tree,out/'rootfs.squashfs','-noappend','-comp','gzip',
          '-processors','1','-no-xattrs','-no-exports','-no-fragments',
          '-all-time',EPOCH,'-mkfs-time',EPOCH,'-no-progress'],env=squash_env)
+    return cargo
 
-def build(cache, work, out, jobs, reuse_kernel=False):
+def input_provenance(cache, lock, source, cargo):
+    """Everything here is independent of the build's work and output paths."""
+    return {'pins_sha256':sha(ROOT/'config/pins.json'),
+        'build_lock_sha256':sha(ROOT/'config/build-lock.json'),
+        'init_source_sha256':sha(ROOT/'src/init.c'),
+        'kiln':{'commit':PINS['kiln_commit'],'archive_sha256':sha(cache/'kiln.tar')},
+        'kernel_archive_sha256':sha(cache/'linux.tar.xz'),
+        'alpine_archive_sha256':sha(cache/'alpine.tar.gz'),
+        'build_lock':lock,'cargo':cargo,'source':source}
+
+def assemble(cache, work, out, jobs, lock, source):
+    unpack(cache/'linux.tar.xz',work/'linux-source')
+    src = work/'linux-source'/f"linux-{PINS['kernel']['version']}"
+    obj = work/'linux-obj'; obj.mkdir()
+    kernel_config(src,obj)
+    run(['make','-C',src,f'O={obj}','ARCH=arm64',f'-j{jobs}',
+         f'KCFLAGS=-ffile-prefix-map={work}=/build','Image'])
+    shutil.copyfile(obj/'arch/arm64/boot/Image',out/'Image')
+    shutil.copyfile(obj/'.config',out/'kernel.config')
+    cargo = rootfs(work,cache,out,lock)
+    manifest = {'schema':1,'bundle_version':'0.1.0','architecture':'aarch64',
+        'kernel_version':PINS['kernel']['version']+'-kiln-guest1',
+        'kiln_commit':PINS['kiln_commit'],'firecracker_version':PINS['firecracker']['version'],
+        'source_date_epoch':int(EPOCH),'broker':{'enabled':False,'protocol':None},
+        'work_disk':{'filesystem':'xfs','mount_options':['prjquota'],'minimum_mib':512},
+        'artifacts':{name:{'sha256':sha(out/name),'bytes':(out/name).stat().st_size}
+            for name in ['Image','kernel.config','kiln','rootfs.squashfs']},
+        'inputs':input_provenance(cache,lock,source,cargo)}
+    writejson(out/'manifest.json',manifest)
+    if verify_source(ROOT)['digest'] != source['digest']: raise ValueError('source changed during build')
+
+def build(cache, work, out, jobs, source_digest=None):
     if os.uname().machine != 'aarch64' or os.geteuid() != 0:
         raise ValueError('build requires root on Linux aarch64')
     os.umask(0o022)
+    source = verify_source(ROOT)
+    if source_digest and source['digest'] != source_digest:
+        raise ValueError('staged source differs from the local inventory')
     for name in ['CC','CXX','LD','AR','AS','CFLAGS','CPPFLAGS','LDFLAGS',
                  'KBUILD_OUTPUT','KBUILD_EXTMOD','KCONFIG_CONFIG','MAKEFLAGS']:
         os.environ.pop(name,None)
@@ -235,36 +277,13 @@ def build(cache, work, out, jobs, reuse_kernel=False):
     for key, name in [('kernel','linux.tar.xz'),('firecracker','firecracker.tgz')]:
         fetch(PINS[key]['url'],cache/name,PINS[key]['sha256'])
     if sha(cache/'kiln.tar') != lock['kiln_source_sha256']: raise ValueError('kiln source mismatch')
-    work.mkdir(parents=True,exist_ok=False); out.mkdir(parents=True,exist_ok=reuse_kernel)
+    if os.path.lexists(out): raise ValueError(f'refusing to overwrite {out}')
+    work.mkdir(parents=True,exist_ok=False)
     os.environ.update({'SOURCE_DATE_EPOCH':EPOCH,'KBUILD_BUILD_TIMESTAMP':'2026-10-30 00:00:00 UTC',
         'KBUILD_BUILD_USER':'builder','KBUILD_BUILD_HOST':'kiln-guest','KBUILD_BUILD_VERSION':'1',
         'LC_ALL':'C','TZ':'UTC'})
     try:
-        if reuse_kernel:
-            if (out/'kernel.config').read_bytes() != (ROOT/'config/kernel.config').read_bytes():
-                raise ValueError('resumed kernel configuration differs')
-            if not (out/'Image').is_file(): raise ValueError('no compiled kernel to resume')
-        else:
-            unpack(cache/'linux.tar.xz',work/'linux-source')
-            src = work/'linux-source'/f"linux-{PINS['kernel']['version']}"
-            obj = work/'linux-obj'; obj.mkdir()
-            kernel_config(src,obj)
-            run(['make','-C',src,f'O={obj}','ARCH=arm64',f'-j{jobs}',
-                 f'KCFLAGS=-ffile-prefix-map={work}=/build','Image'])
-            shutil.copyfile(obj/'arch/arm64/boot/Image',out/'Image')
-            shutil.copyfile(obj/'.config',out/'kernel.config')
-        rootfs(work,cache,out,lock)
-        manifest = {'schema':1,'bundle_version':'0.1.0','architecture':'aarch64',
-            'kernel_version':PINS['kernel']['version']+'-kiln-guest1',
-            'kiln_commit':PINS['kiln_commit'],'firecracker_version':PINS['firecracker']['version'],
-            'source_date_epoch':int(EPOCH),'broker':{'enabled':False,'protocol':None},
-            'work_disk':{'filesystem':'xfs','mount_options':['prjquota'],'minimum_mib':512},
-            'artifacts':{name:{'sha256':sha(out/name),'bytes':(out/name).stat().st_size}
-                for name in ['Image','kernel.config','kiln','rootfs.squashfs']},
-            'inputs':{'pins_sha256':sha(ROOT/'config/pins.json'),
-                'build_lock_sha256':sha(ROOT/'config/build-lock.json'),
-                'init_source_sha256':sha(ROOT/'src/init.c')}}
-        writejson(out/'manifest.json',manifest)
+        publish_new_directory(out,lambda output:assemble(cache,work,output,jobs,lock,source))
     finally:
         shutil.rmtree(work)
 
@@ -276,8 +295,9 @@ if __name__ == '__main__':
     parser.add_argument('--out',type=Path)
     parser.add_argument('--kiln-repo',type=Path)
     parser.add_argument('--jobs',type=int,default=3)
-    parser.add_argument('--reuse-kernel',action='store_true',help='development: resume only this output directory after a rootfs failure; never share it between independent builds')
+    parser.add_argument('--source-digest',help='stable inventory digest the staged source must match')
     args = parser.parse_args()
+    for number in [signal.SIGTERM,signal.SIGHUP]: signal.signal(number,lambda *_:sys.exit(143))
     if args.action == 'prepare': prepare(args.cache.resolve(),args.kiln_repo.resolve())
     elif args.action == 'configure': configure(args.cache.resolve(),args.work.resolve())
-    else: build(args.cache.resolve(),args.work.resolve(),args.out.resolve(),args.jobs,args.reuse_kernel)
+    else: build(args.cache.resolve(),args.work.resolve(),args.out.resolve(),args.jobs,args.source_digest)
