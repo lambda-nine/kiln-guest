@@ -16,12 +16,14 @@ import tarfile
 import time
 import sys
 import stat
+import re
 
 ROOT=Path(__file__).resolve().parents[1]
 PINS=json.loads((ROOT/'config/pins.json').read_text())
 sys.path.insert(0,str(ROOT/'scripts'))
 from kernel_policy import validate as validate_kernel_policy
 from inputs import publish_new_directory
+from verify import verify as verify_bundle
 
 def run(argv,**kw): return sp.run(list(map(str,argv)),check=True,**kw)
 def sha(path):
@@ -114,7 +116,7 @@ class Tap:
         if errors: raise RuntimeError('test network cleanup: '+'; '.join(errors))
 
 class VM:
-    def __init__(self,name,bundle,cache,out,tests=False,net=False):
+    def __init__(self,name,bundle,cache,out,tests=False,net=False,memory_backing='None'):
         self.p=None; self.buf=b''; self.observations=[]; self.out=out; self.name=name
         release=cache/'release'
         self.fc=release/'release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64'
@@ -132,11 +134,12 @@ class VM:
             cfg={'boot-source':{'kernel_image_path':'/kernel','boot_args':
                 'console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3'+
                 (' kiln.test=1' if tests else '')+(' kiln.net=1' if net else '')},
-                'machine-config':{'vcpu_count':1,'mem_size_mib':768,'smt':False},
+                'machine-config':{'vcpu_count':1,'mem_size_mib':768,'smt':False,'huge_pages':memory_backing},
                 'drives':[{'drive_id':'rootfs','path_on_host':'/rootfs','is_root_device':True,'is_read_only':True},
                           {'drive_id':'work','path_on_host':'/work','is_root_device':False,'is_read_only':False}]}
             if net: cfg['network-interfaces']=[{'iface_id':'eth0','guest_mac':'06:00:ac:1e:63:02','host_dev_name':'kgtest0'}]
             write(self.root/'config.json',cfg)
+            write(out/(name+'.config.json'),cfg)
             argv=[jailer,'--id',name,'--exec-file',self.fc,'--uid','10000','--gid','10000',
                   '--cgroup-version','2','--chroot-base-dir',self.base,'--',
                   '--api-sock','/api.sock','--config-file','/config.json']
@@ -164,11 +167,20 @@ class VM:
             self.p.wait(timeout=10)
             self.buf+=self.p.stdout.read(); self.p.stdout.close()
         (self.out/(self.name+'.console.log')).write_bytes(self.buf)
+        write(self.out/(self.name+'.observations.json'),self.observations)
         shutil.rmtree(self.jail,ignore_errors=True)
         # Jailer creates only this per-VM cgroup, never remove a parent's group.
         for path in Path('/sys/fs/cgroup').glob(f'**/{self.fc.name}/{self.name}'):
             try: path.rmdir()
             except OSError: pass
+
+    def host_stats(self):
+        """Sample after timing; process totals, not guest page-fault counters."""
+        status=Path(f'/proc/{self.p.pid}/stat').read_text().rsplit(')',1)[1].split()
+        rollup=Path(f'/proc/{self.p.pid}/smaps_rollup').read_text()
+        return {'vmm_minor_faults':int(status[7]), 'vmm_major_faults':int(status[9]),
+                'vmm_user_ticks':int(status[11]), 'vmm_system_ticks':int(status[12]),
+                'vmm_anon_huge_kib':int(re.search(r'^AnonHugePages:\s+(\d+)',rollup,re.M)[1])}
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
@@ -176,7 +188,8 @@ def main():
     p.add_argument('--runs',type=int,default=20); p.add_argument('--skip-network',action='store_true')
     a=p.parse_args(); bundle=a.bundle.resolve(); cache=a.cache.resolve(); out=a.out.resolve()
     out.mkdir(parents=True,exist_ok=False)
-    manifest=json.loads((bundle/'manifest.json').read_text())
+    manifest=verify_bundle(bundle)
+    memory_backing=manifest.get('launch_profile',{}).get('huge_pages','None')
     validate_kernel_policy(bundle/'kernel.config')
     if manifest['schema']!=1: raise ValueError('unknown manifest schema')
     for name,entry in manifest['artifacts'].items():
@@ -190,7 +203,11 @@ def main():
         'work_disk':'private 512 MiB XFS, nosuid,nodev,noexec,prjquota','uid_gid':10000,'cgroup_version':2,
         'default_seccomp':True,'outer_cgroup_limits':False,'new_pid_namespace':False,
         'cache_drop':False,'timing':'before Popen(jailer) to serial KG_FIRST_COMMAND after first kiln true exits; staging and teardown excluded',
-        'manifest_sha256':sha(bundle/'manifest.json'),'host_services':'installed kiln/kilnd/DNS/metrics left active; other host applications uncontrolled'}
+        'manifest_sha256':sha(bundle/'manifest.json'),'host_services':'installed kiln/kilnd/DNS/metrics left active; other host applications uncontrolled',
+        'huge_pages':memory_backing,
+        'host_thp':{name:Path('/sys/kernel/mm/transparent_hugepage/'+name).read_text().strip()
+                    for name in ['enabled','defrag']}}
+    (out/'manifest.json').write_bytes((bundle/'manifest.json').read_bytes())
     write(out/'conditions.json',conditions)
     records=[]; result={'integration':{},'egress':'untested'}
     try:
@@ -199,7 +216,7 @@ def main():
             tap=Tap() if mode=='network' else None
             try:
                 if tap: tap.__enter__()
-                v=VM('integration-'+mode,bundle,cache,out,tests=True,net=bool(tap))
+                v=VM('integration-'+mode,bundle,cache,out,tests=True,net=bool(tap),memory_backing=memory_backing)
                 try:
                     v.until(b'KG_TESTS_COMPLETE',timeout=150)
                     if b' FAIL' in v.buf or b'KG_FATAL' in v.buf: raise RuntimeError('guest test failure')
@@ -211,7 +228,7 @@ def main():
                                  'dns-seccomp','dns-root-denied','dns-namespace-denied',
                                  'dns-netlink-denied','dns-policy-readonly','dns-tenant-storage-hidden',
                                  'work-disk-flags','work-direct-exec-denied','overlay-workspace-exec',
-                                 'kaslr-enabled']:
+                                 'kaslr-enabled','memory-initialization']:
                         if f'KG_TEST {name} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing security assertion: {name}')
                     v.until(b'Firecracker exiting successfully',timeout=20)
@@ -227,12 +244,13 @@ def main():
                 if tap: tap.__exit__(None,None,None)
         for i in range(a.runs+2):
             time.sleep(.1)
-            v=VM(f'boot-{i:02}',bundle,cache,out)
+            v=VM(f'boot-{i:02}',bundle,cache,out,memory_backing=memory_backing)
             try:
                 elapsed=v.until(b'KG_FIRST_COMMAND')
                 v.until(b'KG_READY')
                 record={'schema':1,'kind':'latency','case':conditions['case'],'session':conditions['l1_boot_id'],
-                    'warmup':i<2,'round':i-2,'gap_ms':100,'elapsed_ns':elapsed,'ok':True}
+                    'warmup':i<2,'round':i-2,'gap_ms':100,'elapsed_ns':elapsed,'ok':True,
+                    'host_stats':v.host_stats()}
                 records.append(record)
                 with (out/'records.jsonl').open('a') as f: f.write(json.dumps(record,sort_keys=True)+'\n')
             finally: v.stop()

@@ -10,6 +10,15 @@ import unittest
 VERIFY=Path(__file__).resolve().parents[1]/'scripts/verify.py'
 
 class VerifyTests(unittest.TestCase):
+    def test_diagnostic_bundle_is_rejected_for_acceptance(self):
+        with tempfile.TemporaryDirectory() as d:
+            a=self.bundle(Path(d)/'a')
+            manifest=json.loads((a/'manifest.json').read_text()); manifest['diagnostic_only']='experiment'
+            (a/'manifest.json').write_text(json.dumps(manifest))
+            result=self.call(a)
+            self.assertNotEqual(result.returncode,0)
+            self.assertIn(b'diagnostic bundle',result.stderr)
+
     def bundle(self, path):
         path.mkdir()
         artifacts={}

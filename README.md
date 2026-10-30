@@ -46,6 +46,17 @@ Boot arguments:
 console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3
 ```
 
+The manifest's `launch_profile` selects Firecracker machine configuration
+`"huge_pages": "Transparent"`, alongside `"vcpu_count": 1` and
+`"mem_size_mib": 768`. This requests host transparent huge pages for guest RAM;
+the guest still uses 4 KiB pages. Keep both allocation and free initialization
+enabled. On the nested Lima target, the initial whole-RAM clearing sweep is
+sensitive to host backing-page faults. THP avoids changing the kernel or its
+security policy. It is an allocation hint, so memory pressure or host THP policy
+can make boots slower without reducing protection. The validation evidence
+records host THP policy and actual VMM huge-page backing for every measured boot.
+See `results/boot-regression/` for controlled comparisons and phase traces.
+
 PID 1 fails closed on mounting, sandbox smoke-test, firewall or DNS startup
 failure. It mounts bounded tmpfs `/run` and `/tmp`, proc/sysfs/cgroup2, creates
 the `/dev/fd` links kiln/nft need, disconnects stdin, sets an explicit minimal
@@ -172,6 +183,16 @@ nested virtualization measurements on mini-one, not bare-metal results or
 an end-to-end kilnd backend benchmark. The test jailer has no extra outer
 cgroup limits or new PID namespace; Phase 1b must add those production limits.
 
+Host backing is an explicit experimental variable: the historical baseline
+and hardening run omitted `huge_pages` (Firecracker `None`); the new launch
+profile requests `Transparent`. The comparison diagnostics retain the same
+bundle while changing only backing or an explicitly labelled test-mode
+initialization override. They are separate from production-mode acceptance
+measurements, and do not authorize lowering the security policy. Diagnostic
+bundles are rejected by the acceptance verifier. `tests/trace_boot.py` verifies
+artifact hashes before launch and archives the manifest and raw timestamped
+serial observations, including on failure.
+
 See `results/test-results.json`, `results/conditions.json`, `results/records.jsonl`
 and console logs for the measured outcome. No steady-state speed claim is
 made; kiln remains experimental and has not been professionally audited.
@@ -258,7 +279,7 @@ Firecracker 1.17 supplies a 64-byte host-CSPRNG `rng-seed`, while Linux arm64's
 early KASLR expects a separate `kaslr-seed` or RNDR. mini-one's nested guest has
 no RNDR. The reviewed local replacement `src/kernel-kaslr-early.c` retains the
 standard seed's priority, otherwise consumes and erases eight bytes from an
-exactly 64-byte RNG seed. The remaining 56 independent random bytes seed the
+exactly 64-byte RNG seed. The remaining 56 CSPRNG output bytes seed the
 kernel RNG; Linux subsequently removes that property. Both the upstream file
 and replacement hashes are pinned and checked before compilation and recorded
 in manifest inputs. Tests exercise the actual seed function's length checks,

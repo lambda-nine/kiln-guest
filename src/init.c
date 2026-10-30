@@ -27,6 +27,13 @@
 #include <unistd.h>
 
 static pid_t dns_pid;
+static bool trace_boot;
+static void trace(const char *phase) {
+    if (!trace_boot) return;
+    struct timespec now;
+    if (clock_gettime(CLOCK_MONOTONIC, &now)) return;
+    printf("KG_PHASE %s %lld.%09ld\n", phase, (long long)now.tv_sec, now.tv_nsec);
+}
 static void stop(int status) {
     printf("KG_SHUTDOWN status=%d\n", status); fflush(NULL);
     kill(-1, SIGTERM); usleep(100000); kill(-1, SIGKILL);
@@ -109,6 +116,7 @@ static void check(const char *name, bool ok) {
     if (!ok) stop(2);
 }
 #include "dns_service.h"
+#include "zero_probe.h"
 static void test_work_disk(void) {
     struct statvfs flags;
     check("work-disk-flags", !statvfs("/var/lib/kiln/runs",&flags) &&
@@ -173,6 +181,8 @@ static void tests(bool net) {
     check("kernel-log-readable", klogctl(3,log,logsize) >= 0);
     check("kaslr-enabled", strstr(log,"KASLR enabled") != NULL &&
           strstr(log,"KASLR disabled") == NULL);
+    check("memory-initialization", strstr(log,
+          "mem auto-init: stack:all(zero), heap alloc:on, heap free:on") != NULL);
     free(log);
     test_dns_status();
     test_work_disk();
@@ -235,6 +245,8 @@ int main(void) {
     setenv("LANG", "C", 1);
     setvbuf(stdout, NULL, _IOLBF, 0); setvbuf(stderr, NULL, _IOLBF, 0);
     mountfs("proc", "/proc", "proc", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
+    trace_boot = option("kiln.test=1");
+    trace("init-proc");
     put_if_present("/proc/sys/kernel/kexec_load_disabled", "1\n");
     mountfs("sysfs", "/sys", "sysfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
     mountfs("securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
@@ -250,13 +262,18 @@ int main(void) {
     mountfs("tmpfs", "/run", "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "mode=0755,size=16M");
     mountfs("tmpfs", "/tmp", "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "mode=1777,size=32M");
     mountfs("cgroup2", "/sys/fs/cgroup", "cgroup2", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
+    trace("mount-work-start");
     mountfs("/dev/vdb", "/var/lib/kiln/runs", "xfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "prjquota");
+    trace("mount-work-done");
     put("/proc/sys/kernel/kptr_restrict", "2\n");
     put("/proc/sys/kernel/dmesg_restrict", "1\n");
     put_if_present("/proc/sys/kernel/unprivileged_bpf_disabled", "1\n");
     loopback();
     if (option("kiln.net=1")) network();
+    if (trace_boot && option("kiln.zero_probe=1")) zero_probe();
+    trace("first-command-start");
     check("first-true", RUN("run", "--", "true") == 0);
+    trace("first-command-done");
     puts("KG_FIRST_COMMAND");
     const char *dirs[] = {"/run/kiln", "/run/kiln/net", "/run/kiln/net/dns", "/run/kiln/net/leases"};
     for (size_t i=0; i<sizeof(dirs)/sizeof(dirs[0]); i++) {
@@ -264,6 +281,7 @@ int main(void) {
         if (chmod(dirs[i],0755)) die("DNS runtime directory mode");
     }
     check("network-setup", RUN("network-setup") == 0);
+    trace("network-setup-done");
     dns_pid = start_dns(option("kiln.test=1"));
     bool ready = false;
     for (int i=0; i<100; i++) {
@@ -283,6 +301,7 @@ int main(void) {
         usleep(10000);
     }
     check("dns-ready", ready);
+    trace("dns-ready");
     puts("KG_READY");
     /* Phase 1b broker hook: disabled. No vsock or serial command listener. */
     if (option("kiln.test=1")) tests(option("kiln.net=1"));

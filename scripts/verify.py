@@ -5,10 +5,12 @@ import json
 from pathlib import Path
 import sys
 
-def verify(directory):
+def verify(directory, allow_diagnostic=False):
     root=Path(directory)
     manifest=json.loads((root/'manifest.json').read_text())
     if manifest['schema']!=1: raise ValueError('unknown manifest schema')
+    if 'diagnostic_only' in manifest and not allow_diagnostic:
+        raise ValueError('diagnostic bundle is not an acceptance build')
     if set(manifest['artifacts'])!={'Image','kernel.config','kiln','rootfs.squashfs'}:
         raise ValueError('unexpected artifact set')
     for name, record in manifest['artifacts'].items():
