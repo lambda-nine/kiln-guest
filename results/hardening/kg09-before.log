@@ -1,0 +1,2 @@
+mountfs("/dev/vdb", "/var/lib/kiln/runs", "xfs", MS_NOSUID|MS_NODEV, "prjquota")
+PASS=False

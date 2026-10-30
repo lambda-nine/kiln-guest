@@ -255,7 +255,7 @@ def assemble(cache, work, out, jobs, lock, source):
         'kernel_version':PINS['kernel']['version']+'-kiln-guest1',
         'kiln_commit':PINS['kiln_commit'],'firecracker_version':PINS['firecracker']['version'],
         'source_date_epoch':int(EPOCH),'broker':{'enabled':False,'protocol':None},
-        'work_disk':{'filesystem':'xfs','mount_options':['prjquota'],'minimum_mib':512},
+        'work_disk':{'filesystem':'xfs','mount_options':['nosuid','nodev','noexec','prjquota'],'minimum_mib':512},
         'artifacts':{name:{'sha256':sha(out/name),'bytes':(out/name).stat().st_size}
             for name in ['Image','kernel.config','kiln','rootfs.squashfs']},
         'inputs':input_provenance(cache,lock,source,cargo)}

@@ -18,6 +18,7 @@
 #include <sys/signalfd.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -107,6 +108,33 @@ static void check(const char *name, bool ok) {
     if (!ok) stop(2);
 }
 #include "dns_service.h"
+static void test_work_disk(void) {
+    struct statvfs flags;
+    check("work-disk-flags", !statvfs("/var/lib/kiln/runs",&flags) &&
+          (flags.f_flag & (ST_NOEXEC|ST_NOSUID|ST_NODEV)) == (ST_NOEXEC|ST_NOSUID|ST_NODEV));
+    const char *path="/var/lib/kiln/runs/.exec-probe";
+    int src=open("/init",O_RDONLY|O_CLOEXEC);
+    int dst=open(path,O_CREAT|O_EXCL|O_WRONLY|O_CLOEXEC|O_NOFOLLOW,0700);
+    if (src < 0 || dst < 0) die("work exec probe");
+    char buf[65536]; ssize_t n;
+    while ((n=read(src,buf,sizeof(buf))) > 0) {
+        ssize_t done=0;
+        while (done < n) {
+            ssize_t written=write(dst,buf+done,(size_t)(n-done));
+            if (written < 0 && errno == EINTR) continue;
+            if (written <= 0) die("copy exec probe");
+            done+=written;
+        }
+    }
+    if (n < 0 || fchmod(dst,0755)) die("exec probe mode");
+    close(src); if (close(dst)) die("exec probe close");
+    pid_t p=fork(); if (p < 0) die("exec probe fork");
+    if (!p) { execl(path,path,(char *)NULL); _exit(errno == EACCES ? 0 : 1); }
+    check("work-direct-exec-denied",collect(p) == 0);
+    if (unlink(path)) die("exec probe unlink");
+    check("overlay-workspace-exec",RUN("run","--","sh","-c",
+          "awk '$2==\"/\" && $3==\"overlay\" {print; if ($4 !~ /(^|,)noexec(,|$)/) ok=1} END{exit !ok}' /proc/mounts && cp /bin/busybox /workspace/busybox && /workspace/busybox true") == 0);
+}
 static void loopback(void) {
     int fd = socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC, 0);
     if (fd < 0) die("loopback socket");
@@ -139,6 +167,7 @@ static void network(void) {
 }
 static void tests(bool net) {
     test_dns_status();
+    test_work_disk();
     check("kexec-load-absent", syscall(SYS_kexec_load, 0, 0, NULL, 0) == -1 && errno == ENOSYS);
     check("kexec-file-absent", syscall(SYS_kexec_file_load, -1, -1, 0, NULL, 0) == -1 && errno == ENOSYS);
     const char *kexec = "/proc/sys/kernel/kexec_load_disabled";
@@ -213,7 +242,7 @@ int main(void) {
     mountfs("tmpfs", "/run", "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "mode=0755,size=16M");
     mountfs("tmpfs", "/tmp", "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "mode=1777,size=32M");
     mountfs("cgroup2", "/sys/fs/cgroup", "cgroup2", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
-    mountfs("/dev/vdb", "/var/lib/kiln/runs", "xfs", MS_NOSUID|MS_NODEV, "prjquota");
+    mountfs("/dev/vdb", "/var/lib/kiln/runs", "xfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "prjquota");
     put("/proc/sys/kernel/kptr_restrict", "2\n");
     put("/proc/sys/kernel/dmesg_restrict", "1\n");
     put_if_present("/proc/sys/kernel/unprivileged_bpf_disabled", "1\n");

@@ -152,7 +152,7 @@ def main():
     conditions={'case':'fc-jailer-kiln-none-768','tier':'strong-isolation','workload':['kiln','run','--','true'],
         'gap_ms':100,'warmups':2,'runs':a.runs,'l1_sessions':1,'l1_boot_id':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         'uname':list(os.uname()),'vcpu_count':1,'mem_size_mib':768,'rootfs':'squashfs, read-only',
-        'work_disk':'private 512 MiB XFS, prjquota','uid_gid':10000,'cgroup_version':2,
+        'work_disk':'private 512 MiB XFS, nosuid,nodev,noexec,prjquota','uid_gid':10000,'cgroup_version':2,
         'default_seccomp':True,'outer_cgroup_limits':False,'new_pid_namespace':False,
         'cache_drop':False,'timing':'before Popen(jailer) to serial KG_FIRST_COMMAND after first kiln true exits; staging and teardown excluded',
         'manifest_sha256':sha(bundle/'manifest.json'),'host_services':'installed kiln/kilnd/DNS/metrics left active; other host applications uncontrolled'}
@@ -174,7 +174,8 @@ def main():
                                  'devkmem-absent','debugfs-absent','lockdown-confidentiality',
                                  'dns-nonroot','dns-only-bind-capability','dns-no-new-privileges',
                                  'dns-seccomp','dns-root-denied','dns-namespace-denied',
-                                 'dns-netlink-denied','dns-policy-readonly','dns-tenant-storage-hidden']:
+                                 'dns-netlink-denied','dns-policy-readonly','dns-tenant-storage-hidden',
+                                 'work-disk-flags','work-direct-exec-denied','overlay-workspace-exec']:
                         if f'KG_TEST {name} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing security assertion: {name}')
                     v.until(b'Firecracker exiting successfully',timeout=20)
