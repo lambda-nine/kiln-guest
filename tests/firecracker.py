@@ -116,8 +116,13 @@ class Tap:
         if errors: raise RuntimeError('test network cleanup: '+'; '.join(errors))
 
 class VM:
-    def __init__(self,name,bundle,cache,out,tests=False,net=False,memory_backing='None'):
+    def __init__(self,name,bundle,cache,out,tests=False,net=False,memory_backing='None',parent_cgroup=None):
         self.p=None; self.buf=b''; self.observations=[]; self.out=out; self.name=name
+        if parent_cgroup is not None:
+            if not parent_cgroup.startswith('kg-density-') or Path(parent_cgroup).name!=parent_cgroup:
+                raise ValueError('invalid density cgroup name')
+            if not (Path('/sys/fs/cgroup')/parent_cgroup/'cgroup.procs').is_file():
+                raise ValueError('density cgroup must exist before launch')
         release=cache/'release'
         self.fc=release/'release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64'
         jailer=release/'release-v1.17.0-aarch64/jailer-v1.17.0-aarch64'
@@ -141,8 +146,10 @@ class VM:
             write(self.root/'config.json',cfg)
             write(out/(name+'.config.json'),cfg)
             argv=[jailer,'--id',name,'--exec-file',self.fc,'--uid','10000','--gid','10000',
-                  '--cgroup-version','2','--chroot-base-dir',self.base,'--',
-                  '--api-sock','/api.sock','--config-file','/config.json']
+                  '--cgroup-version','2','--chroot-base-dir',self.base]
+            if parent_cgroup is not None: argv+=['--parent-cgroup',parent_cgroup]
+            argv+=['--','--api-sock','/api.sock','--config-file','/config.json']
+            write(out/(name+'.jailer.json'),list(map(str,argv)))
             self.start=time.monotonic_ns()
             self.p=sp.Popen(list(map(str,argv)),stdout=sp.PIPE,stderr=sp.STDOUT,stdin=sp.DEVNULL)
         except BaseException: self.stop(); raise

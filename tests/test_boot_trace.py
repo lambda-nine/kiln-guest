@@ -6,8 +6,31 @@ import tempfile
 import unittest
 from unittest import mock
 from tests import trace_boot
+from tests import boot_options
 
 class TraceTests(unittest.TestCase):
+    def test_comparison_launch_failure_is_retained_and_cannot_be_retried_away(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d); bundle=self.fixture(root)
+            argv=['boot_options.py','--bundle',str(bundle),'--cache',str(root/'cache'),
+                  '--out',str(root/'out'),'--option','thp','--count','1']
+            read_text=Path.read_text
+            def read(path,*args,**kwargs):
+                if str(path)=='/proc/sys/kernel/random/boot_id': return 'fixture-boot\n'
+                if str(path).startswith('/sys/kernel/mm/transparent_hugepage/'): return '[madvise]\n'
+                return read_text(path,*args,**kwargs)
+            with mock.patch('sys.argv',argv),mock.patch.object(boot_options.Path,'read_text',read), \
+                 mock.patch.object(boot_options.fc,'verify_release'), \
+                 mock.patch.object(boot_options.fc,'VM',side_effect=RuntimeError('launch failed')) as launch:
+                with self.assertRaisesRegex(RuntimeError,'launch failed'): boot_options.main()
+                records=(root/'out/records.jsonl').read_text().splitlines()
+                self.assertEqual(len(records),1)
+                self.assertFalse(json.loads(records[0])['ok'])
+                self.assertEqual(json.loads(records[0])['error'],'launch failed')
+                with self.assertRaisesRegex(ValueError,'nonsequential'): boot_options.main()
+                self.assertEqual(launch.call_count,1)
+                self.assertEqual((root/'out/records.jsonl').read_text().splitlines(),records)
+
     def fixture(self,root):
         bundle=root/'bundle'; bundle.mkdir()
         artifacts={}

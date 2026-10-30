@@ -49,29 +49,46 @@ def main():
         records=[json.loads(s) for s in (out/'records.jsonl').read_text().splitlines()]
     if len(records)!=a.start or not 0<=a.start<a.start+a.count<=22:
         raise ValueError('nonsequential or invalid sample range')
+    if any(not r.get('ok') for r in records):
+        raise ValueError('failed attempt retained; use a new output directory')
     original_write=fc.write
     def write(path,data):
         if path.name=='config.json': data['boot-source']['boot_args']+=' '+overrides
         original_write(path,data)
     fc.write=write
-    for i in range(a.start,a.start+a.count):
-        # Recheck immediately before each launch, outside the timed boundary.
-        if verify(bundle)!=manifest: raise ValueError('bundle changed during comparison')
-        time.sleep(.1)
-        v=fc.VM(f'option-{a.option}-{i:02}',bundle,cache,out,tests=True,memory_backing=backing)
-        record={'round':i-2,'warmup':i<2,'ok':False}
-        try:
-            record['elapsed_ns']=v.until(b'KG_FIRST_COMMAND',timeout=90)
-            v.until(b'KG_READY',timeout=90)
-            record['host_stats']=v.host_stats(); record['ok']=True
-        except BaseException as error:
-            record['error']=str(error); raise
-        finally:
-            v.stop()
-            original_write(out/f'observations-{i:02}.json',v.observations)
-            with (out/'records.jsonl').open('a') as f: f.write(json.dumps(record,sort_keys=True)+'\n')
-        records.append(record)
-        print(json.dumps(record),flush=True)
+    try:
+        for i in range(a.start,a.start+a.count):
+            record={'round':i-2,'warmup':i<2,'ok':False}
+            v=None
+            try:
+                name=f'option-{a.option}-{i:02}'
+                if any(out.glob(name+'.*')):
+                    raise ValueError('attempt files already exist; refuse to overwrite')
+                if verify(bundle)!=manifest: raise ValueError('bundle changed during comparison')
+                time.sleep(.1)
+                v=fc.VM(name,bundle,cache,out,tests=True,memory_backing=backing)
+                record['elapsed_ns']=v.until(b'KG_FIRST_COMMAND',timeout=90)
+                v.until(b'KG_READY',timeout=90)
+                record['host_stats']=v.host_stats(); record['ok']=True
+            except BaseException as error:
+                record['error']=str(error); raise
+            finally:
+                cleanup_error=None
+                try:
+                    if v is not None: v.stop()
+                except Exception as error:
+                    record['ok']=False; record['cleanup_error']=str(error); cleanup_error=error
+                try:
+                    original_write(out/f'observations-{i:02}.json',v.observations if v is not None else [])
+                except Exception as error:
+                    record['ok']=False; record['observation_error']=str(error); cleanup_error=error
+                finally:
+                    with (out/'records.jsonl').open('a') as f: f.write(json.dumps(record,sort_keys=True)+'\n')
+                if cleanup_error is not None: raise RuntimeError('attempt cleanup/evidence failure') from cleanup_error
+            records.append(record)
+            print(json.dumps(record),flush=True)
+    finally:
+        fc.write=original_write
     values=sorted(r['elapsed_ns']/1e6 for r in records if not r['warmup'] and r['ok'])
     if len(records)==22:
         original_write(out/'summary.json',{'conditions':conditions,'latency_ms':{
