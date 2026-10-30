@@ -1,0 +1,60 @@
+test_lock_follows_only_a_reviewed_kiln_pin (tests.test_inputs.BuildScriptTests.test_lock_follows_only_a_reviewed_kiln_pin) ... ok
+test_lock_refuses_toolchain_or_deb_repin (tests.test_inputs.BuildScriptTests.test_lock_refuses_toolchain_or_deb_repin) ... ok
+test_provenance_is_complete_and_path_free (tests.test_inputs.BuildScriptTests.test_provenance_is_complete_and_path_free) ... ok
+test_reuse_kernel_is_gone (tests.test_inputs.BuildScriptTests.test_reuse_kernel_is_gone) ... ok
+test_arguments_force_the_verified_vendor_offline (tests.test_inputs.CargoInvocationTests.test_arguments_force_the_verified_vendor_offline) ... ok
+test_inherited_influences_are_cleared (tests.test_inputs.CargoInvocationTests.test_inherited_influences_are_cleared) ... ok
+test_accepts_registry_and_local_in_stable_order (tests.test_inputs.CargoLockTests.test_accepts_registry_and_local_in_stable_order) ... ok
+test_rejects_every_other_source_and_shape (tests.test_inputs.CargoLockTests.test_rejects_every_other_source_and_shape) ... ok
+test_digest_is_stable_and_covers_content_and_mode (tests.test_inputs.InventoryTests.test_digest_is_stable_and_covers_content_and_mode) ... ok
+test_inventory_is_complete_sorted_and_excludes_non_source (tests.test_inputs.InventoryTests.test_inventory_is_complete_sorted_and_excludes_non_source) ... ok
+test_setuid_source_is_rejected (tests.test_inputs.InventoryTests.test_setuid_source_is_rejected) ... ok
+test_symlink_and_special_are_rejected (tests.test_inputs.InventoryTests.test_symlink_and_special_are_rejected) ... ok
+test_verify_accepts_exact_stage_and_ignores_non_source (tests.test_inputs.InventoryTests.test_verify_accepts_exact_stage_and_ignores_non_source) ... ok
+test_verify_rejects_each_drift (tests.test_inputs.InventoryTests.test_verify_rejects_each_drift) ... ok
+test_verify_requires_a_regular_well_formed_manifest (tests.test_inputs.InventoryTests.test_verify_requires_a_regular_well_formed_manifest) ... ok
+test_existing_output_is_refused_before_any_work (tests.test_inputs.OutputTests.test_existing_output_is_refused_before_any_work) ... ok
+test_failed_build_publishes_nothing_and_removes_partial_output (tests.test_inputs.OutputTests.test_failed_build_publishes_nothing_and_removes_partial_output) ... ok
+test_output_created_during_build_is_not_replaced (tests.test_inputs.OutputTests.test_output_created_during_build_is_not_replaced) ... ok
+test_success_publishes_only_new_files_into_an_empty_directory (tests.test_inputs.OutputTests.test_success_publishes_only_new_files_into_an_empty_directory) ... ok
+test_deleted_file_is_gone_after_restage (tests.test_inputs.StageTests.test_deleted_file_is_gone_after_restage)
+Baseline: stale-stage.py kept config/kernel.config by extracting over the tree. ... ok
+test_destination_must_be_a_directory (tests.test_inputs.StageTests.test_destination_must_be_a_directory) ... ok
+test_every_malformed_archive_leaves_old_stage_untouched (tests.test_inputs.StageTests.test_every_malformed_archive_leaves_old_stage_untouched) ... ok
+test_exchange_refuses_outside_linux (tests.test_inputs.StageTests.test_exchange_refuses_outside_linux) ... skipped 'covers the non-Linux refusal'
+test_failed_publish_keeps_old_stage_and_removes_new (tests.test_inputs.StageTests.test_failed_publish_keeps_old_stage_and_removes_new) ... ok
+test_first_stage_is_exact_and_verifiable (tests.test_inputs.StageTests.test_first_stage_is_exact_and_verifiable) ... ok
+test_program_fits_one_remote_shell_argument (tests.test_inputs.StageTests.test_program_fits_one_remote_shell_argument) ... ok
+test_program_runs_as_isolated_argument (tests.test_inputs.StageTests.test_program_runs_as_isolated_argument)
+The VM gets this file as python3 -I -c with argv and tar on stdin. ... ok
+test_real_exchange (tests.test_inputs.StageTests.test_real_exchange) ... ok
+test_self_consistent_archive_must_match_expected_digest (tests.test_inputs.StageTests.test_self_consistent_archive_must_match_expected_digest) ... ok
+test_bad_download_is_not_cached (tests.test_inputs.VendorTests.test_bad_download_is_not_cached) ... ok
+test_crate_modes_are_normalized (tests.test_inputs.VendorTests.test_crate_modes_are_normalized) ... ok
+test_crate_symlinked_in_cache_is_rejected (tests.test_inputs.VendorTests.test_crate_symlinked_in_cache_is_rejected) ... ok
+test_existing_vendor_or_cargo_home_is_refused (tests.test_inputs.VendorTests.test_existing_vendor_or_cargo_home_is_refused) ... ok
+test_extraction_produces_checksums_cargo_can_verify (tests.test_inputs.VendorTests.test_extraction_produces_checksums_cargo_can_verify) ... ok
+test_inherited_cargo_config_is_refused (tests.test_inputs.VendorTests.test_inherited_cargo_config_is_refused) ... ok
+test_previous_vendor_mutation_cannot_reach_next_build (tests.test_inputs.VendorTests.test_previous_vendor_mutation_cannot_reach_next_build)
+Baseline: cargo-cache-run.sh compiled an edited shared registry/src tree. ... ok
+test_tampered_cached_crate_is_rejected_without_extraction_or_repair (tests.test_inputs.VendorTests.test_tampered_cached_crate_is_rejected_without_extraction_or_repair) ... ok
+test_unsafe_crate_contents_are_rejected (tests.test_inputs.VendorTests.test_unsafe_crate_contents_are_rejected) ... ok
+test_collect_returns_config_before_any_bundle_exists (tests.test_inputs.WrapperTests.test_collect_returns_config_before_any_bundle_exists) ... skipped 'the wrapper runs only from a git checkout'
+test_each_build_stages_fresh_and_binds_the_digest (tests.test_inputs.WrapperTests.test_each_build_stages_fresh_and_binds_the_digest) ... skipped 'the wrapper runs only from a git checkout'
+test_prepare_names_kiln_from_the_common_dir_sibling (tests.test_inputs.WrapperTests.test_prepare_names_kiln_from_the_common_dir_sibling) ... skipped 'the wrapper runs only from a git checkout'
+test_stage_source_end_to_end_with_a_local_receiver (tests.test_inputs.WrapperTests.test_stage_source_end_to_end_with_a_local_receiver) ... skipped 'the wrapper runs only from a git checkout'
+test_stage_source_reports_receiver_rejection_without_a_broken_pipe (tests.test_inputs.WrapperTests.test_stage_source_reports_receiver_rejection_without_a_broken_pipe) ... skipped 'the wrapper runs only from a git checkout'
+test_test_action_does_not_restage (tests.test_inputs.WrapperTests.test_test_action_does_not_restage) ... skipped 'the wrapper runs only from a git checkout'
+test_same_size_corruption_is_rejected (tests.test_verify.VerifyTests.test_same_size_corruption_is_rejected) ... ok
+test_two_identical_builds (tests.test_verify.VerifyTests.test_two_identical_builds) ... ok
+test_unknown_schema_is_rejected (tests.test_verify.VerifyTests.test_unknown_schema_is_rejected) ... ok
+test_actual_kaslr_seed_function_handles_and_erases_seeds (tests.test_validation.ValidationTests.test_actual_kaslr_seed_function_handles_and_erases_seeds) ... ok
+test_coalesced_markers_keep_their_first_observation (tests.test_validation.ValidationTests.test_coalesced_markers_keep_their_first_observation) ... ok
+test_kernel_patch_requires_both_reviewed_source_hashes (tests.test_validation.ValidationTests.test_kernel_patch_requires_both_reviewed_source_hashes) ... ok
+test_modified_vmm_and_adjacent_checksum_are_rejected (tests.test_validation.ValidationTests.test_modified_vmm_and_adjacent_checksum_are_rejected) ... ok
+test_old_matching_lock_and_archive_cannot_mislabel_new_pin (tests.test_validation.ValidationTests.test_old_matching_lock_and_archive_cannot_mislabel_new_pin) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 0.213s
+
+OK (skipped=7)

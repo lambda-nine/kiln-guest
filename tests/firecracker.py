@@ -2,6 +2,7 @@
 """Sequential jailer integration and 20-boot measurements; no guest broker."""
 import argparse
 import hashlib
+import io
 import json
 import math
 import os
@@ -14,11 +15,13 @@ import subprocess as sp
 import tarfile
 import time
 import sys
+import stat
 
 ROOT=Path(__file__).resolve().parents[1]
 PINS=json.loads((ROOT/'config/pins.json').read_text())
 sys.path.insert(0,str(ROOT/'scripts'))
 from kernel_policy import validate as validate_kernel_policy
+from inputs import publish_new_directory
 
 def run(argv,**kw): return sp.run(list(map(str,argv)),check=True,**kw)
 def sha(path):
@@ -27,6 +30,37 @@ def sha(path):
         for b in iter(lambda:f.read(1024*1024),b''): h.update(b)
     return h.hexdigest()
 def write(path,data): path.write_text(json.dumps(data,sort_keys=True,indent=2)+'\n')
+
+def verify_release(cache, expected_digest=None):
+    """Bind each executed VMM byte to the pinned archive, including cache hits."""
+    archive=(cache/'firecracker.tgz').read_bytes()
+    expected_digest=expected_digest or PINS['firecracker']['sha256']
+    if hashlib.sha256(archive).hexdigest() != expected_digest:
+        raise ValueError('VMM archive digest mismatch')
+    folder='release-v1.17.0-aarch64'
+    names={f'{folder}/{name}-v1.17.0-aarch64' for name in ['firecracker','jailer']}
+    binaries={}
+    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
+        for member in tar:
+            name=member.name.removeprefix('./')
+            if name not in names: continue
+            if not member.isfile() or name in binaries: raise ValueError('invalid VMM archive executable')
+            binaries[name]=tar.extractfile(member).read()
+    if set(binaries) != names: raise ValueError('missing VMM archive executable')
+    release=cache/'release'
+    if not os.path.lexists(release):
+        def populate(destination):
+            (destination/folder).mkdir()
+            for name,data in binaries.items():
+                (destination/name).write_bytes(data); (destination/name).chmod(0o755)
+        publish_new_directory(release,populate)
+    for directory in [release,release/folder]:
+        if not stat.S_ISDIR(directory.lstat().st_mode): raise ValueError('VMM executable directory is not regular')
+    for name,data in binaries.items():
+        path=release/name
+        if not stat.S_ISREG(path.lstat().st_mode) or path.stat().st_size != len(data) or sha(path) != hashlib.sha256(data).hexdigest():
+            raise ValueError(f'VMM executable differs from pinned archive: {name}')
+    return release
 
 class Tap:
     def __init__(self): self.name='kgtest0'; self.created=False; self.table=False; self.old=None
@@ -81,7 +115,7 @@ class Tap:
 
 class VM:
     def __init__(self,name,bundle,cache,out,tests=False,net=False):
-        self.p=None; self.buf=b''; self.out=out; self.name=name
+        self.p=None; self.buf=b''; self.observations=[]; self.out=out; self.name=name
         release=cache/'release'
         self.fc=release/'release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64'
         jailer=release/'release-v1.17.0-aarch64/jailer-v1.17.0-aarch64'
@@ -112,10 +146,16 @@ class VM:
     def until(self,marker,timeout=60):
         deadline=time.monotonic()+timeout
         while time.monotonic()<deadline:
+            index=self.buf.find(marker)
+            if index >= 0:
+                return next(elapsed for end,elapsed in self.observations if end >= index+len(marker))
             if select.select([self.p.stdout],[],[],.1)[0]:
                 chunk=os.read(self.p.stdout.fileno(),65536); self.buf+=chunk
+                elapsed=time.monotonic_ns()-self.start
+                if chunk: self.observations.append((len(self.buf),elapsed))
                 (self.out/(self.name+'.console.log')).write_bytes(self.buf)
-                if marker in self.buf: return time.monotonic_ns()-self.start
+                if marker in self.buf:
+                    return next(value for end,value in self.observations if end >= self.buf.index(marker)+len(marker))
                 if not chunk: break
         raise RuntimeError(f'{self.name} missing {marker!r}:\n'+self.buf.decode(errors='replace'))
     def stop(self):
@@ -142,12 +182,7 @@ def main():
     for name,entry in manifest['artifacts'].items():
         if Path(name).name!=name or sha(bundle/name)!=entry['sha256'] or (bundle/name).stat().st_size!=entry['bytes']:
             raise ValueError(f'bundle artifact mismatch: {name}')
-    if sha(cache/'firecracker.tgz')!=PINS['firecracker']['sha256']: raise ValueError('VMM digest mismatch')
-    release=cache/'release'
-    if not release.exists():
-        release.mkdir()
-        with tarfile.open(cache/'firecracker.tgz') as t: t.extractall(release,filter='data')
-    run(['sha256sum','-c','SHA256SUMS'],cwd=release/'release-v1.17.0-aarch64')
+    release=verify_release(cache)
     before={str(f):sha(f) for f in [Path('/usr/local/bin/kiln'),Path('/usr/local/bin/kilnd')] if f.exists()}
     conditions={'case':'fc-jailer-kiln-none-768','tier':'strong-isolation','workload':['kiln','run','--','true'],
         'gap_ms':100,'warmups':2,'runs':a.runs,'l1_sessions':1,'l1_boot_id':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
@@ -175,7 +210,8 @@ def main():
                                  'dns-nonroot','dns-only-bind-capability','dns-no-new-privileges',
                                  'dns-seccomp','dns-root-denied','dns-namespace-denied',
                                  'dns-netlink-denied','dns-policy-readonly','dns-tenant-storage-hidden',
-                                 'work-disk-flags','work-direct-exec-denied','overlay-workspace-exec']:
+                                 'work-disk-flags','work-direct-exec-denied','overlay-workspace-exec',
+                                 'kaslr-enabled']:
                         if f'KG_TEST {name} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing security assertion: {name}')
                     v.until(b'Firecracker exiting successfully',timeout=20)

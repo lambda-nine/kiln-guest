@@ -1,0 +1,15 @@
+{
+  "follow_up_verdict": "clean; no actionable code findings",
+  "initial_findings": [
+    "cached VMM bytes not bound to pinned archive",
+    "kiln pin/lock/archive agreement unenforced",
+    "coalesced serial markers could time out",
+    "runtime KASLR not proven"
+  ],
+  "limitations": "review does not authorize snapshots; actual final build/runtime acceptance is recorded separately",
+  "model": "gpt-6-astra",
+  "regression_tests": "tests/test_validation.py; failing-before and passing-after logs retained",
+  "runtime_negative_evidence": "exploratory-kaslr-console.log: KASLR disabled due to lack of seed",
+  "scope": "read-only review of hardened guest source and seed compatibility; final full-build/runtime results were not yet available at review end",
+  "seed_review": "Acceptable for pinned cold boots: standard-seed priority, exactly 64 fallback bytes, first eight erased, remaining 56 preserved; early mapping precedes RNG consumption and FDT later overwrites whole property"
+}

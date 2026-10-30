@@ -163,7 +163,7 @@ def copy_elf(source, tree, pool):
         copy_elf(sorted(candidates)[0],tree,pool)
 
 def rootfs(work, cache, out, lock):
-    if sha(cache/'kiln.tar') != lock['kiln_source_sha256']: raise ValueError('kiln source mismatch')
+    validate_kiln_source(cache,lock)
     kiln = work/'kiln'; unpack(cache/'kiln.tar',kiln)
     cargo = vendor_crates(kiln,cache,work)
     env = cargo_environment(os.environ,work)
@@ -238,12 +238,14 @@ def input_provenance(cache, lock, source, cargo):
         'init_source_sha256':sha(ROOT/'src/init.c'),
         'kiln':{'commit':PINS['kiln_commit'],'archive_sha256':sha(cache/'kiln.tar')},
         'kernel_archive_sha256':sha(cache/'linux.tar.xz'),
+        'kernel_kaslr_patch':PINS['kernel_kaslr_patch'],
         'alpine_archive_sha256':sha(cache/'alpine.tar.gz'),
         'build_lock':lock,'cargo':cargo,'source':source}
 
 def assemble(cache, work, out, jobs, lock, source):
     unpack(cache/'linux.tar.xz',work/'linux-source')
     src = work/'linux-source'/f"linux-{PINS['kernel']['version']}"
+    apply_kernel_patch(src)
     obj = work/'linux-obj'; obj.mkdir()
     kernel_config(src,obj)
     run(['make','-C',src,f'O={obj}','ARCH=arm64',f'-j{jobs}',
@@ -276,7 +278,7 @@ def build(cache, work, out, jobs, source_digest=None):
     if toolchain() != lock['toolchain']: raise ValueError('toolchain differs from build lock')
     for key, name in [('kernel','linux.tar.xz'),('firecracker','firecracker.tgz')]:
         fetch(PINS[key]['url'],cache/name,PINS[key]['sha256'])
-    if sha(cache/'kiln.tar') != lock['kiln_source_sha256']: raise ValueError('kiln source mismatch')
+    validate_kiln_source(cache,lock)
     if os.path.lexists(out): raise ValueError(f'refusing to overwrite {out}')
     work.mkdir(parents=True,exist_ok=False)
     os.environ.update({'SOURCE_DATE_EPOCH':EPOCH,'KBUILD_BUILD_TIMESTAMP':'2026-10-30 00:00:00 UTC',
@@ -286,6 +288,18 @@ def build(cache, work, out, jobs, source_digest=None):
         publish_new_directory(out,lambda output:assemble(cache,work,output,jobs,lock,source))
     finally:
         shutil.rmtree(work)
+
+def validate_kiln_source(cache, lock):
+    actual=sha(cache/'kiln.tar')
+    if actual != lock['kiln_source_sha256'] or actual != PINS['kiln_source_sha256']:
+        raise ValueError('kiln source pin/lock/archive mismatch')
+
+def apply_kernel_patch(source):
+    patch=PINS['kernel_kaslr_patch']
+    original=source/patch['upstream_path']; replacement=ROOT/patch['replacement']
+    if sha(original) != patch['upstream_sha256'] or sha(replacement) != patch['sha256']:
+        raise ValueError('kernel KASLR source patch digest mismatch')
+    shutil.copyfile(replacement,original)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)

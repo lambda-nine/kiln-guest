@@ -1,0 +1,477 @@
+2026-10-30T20:22:14.055589745 [integration-offline:main] Running Firecracker v1.17.0
+2026-10-30T20:22:14.055729580 [integration-offline:main] Listening on API socket ("/api.sock").
+2026-10-30T20:22:14.056061207 [integration-offline:fc_api] API server started.
+2026-10-30T20:22:14.061669667 [integration-offline:main] Could not read the coherency line size, size, number of sets for cache level 1.
+2026-10-30T20:22:14.061822627 [integration-offline:main] Artificially kick devices
+2026-10-30T20:22:14.061899419 [integration-offline:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding
+2026-10-30T20:22:14.061920336 [integration-offline:main] Successfully started microvm that was configured from one single json
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x610f0000]
+[    0.000000] Linux version 6.18.56-kiln-guest1 (builder@kiln-guest) (gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #1 SMP 2026-10-30 00:00:00 UTC
+[    0.000000] KASLR disabled due to lack of seed
+[    0.000000] random: crng init done
+[    0.000000] Machine model: linux,dummy-virt
+[    0.000000] PCI: Unknown option `off'
+[    0.000000] PCI: Unknown option `off'
+[    0.000000] earlycon: uart0 at MMIO 0x0000000040002000 (options '')
+[    0.000000] printk: legacy bootconsole [uart0] enabled
+[    0.000000] efi: UEFI not found.
+[    0.000000] OF: reserved mem: Reserved memory: No reserved-memory node in the DT
+[    0.000000] NUMA: Faking a node at [mem 0x0000000080200000-0x00000000afffffff]
+[    0.000000] NODE_DATA(0) allocated [mem 0xafe57500-0xafe81e7f]
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000080200000-0x00000000afffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   empty
+[    0.000000]   Device   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000080200000-0x00000000afffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000080200000-0x00000000afffffff]
+[    0.000000] On node 0, zone DMA: 512 pages in unavailable ranges
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: Trusted OS migration not required
+[    0.000000] psci: SMC Calling Convention v1.1
+[    0.000000] smccc: KVM: hypervisor services detected (0x00000000 0x00000000 0x00000000 0x00000003)
+[    0.000000] Kernel is locked down from Kernel configuration; see man kernel_lockdown.7
+[    0.000000] percpu: Embedded 18 pages/cpu s42840 r0 d30888 u73728
+[    0.000000] Detected PIPT I-cache on CPU0
+[    0.000000] CPU features: detected: GICv3 CPU interface
+[    0.000000] CPU features: detected: Spectre-v4
+[    0.000000] CPU features: detected: Spectre-BHB
+[    0.000000] alternatives: applying boot alternatives
+[    0.000000] Kernel command line: console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=7 kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000
+[    0.000000] printk: log buffer data + meta data: 131072 + 458752 = 589824 bytes
+[    0.000000] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.000000] software IO TLB: SWIOTLB bounce buffer size adjusted to 0MB
+[    0.000000] software IO TLB: area num 1.
+[    0.000000] software IO TLB: SWIOTLB bounce buffer size roundup to 1MB
+[    0.000000] software IO TLB: mapped [mem 0x00000000aef80000-0x00000000af080000] (1MB)
+[    0.000000] Fallback order for Node 0: 0 
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 196096
+[    0.000000] Policy zone: DMA
+[    0.000000] mem auto-init: stack:all(zero), heap alloc:on, heap free:on
+[    0.000000] mem auto-init: clearing system memory may take some time...
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=64 to nr_cpu_ids=1.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=1
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: 96 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv3: GICv3 features: 16 PPIs, DirectLPI
+[    0.000000] GICv3: GICD_CTLR.DS=1, SCR_EL3.FIQ=0
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x000000003ffd0000
+[    0.000000] ITS [mem 0x3ffb0000-0x3ffcffff]
+[    0.000000] ITS@0x000000003ffb0000: allocated 8192 Devices @81840000 (indirect, esz 8, psz 64K, shr 1)
+[    0.000000] ITS@0x000000003ffb0000: allocated 8192 Interrupt Collections @81850000 (flat, esz 8, psz 64K, shr 1)
+[    0.000000] GICv3: using LPI property table @0x0000000081860000
+[    0.000000] GICv3: CPU0: using allocated LPI pending table @0x0000000081870000
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.000000] arch_timer: cp15 timer running at 24.00MHz (virt).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+[    0.000000] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+[    0.011653] arm-pv: using stolen time PV
+[    0.020808] Console: colour dummy device 80x25
+[    0.027200] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=240000)
+[    0.041540] pid_max: default: 32768 minimum: 301
+[    0.048087] LSM: initializing lsm=lockdown,capability,landlock,selinux
+[    0.060161] landlock: Up and running.
+[    0.064945] SELinux:  Initializing.
+[    0.080871] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.090747] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.113557] rcu: Hierarchical SRCU implementation.
+[    0.119802] rcu: 	Max phase no-delay instances is 1000.
+[    0.127193] EFI services will not be available.
+[    0.133139] smp: Bringing up secondary CPUs ...
+[    0.139260] smp: Brought up 1 node, 1 CPU
+[    0.144416] SMP: Total of 1 processors activated.
+[    0.150607] CPU: All CPU(s) started at EL1
+[    0.155822] CPU features: detected: Branch Target Identification
+[    0.163696] CPU features: detected: ARMv8.4 Translation Table Level
+[    0.171750] CPU features: detected: Data cache clean to the PoU not required for I/D coherence
+[    0.183267] CPU features: detected: Common not Private translations
+[    0.191431] CPU features: detected: CRC32 instructions
+[    0.198359] CPU features: detected: Data cache clean to Point of Deep Persistence
+[    0.207897] CPU features: detected: Data cache clean to Point of Persistence
+[    0.217570] CPU features: detected: Data independent timing control (DIT)
+[    0.226328] CPU features: detected: E0PD
+[    0.231564] CPU features: detected: Enhanced Privileged Access Never
+[    0.239826] CPU features: detected: RCpc load-acquire (LDAPR)
+[    0.247612] CPU features: detected: LSE atomic instructions
+[    0.254727] CPU features: detected: Privileged Access Never
+[    0.262201] CPU features: detected: RAS Extension Support
+[    0.269124] CPU features: detected: Speculation barrier (SB)
+[    0.276602] CPU features: detected: TLB range maintenance instructions
+[    0.285252] alternatives: applying system-wide alternatives
+[    0.351160] Memory: 745416K/784384K available (11392K kernel code, 1006K rwdata, 2560K rodata, 2304K init, 1099K bss, 35276K reserved, 0K cma-reserved)
+[    0.378523] devtmpfs: initialized
+[    0.393459] posixtimers hash table entries: 512 (order: 1, 8192 bytes, linear)
+[    0.402618] futex hash table entries: 256 (16384 bytes on 1 NUMA nodes, total 16 KiB, linear).
+[    0.416993] DMI not present or invalid.
+[    0.427021] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.438486] DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+[    0.447988] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.457885] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.467928] audit: initializing netlink subsys (disabled)
+[    0.477723] thermal_sys: Registered thermal governor 'fair_share'
+[    0.477758] thermal_sys: Registered thermal governor 'step_wise'
+[    0.486135] thermal_sys: Registered thermal governor 'user_space'
+[    0.494524] audit: type=2000 audit(0.300:1): state=initialized audit_enabled=0 res=1
+[    0.513277] cpuidle: using governor menu
+[    0.518764] ASID allocator initialised with 65536 entries
+[    0.535121] HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+[    0.544343] HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
+[    0.552222] HugeTLB: registered 32.0 MiB page size, pre-allocated 0 pages
+[    0.561087] HugeTLB: 0 KiB vmemmap can be freed for a 32.0 MiB page
+[    0.569078] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.578094] HugeTLB: 0 KiB vmemmap can be freed for a 2.00 MiB page
+[    0.586212] HugeTLB: registered 64.0 KiB page size, pre-allocated 0 pages
+[    0.595325] HugeTLB: 0 KiB vmemmap can be freed for a 64.0 KiB page
+[    0.612888] ACPI: Interpreter disabled.
+[    0.618979] iommu: Default domain type: Translated
+[    0.625205] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.637987] SCSI subsystem initialized
+[    0.643008] pps_core: LinuxPPS API ver. 1 registered
+[    0.649872] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.661844] PTP clock support registered
+[    0.678126] NetLabel: Initializing
+[    0.682812] NetLabel:  domain hash size = 128
+[    0.688518] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+[    0.696834] NetLabel:  unlabeled traffic allowed by default
+[    0.707645] vgaarb: loaded
+[    0.712813] clocksource: Switched to clocksource arch_sys_counter
+[    0.724412] VFS: Disk quotas dquot_6.6.0
+[    0.729661] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.741274] pnp: PnP ACPI: disabled
+[    0.753854] NET: Registered PF_INET protocol family
+[    0.761727] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.780583] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
+[    0.792086] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.802477] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.813456] TCP bind hash table entries: 8192 (order: 6, 262144 bytes, linear)
+[    0.823542] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.834248] MPTCP token hash table entries: 1024 (order: 3, 24576 bytes, linear)
+[    0.844783] UDP hash table entries: 512 (order: 3, 32768 bytes, linear)
+[    0.853466] UDP-Lite hash table entries: 512 (order: 3, 32768 bytes, linear)
+[    0.866283] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.880755] RPC: Registered named UNIX socket transport module.
+[    0.889310] RPC: Registered udp transport module.
+[    0.895603] RPC: Registered tcp transport module.
+[    0.901468] RPC: Registered tcp-with-tls transport module.
+[    0.908678] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.917144] PCI: CLS 0 bytes, default 64
+[    0.929135] Initialise system trusted keyrings
+[    0.936606] workingset: timestamp_bits=36 max_order=18 bucket_order=0
+[    0.947486] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.959752] NFS: Registering the id_resolver key type
+[    0.967163] Key type id_resolver registered
+[    0.972509] Key type id_legacy registered
+[    0.978773] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    0.988158] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    0.999893] fuse: init (API version 7.45)
+[    1.007231] SGI XFS with ACLs, security attributes, quota, no debug enabled
+[    1.036690] Key type asymmetric registered
+[    1.041940] Asymmetric key parser 'x509' registered
+[    1.048820] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 247)
+[    1.059632] io scheduler mq-deadline registered
+[    1.065849] io scheduler kyber registered
+[    1.071354] io scheduler bfq registered
+[    1.083680] Serial: 8250/16550 driver, 1 ports, IRQ sharing disabled
+[    1.099996] printk: legacy console [ttyS0] disabled
+[    1.108232] 40002000.uart: ttyS0 at MMIO 0x40002000 (irq = 13, base_baud = 1500000) is a 16550A
+[    1.121457] printk: legacy console [ttyS0] enabled
+[    1.121457] printk: legacy console [ttyS0] enabled
+[    1.134360] printk: legacy bootconsole [uart0] disabled
+[    1.134360] printk: legacy bootconsole [uart0] disabled
+[    1.164858] loop: module loaded
+[    1.170745] virtio_blk virtio0: 1/0/0 default/read/poll queues
+[    1.182667] virtio_blk virtio0: [vda] 14416 512-byte logical blocks (7.38 MB/7.04 MiB)
+2026-10-30T20:22:25.051581968 [integration-offline:fc_vcpu 0] [Block:rootfs] notifying queues
+[    1.199234] virtio_blk virtio1: 1/0/0 default/read/poll queues
+[    1.209361] virtio_blk virtio1: [vdb] 1048576 512-byte logical blocks (537 MB/512 MiB)
+2026-10-30T20:22:25.077611251 [integration-offline:fc_vcpu 0] [Block:work] notifying queues
+[    1.222026] Loading iSCSI transport class v2.0-870.
+[    1.230859] iscsi: registered transport (tcp)
+[    1.237861] tun: Universal TUN/TAP device driver, 1.6
+[    1.249651] rtc-pl031 40001000.rtc: registered as rtc0
+[    1.257384] rtc-pl031 40001000.rtc: setting system clock to 2026-10-30T20:22:25 UTC (1793391745)
+[    1.283266] Initializing XFRM netlink socket
+[    1.289947] NET: Registered PF_INET6 protocol family
+[    1.310893] Segment Routing with IPv6
+[    1.316775] In-situ OAM (IOAM) with IPv6
+[    1.324350] NET: Registered PF_PACKET protocol family
+[    1.332269] Bridge firewalling registered
+[    1.338698] Key type dns_resolver registered
+[    1.346815] NET: Registered PF_VSOCK protocol family
+[    1.357304] registered taskstats version 1
+[    1.363156] Loading compiled-in X.509 certificates
+[    1.373937] Demotion targets for Node 0: null
+[    1.380691] Key type .fscrypt registered
+[    1.386131] Key type fscrypt-provisioning registered
+[    1.395634] Key type encrypted registered
+[    1.416148] clk: Disabling unused clocks
+[    1.426842] check access for rdinit=/init failed: -2, ignoring
+[    1.440427] VFS: Mounted root (squashfs filesystem) readonly on device 254:0.
+[    1.449004] devtmpfs: mounted
+[    1.455464] Freeing unused kernel memory: 2304K
+[    1.459516] Run /init as init process
+[    1.524153] XFS (vdb): Mounting V5 Filesystem 1ccfbc09-506b-415c-b85c-5beb5c22c561
+[    1.549860] XFS (vdb): Ending clean mount
+[    1.559919] XFS (vdb): Quotacheck needed: Please wait.
+[    1.575604] XFS (vdb): Quotacheck: Done.
+KG_TEST first-true PASS
+KG_FIRST_COMMAND
+KG_TEST network-setup PASS
+KG_TEST dns-root-denied PASS
+KG_TEST dns-namespace-denied PASS
+KG_TEST dns-netlink-denied PASS
+KG_TEST dns-policy-readonly PASS
+KG_TEST dns-tenant-storage-hidden PASS
+kiln dns: listening on 10.88.0.1:53, forwarding to 1.1.1.1
+KG_TEST dns-ready PASS
+kiln: serving metrics on http://127.0.0.1:9841/metrics
+KG_READY
+KG_TEST dns-status-readable PASS
+KG_TEST dns-nonroot PASS
+KG_TEST dns-only-bind-capability PASS
+KG_TEST dns-no-new-privileges PASS
+KG_TEST dns-seccomp PASS
+KG_TEST work-disk-flags PASS
+KG_TEST work-direct-exec-denied PASS
+overlay / overlay rw,relatime,lowerdir=/var/lib/kiln/images/alpine,upperdir=/var/lib/kiln/runs/18e3684aa7f2bd0f-137/upper,workdir=/var/lib/kiln/runs/18e3684aa7f2bd0f-137/work,uuid=on 0 0
+KG_TEST overlay-workspace-exec PASS
+KG_TEST kexec-load-absent PASS
+KG_TEST kexec-file-absent PASS
+KG_TEST kexec-sysctl-compiled-out PASS
+KG_TEST bpf-syscall-absent PASS
+KG_TEST io-uring-absent PASS
+KG_TEST userfaultfd-absent PASS
+KG_TEST perf-events-absent PASS
+KG_TEST modules-absent PASS
+KG_TEST proc-kcore-absent PASS
+KG_TEST devmem-absent PASS
+KG_TEST devkmem-absent PASS
+KG_TEST debugfs-absent PASS
+KG_TEST lockdown-readable PASS
+KG_TEST lockdown-confidentiality PASS
+touch: /etc/should-fail: Permission denied
+KG_TEST readonly PASS
+dd: error writing '/workspace/big': No space left on device
+17+0 records in
+16+0 records out
+16777216 bytes (16.0MB) copied, 0.036065 seconds, 443.6MB/s
+KG_TEST limits PASS
+[    2.625239] awk invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+[    2.631524] CPU: 0 UID: 2000000000 PID: 154 Comm: awk Not tainted 6.18.56-kiln-guest1 #1 NONE 
+[    2.631571] Hardware name: linux,dummy-virt (DT)
+[    2.631580] Call trace:
+[    2.631592]  show_stack+0x18/0x24 (C)
+[    2.631639]  dump_stack_lvl+0x74/0x8c
+[    2.631804]  dump_stack+0x18/0x24
+[    2.631805]  dump_header+0x3c/0x1d8
+[    2.631861]  oom_kill_process+0x13c/0x360
+[    2.631862]  out_of_memory+0xd4/0x340
+[    2.631863]  mem_cgroup_out_of_memory+0xcc/0x108
+[    2.631974]  try_charge_memcg+0x3c4/0x5c0
+[    2.631975]  charge_memcg+0x44/0x84
+[    2.631976]  __mem_cgroup_charge+0x34/0xdc
+[    2.631977]  alloc_anon_folio+0x2c4/0x444
+[    2.632005]  do_anonymous_page+0x134/0x584
+[    2.632006]  do_pte_missing+0xd4/0x55c
+[    2.632006]  handle_pte_fault+0x198/0x22c
+[    2.632006]  __handle_mm_fault+0x1cc/0x3d8
+[    2.632007]  handle_mm_fault+0x98/0x1f8
+[    2.632007]  do_page_fault+0xe8/0x544
+[    2.632070]  do_translation_fault+0x4c/0x58
+[    2.632071]  do_mem_abort+0x44/0x94
+[    2.632071]  el0_da+0x2c/0x84
+[    2.632100]  el0t_64_sync_handler+0xd0/0xe4
+[    2.632102]  el0t_64_sync+0x18c/0x190
+[    2.632106] memory: usage 32768kB, limit 32768kB, failcnt 19
+[    2.716367] swap: usage 0kB, limit 0kB, failcnt 0
+[    2.719966] Memory cgroup stats for /kiln/18e3684ab9d59f3b-152:
+[    2.720501] anon 33333248
+[    2.727305] file 0
+[    2.728957] kernel 221184
+[    2.731066] kernel_stack 16384
+[    2.733717] pagetables 126976
+[    2.736131] sec_pagetables 0
+[    2.738406] percpu 156
+[    2.740244] sock 0
+[    2.741834] vmalloc 4096
+[    2.743981] shmem 0
+[    2.745737] zswap 0
+[    2.747480] zswapped 0
+[    2.749407] file_mapped 0
+[    2.751486] file_dirty 0
+[    2.753662] file_writeback 0
+[    2.756057] swapcached 0
+[    2.758161] anon_thp 29360128
+[    2.760575] file_thp 0
+[    2.762552] shmem_thp 0
+[    2.764725] inactive_anon 33280000
+[    2.767440] active_anon 4096
+[    2.769771] inactive_file 0
+[    2.772005] active_file 0
+[    2.774276] unevictable 0
+[    2.776410] slab_reclaimable 30944
+[    2.779139] slab_unreclaimable 35672
+[    2.782072] slab 66616
+[    2.784144] workingset_refault_anon 0
+[    2.787071] workingset_refault_file 0
+[    2.789915] workingset_activate_anon 0
+[    2.792902] workingset_activate_file 0
+[    2.795883] workingset_restore_anon 0
+[    2.798833] workingset_restore_file 0
+[    2.801660] workingset_nodereclaim 0
+[    2.804667] pgdemote_kswapd 0
+[    2.807191] pgdemote_direct 0
+[    2.809580] pgdemote_khugepaged 0
+[    2.812279] pgdemote_proactive 0
+[    2.814968] pgpromote_success 0
+[    2.817453] pgscan 0
+[    2.819289] pgsteal 0
+[    2.821173] pswpin 0
+[    2.822982] pswpout 0
+[    2.824900] pgscan_kswapd 0
+[    2.827159] pgscan_direct 0
+[    2.829338] pgscan_khugepaged 0
+[    2.831805] pgscan_proactive 0
+[    2.834323] pgsteal_kswapd 0
+[    2.836663] pgsteal_direct 0
+[    2.838948] pgsteal_khugepaged 0
+[    2.841532] pgsteal_proactive 0
+[    2.844143] pgfault 2782
+[    2.846147] pgmajfault 0
+[    2.848159] pgrefill 0
+[    2.850090] pgactivate 0
+[    2.852142] pgdeactivate 0
+[    2.854456] pglazyfree 0
+[    2.856523] pglazyfreed 0
+[    2.858662] swpin_zero 0
+[    2.860668] swpout_zero 0
+[    2.862825] zswpin 0
+[    2.864624] zswpout 0
+[    2.866471] zswpwb 0
+[    2.868317] thp_fault_alloc 18
+[    2.870780] thp_collapse_alloc 1
+[    2.873368] thp_swpout 0
+[    2.875409] thp_swpout_fallback 0
+[    2.878015] numa_pages_migrated 0
+[    2.880642] numa_pte_updates 0
+[    2.883230] numa_hint_faults 0
+[    2.885627] Tasks state (memory values in pages):
+[    2.889294] [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+[    2.897694] [    153] 2000000000   153      664      324       36      288         0    36864        0             0 kiln
+[    2.906578] [    154] 2000000000   154    12715     8329     8118      211         0   118784        0             0 awk
+[    2.914862] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/kiln/18e3684ab9d59f3b-152,task_memcg=/kiln/18e3684ab9d59f3b-152,task=awk,pid=154,uid=2000000000
+[    2.927755] Memory cgroup out of memory: Killed process 154 (awk) total-vm:50860kB, anon-rss:32472kB, file-rss:844kB, shmem-rss:0kB, UID:2000000000 pgtables:116kB oom_score_adj:0
+[    2.939945] Tasks in /kiln/18e3684ab9d59f3b-152 are going to be killed due to memory.oom.group set
+[    2.946783] Memory cgroup out of memory: Killed process 153 (kiln) total-vm:2656kB, anon-rss:144kB, file-rss:1152kB, shmem-rss:0kB, UID:2000000000 pgtables:36kB oom_score_adj:0
+[    2.959313] Memory cgroup out of memory: Killed process 154 (awk) total-vm:50860kB, anon-rss:32472kB, file-rss:844kB, shmem-rss:0kB, UID:2000000000 pgtables:116kB oom_score_adj:0
+kiln: sandbox ran out of memory and was killed (memory.max)
+KG_TEST memory-oom PASS
+[    3.047897] cgroup: fork rejected by pids controller in /kiln/18e3684ad783cabe-155
+xargs: true: Resource temporarily unavailable
+KG_TEST pids-enforced PASS
+KG_TEST create PASS
+KG_TEST exec-write PASS
+KG_TEST exec-persist PASS
+KG_TEST rm PASS
+Error: connect to sandbox 18e3684ad9dc0e63-159
+
+Caused by:
+    No such file or directory (os error 2)
+KG_TEST exec-removed PASS
+[    3.268639] kiln0: port 1(kv0002) entered blocking state
+[    3.273014] kiln0: port 1(kv0002) entered disabled state
+[    3.277150] kv0002: entered allmulticast mode
+[    3.282256] kv0002: entered promiscuous mode
+[    3.294856] kiln0: port 1(kv0002) entered blocking state
+[    3.298879] kiln0: port 1(kv0002) entered forwarding state
+[    3.326460] kiln0: port 1(kv0002) entered disabled state
+[    3.336948] kv0002 (unregistering): left allmulticast mode
+[    3.341329] kv0002 (unregistering): left promiscuous mode
+[    3.345687] kiln0: port 1(kv0002) entered disabled state
+KG_TEST net-full-rules PASS
+[    3.391284] kiln0: port 1(kv0002) entered blocking state
+[    3.395578] kiln0: port 1(kv0002) entered disabled state
+[    3.399496] kv0002: entered allmulticast mode
+[    3.402946] kv0002: entered promiscuous mode
+[    3.406520] kiln0: port 1(kv0002) entered blocking state
+[    3.410433] kiln0: port 1(kv0002) entered forwarding state
+KG_TEST allow-rules PASS
+Error: --allow "169.254.169.254:80" overlaps non-public IPv4 ranges (including private, metadata and special-use destinations)
+KG_TEST private-denied PASS
+table inet kiln {
+	counter egress_rejected {
+		packets 0 bytes 0
+[    3.444299] kiln0: port 1(kv0002) entered disabled state
+[    3.448408] kv0002 (unregistering): left allmulticast mode
+[    3.452536] kv0002 (unregistering): left promiscuous mode
+[    3.456844] kiln0: port 1(kv0002) entered disabled state
+	}
+
+	counter conntrack_rejected {
+		packets 0 bytes 0
+	}
+
+	set private {
+		type ipv4_addr
+		flags interval
+		elements = { 0.0.0.0/8, 10.0.0.0/8,
+			     100.64.0.0/10, 127.0.0.0/8,
+			     169.254.0.0/16, 172.16.0.0/12,
+			     192.0.0.0/24, 192.0.2.0/24,
+			     192.88.99.0/24, 192.168.0.0/16,
+			     198.18.0.0/15, 198.51.100.0/24,
+			     203.0.113.0/24, 224.0.0.0/4,
+			     240.0.0.0/4 }
+	}
+
+	map egress {
+		type ipv4_addr : verdict
+	}
+
+	set connlimit {
+		type ipv4_addr
+		size 65535
+		flags dynamic
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+		iifname "kiln0" ct state new add @connlimit { ip saddr ct count over 256 } counter name "conntrack_rejected" counter packets 0 bytes 0 reject with icmpx admin-prohibited
+		iifname "kiln0" ip saddr vmap @egress
+		iifname "kiln0" counter packets 0 bytes 0 reject with icmpx admin-prohibited
+		oifname "kiln0" ct state established,related accept
+		oifname "kiln0" counter packets 0 bytes 0 drop
+	}
+
+	chain postrouting {
+		type nat hook postrouting priority srcnat; policy accept;
+		ip saddr 10.88.0.0/16 oifname != "kiln0" masquerade
+	}
+
+	chain input {
+		type filter hook input priority filter; policy accept;
+		iifname "kiln0" ct state established,related accept
+		iifname "kiln0" ip daddr 10.88.0.1 meta l4proto { 6, 17 } th dport 53 accept
+		iifname "kiln0" counter packets 0 bytes 0 reject with icmpx admin-prohibited
+	}
+}
+KG_TEST nft-ruleset PASS
+KG_TESTS_COMPLETE
+KG_SHUTDOWN status=0
+[    3.778347] XFS (vdb): Unmounting Filesystem 1ccfbc09-506b-415c-b85c-5beb5c22c561
+[    3.791919] reboot: Power down
+2026-10-30T20:22:27.653206934 [integration-offline:fc_vcpu 0] Received KVM_SYSTEM_EVENT: type: 1, event: [0]
+2026-10-30T20:22:27.653260559 [integration-offline:main] Vmm is stopping.
+2026-10-30T20:22:27.653369519 [integration-offline:main] Killing vCPU threads
+2026-10-30T20:22:27.668674803 [integration-offline:main] Firecracker exiting successfully. exit_code=0

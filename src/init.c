@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/klog.h>
 #include <sys/mount.h>
 #include <sys/prctl.h>
 #include <sys/reboot.h>
@@ -166,6 +167,13 @@ static void network(void) {
     close(fd);
 }
 static void tests(bool net) {
+    int logsize=klogctl(10,NULL,0);
+    check("kernel-log-bounded", logsize > 0 && logsize <= 1024*1024);
+    char *log=calloc(1,(size_t)logsize+1); if (!log) die("kernel log allocation");
+    check("kernel-log-readable", klogctl(3,log,logsize) >= 0);
+    check("kaslr-enabled", strstr(log,"KASLR enabled") != NULL &&
+          strstr(log,"KASLR disabled") == NULL);
+    free(log);
     test_dns_status();
     test_work_disk();
     check("kexec-load-absent", syscall(SYS_kexec_load, 0, 0, NULL, 0) == -1 && errno == ENOSYS);

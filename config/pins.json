@@ -21,5 +21,11 @@
     "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/aarch64/alpine-minirootfs-3.24.2-aarch64.tar.gz",
     "sha256": "9bf70a7f18ea44094cbb5f70c58f9af129c8214745743db0e68e5502cc2ce773"
   },
-  "kiln_source_sha256": "6e9af37419bacd0bb8c7e4903796cc8a9ce5b0f401f41d4dd3353af8d10194af"
+  "kiln_source_sha256": "6e9af37419bacd0bb8c7e4903796cc8a9ce5b0f401f41d4dd3353af8d10194af",
+  "kernel_kaslr_patch": {
+    "upstream_path": "arch/arm64/kernel/pi/kaslr_early.c",
+    "upstream_sha256": "1730a3193e5990a7018ee25f04c70ee7353f91b39c9ac25ac6f6ba6ccd36f39d",
+    "replacement": "src/kernel-kaslr-early.c",
+    "sha256": "d36ff6a2197e6678067ec7871decab89a7db3138475717ddb0a39ccdeb2bec0d"
+  }
 }

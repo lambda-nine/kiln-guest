@@ -1,0 +1,513 @@
+{
+  "architecture": "aarch64",
+  "artifacts": {
+    "Image": {
+      "bytes": 17807872,
+      "sha256": "c01bfa20617211860893568d4c0334b00330a1543b8ace1a63e3471aed1b6100"
+    },
+    "kernel.config": {
+      "bytes": 95560,
+      "sha256": "f4cc5f557c66c86acd75276d5053db6bd56992cff40471f3044ab5570d2dea2d"
+    },
+    "kiln": {
+      "bytes": 2376016,
+      "sha256": "54442ccc0ce12b9a9236c927b9073019d7d4774c2e2d82f4d55d0db491925c64"
+    },
+    "rootfs.squashfs": {
+      "bytes": 7380992,
+      "sha256": "adffadfef2161615e0bb5bfc6782758fa8e2f6347a08749792a93be7945b3d83"
+    }
+  },
+  "broker": {
+    "enabled": false,
+    "protocol": null
+  },
+  "bundle_version": "0.1.0",
+  "firecracker_version": "1.17.0",
+  "inputs": {
+    "alpine_archive_sha256": "9bf70a7f18ea44094cbb5f70c58f9af129c8214745743db0e68e5502cc2ce773",
+    "build_lock": {
+      "debs": [
+        {
+          "file": "nftables_1.0.9-1ubuntu0.1_arm64.deb",
+          "package": "nftables",
+          "sha256": "8b26cbe6e1155e1507128b0c5183713226d10570462216cf2f41c27f3028de3b",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/n/nftables/nftables_1.0.9-1ubuntu0.1_arm64.deb",
+          "version": "1.0.9-1ubuntu0.1"
+        },
+        {
+          "file": "libnftables1_1.0.9-1ubuntu0.1_arm64.deb",
+          "package": "libnftables1",
+          "sha256": "69f16c2f161ddfd196a00d7dbcf52a25821a5eadcca07a8ddd03f05dede148d0",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/n/nftables/libnftables1_1.0.9-1ubuntu0.1_arm64.deb",
+          "version": "1.0.9-1ubuntu0.1"
+        },
+        {
+          "file": "libnftnl11_1.2.6-2build1_arm64.deb",
+          "package": "libnftnl11",
+          "sha256": "678792e1aa102892b594e0ee13ee93b763011674bddba800a3974a68a83c6ed1",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libn/libnftnl/libnftnl11_1.2.6-2build1_arm64.deb",
+          "version": "1.2.6-2build1"
+        },
+        {
+          "file": "libmnl0_1.0.5-2build1_arm64.deb",
+          "package": "libmnl0",
+          "sha256": "9442f15a4bbc6148e527045adaf85c86ae3ffe159176d6a5f3b471b49150e470",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libm/libmnl/libmnl0_1.0.5-2build1_arm64.deb",
+          "version": "1.0.5-2build1"
+        },
+        {
+          "file": "libedit2_3.1-20230828-1build1_arm64.deb",
+          "package": "libedit2",
+          "sha256": "cf642fec16d86517e0e715520c3a7cdaee650e7ae8a4993f82d0e1e7a5883efb",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libe/libedit/libedit2_3.1-20230828-1build1_arm64.deb",
+          "version": "3.1-20230828-1build1"
+        },
+        {
+          "file": "libxtables12_1.8.10-3ubuntu2_arm64.deb",
+          "package": "libxtables12",
+          "sha256": "72cd6add0f8eaaa45f44dd5c0903df083ab3847091d0633b4e46e8f80443718a",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/i/iptables/libxtables12_1.8.10-3ubuntu2_arm64.deb",
+          "version": "1.8.10-3ubuntu2"
+        },
+        {
+          "file": "libjansson4_2.14-2build2_arm64.deb",
+          "package": "libjansson4",
+          "sha256": "a9d513eae76f4efb1c7370413bd21634fcfc0955e103d26af95f298af6c90abd",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/j/jansson/libjansson4_2.14-2build2_arm64.deb",
+          "version": "2.14-2build2"
+        },
+        {
+          "file": "libgmp10_2%3a6.3.0+dfsg-2ubuntu6.1_arm64.deb",
+          "package": "libgmp10",
+          "sha256": "5a783429ec1a29fb74a9a59c1699579dd9742bd35722280b9ce10e1f3916b003",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/gmp/libgmp10_6.3.0%2bdfsg-2ubuntu6.1_arm64.deb",
+          "version": "2:6.3.0+dfsg-2ubuntu6.1"
+        },
+        {
+          "file": "libc6_2.39-0ubuntu8.9_arm64.deb",
+          "package": "libc6",
+          "sha256": "ad109797c5f78a5eeb6d4c296bfbaae68b239111a0c9ac0eb97b8d430284ac45",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/glibc/libc6_2.39-0ubuntu8.9_arm64.deb",
+          "version": "2.39-0ubuntu8.9"
+        },
+        {
+          "file": "libtinfo6_6.4+20240113-1ubuntu2.2_arm64.deb",
+          "package": "libtinfo6",
+          "sha256": "00570dce13bd89b31e4f433001fb0a55436e57a76370afbae6c5ac491b3dd3e9",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/n/ncurses/libtinfo6_6.4%2b20240113-1ubuntu2.2_arm64.deb",
+          "version": "6.4+20240113-1ubuntu2.2"
+        },
+        {
+          "file": "libbsd0_0.12.1-1build1.1_arm64.deb",
+          "package": "libbsd0",
+          "sha256": "cdf9ff601244e64482584d9d9b98aa54a573c081ab5956227c737307196c1ce3",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libb/libbsd/libbsd0_0.12.1-1build1.1_arm64.deb",
+          "version": "0.12.1-1build1.1"
+        },
+        {
+          "file": "libmd0_1.1.0-2build1.1_arm64.deb",
+          "package": "libmd0",
+          "sha256": "c28583825f7191cdc8b6b71c6150e2cbfc29616d6570680e5284fabc19765ea5",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libm/libmd/libmd0_1.1.0-2build1.1_arm64.deb",
+          "version": "1.1.0-2build1.1"
+        },
+        {
+          "file": "libgcc-s1_14.2.0-4ubuntu2~24.04.1_arm64.deb",
+          "package": "libgcc-s1",
+          "sha256": "5b191f79ad985a9a653dbba45214619f729f9178a9bdf92f7c68db06c50d070b",
+          "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/gcc-14/libgcc-s1_14.2.0-4ubuntu2%7e24.04.1_arm64.deb",
+          "version": "14.2.0-4ubuntu2~24.04.1"
+        }
+      ],
+      "kiln_source_sha256": "6e9af37419bacd0bb8c7e4903796cc8a9ce5b0f401f41d4dd3353af8d10194af",
+      "schema": 1,
+      "toolchain": {
+        "packages": "bc=1.07.1-3ubuntu4\nbinutils=2.42-4ubuntu2.10\nbison=2:3.8.2+dfsg-1ubuntu0.24.04.1\nflex=2.6.4-8.2build1\ngcc=4:13.2.0-7ubuntu1\ngcc-13=13.3.0-6ubuntu2~24.04.1\nlibc6=2.39-0ubuntu8.9\nlibc6-dev=2.39-0ubuntu8.9\nlibelf-dev=0.190-1.1ubuntu0.1\nlibssl-dev=3.0.13-0ubuntu3.16\nmake=4.3-4.1build2\nsquashfs-tools=1:4.6.1-1build1\nxfsprogs=6.6.0-1ubuntu2.1",
+        "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1",
+        "tools": {
+          "ar": {
+            "path": "/usr/bin/aarch64-linux-gnu-ar",
+            "sha256": "f4583a612510e038dbc1ae8afb5eae5f0445c435bdd7c4c28e78acc7e757d2b1"
+          },
+          "as": {
+            "path": "/usr/bin/aarch64-linux-gnu-as",
+            "sha256": "1ffda50efb6d91b6b05ef933aced099595c36577594c0296c91161f2d13db374"
+          },
+          "cargo": {
+            "path": "/home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/cargo",
+            "sha256": "a7a2b55d440156ac2c83b4cda27a25a7d100b8e69c6ac62232ebeb643859ae8a"
+          },
+          "gcc": {
+            "path": "/usr/bin/aarch64-linux-gnu-gcc-13",
+            "sha256": "a20520ee21543f243d40636a9181a142c45ecd989de31ab86b99a8ea5ada870d"
+          },
+          "ld": {
+            "path": "/usr/bin/aarch64-linux-gnu-ld.bfd",
+            "sha256": "1e4d3369b76845fa8e099b83513bf28f6f722e046f9b2cde1378c9e27f96d19c"
+          },
+          "make": {
+            "path": "/usr/bin/make",
+            "sha256": "abbecc214fcadef6530d1cc137bde7ceb74cae3f6b992c7d10a8669a7314c7e0"
+          },
+          "mksquashfs": {
+            "path": "/usr/bin/mksquashfs",
+            "sha256": "4bc5c66a81a1d86a5743e1c1ced12b6362e1b56c088d8241ef9ed5a3b8659317"
+          },
+          "objcopy": {
+            "path": "/usr/bin/aarch64-linux-gnu-objcopy",
+            "sha256": "1216ee3b084501a5132643fef4bba7221186f4b7dc99cd46e2bf9e3e7d37c344"
+          },
+          "python3": {
+            "path": "/usr/bin/python3.12",
+            "sha256": "c86f21d0da9290ece2d7d49a3f7ed52aed59cb029abdf0ea25c79634f6cbe960"
+          },
+          "readelf": {
+            "path": "/usr/bin/aarch64-linux-gnu-readelf",
+            "sha256": "6bca2bbd23b072db9e9a19ae0e65cf7b7c15c08a3c2cf01dd56453e1ac9340b1"
+          },
+          "rustc": {
+            "path": "/home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/rustc",
+            "sha256": "b3a6b57674bb153f842dbed5de751b35fe9464768cb986f469451b6480b1ba5f"
+          },
+          "strip": {
+            "path": "/usr/bin/aarch64-linux-gnu-strip",
+            "sha256": "3a69e3786ea2884baf4d9811e509ba6d16be03d5d6f541103b8de317a2465fca"
+          }
+        }
+      }
+    },
+    "build_lock_sha256": "1127eb732f40b552438878a7ec49153a6ad6f43162f8319c06a805bb7b921bbe",
+    "cargo": {
+      "cargo_lock_sha256": "8a31590a0d9f3da3daaf22e21b8f1c3e6249e629523d4ce49ae355ba5c29fcb6",
+      "local_packages": [
+        {
+          "name": "kiln",
+          "version": "0.1.0"
+        }
+      ],
+      "registry_packages": [
+        {
+          "name": "anstream",
+          "sha256": "824a212faf96e9acacdbd09febd34438f8f711fb84e09a8916013cd7815ca28d",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.0"
+        },
+        {
+          "name": "anstyle",
+          "sha256": "940b3a0ca603d1eade50a4846a2afffd5ef57a9feac2c0e2ec2e14f9ead76000",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.14"
+        },
+        {
+          "name": "anstyle-parse",
+          "sha256": "52ce7f38b242319f7cabaa6813055467063ecdc9d355bbb4ce0c68908cd8130e",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.0"
+        },
+        {
+          "name": "anstyle-query",
+          "sha256": "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.1.5"
+        },
+        {
+          "name": "anstyle-wincon",
+          "sha256": "291e6a250ff86cd4a820112fb8898808a366d8f9f58ce16d1f538353ad55747d",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "3.0.11"
+        },
+        {
+          "name": "anyhow",
+          "sha256": "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.104"
+        },
+        {
+          "name": "bitflags",
+          "sha256": "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "2.13.2"
+        },
+        {
+          "name": "cfg-if",
+          "sha256": "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.5"
+        },
+        {
+          "name": "cfg_aliases",
+          "sha256": "f079e83a288787bcd14a6aea84cee5c87a67c5a3e660c30f557a3d24761b3527",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.2.2"
+        },
+        {
+          "name": "clap",
+          "sha256": "aa8876b300ab35ba921adea3dfd70157a46249b33f95c9084ae5709785478946",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "4.6.7"
+        },
+        {
+          "name": "clap_builder",
+          "sha256": "ec0797fb7aeb1406c84efac526901f7ec3ead2124f946b494e72879d4b54704d",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "4.6.7"
+        },
+        {
+          "name": "clap_derive",
+          "sha256": "f9c751b79415d4e559e3d1fcf128e09e720eb673a06d26cf6f392d37d75b66e0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "4.6.7"
+        },
+        {
+          "name": "clap_lex",
+          "sha256": "1c133bc6a41be0d194c306b5506d15e6feeea7b1d6604bd3f8310dfb2ca96486",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.1.1"
+        },
+        {
+          "name": "colorchoice",
+          "sha256": "1d07550c9036bf2ae0c684c4297d503f838287c83c53686d05370d0e139ae570",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.5"
+        },
+        {
+          "name": "heck",
+          "sha256": "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.5.0"
+        },
+        {
+          "name": "is_terminal_polyfill",
+          "sha256": "a6cb138bb79a146c1bd460005623e142ef0181e3d0219cb493e02f7d08a35695",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.70.2"
+        },
+        {
+          "name": "libc",
+          "sha256": "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.2.190"
+        },
+        {
+          "name": "nix",
+          "sha256": "cf20d2fde8ff38632c426f1165ed7436270b44f199fc55284c38276f9db47c3d",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.31.3"
+        },
+        {
+          "name": "once_cell_polyfill",
+          "sha256": "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.70.2"
+        },
+        {
+          "name": "proc-macro2",
+          "sha256": "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.107"
+        },
+        {
+          "name": "quote",
+          "sha256": "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.47"
+        },
+        {
+          "name": "strsim",
+          "sha256": "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.11.1"
+        },
+        {
+          "name": "syn",
+          "sha256": "8593e8e72159ed2257d083c7a454a85cbf854f37a0966d8d483aff8c8a3ebcee",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "3.0.6"
+        },
+        {
+          "name": "unicode-ident",
+          "sha256": "d245f478577f809a851594d02313b640fb437e0bb33866753cff937863096954",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "1.0.26"
+        },
+        {
+          "name": "utf8parse",
+          "sha256": "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.2.2"
+        },
+        {
+          "name": "windows-link",
+          "sha256": "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.2.1"
+        },
+        {
+          "name": "windows-sys",
+          "sha256": "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "version": "0.61.2"
+        }
+      ]
+    },
+    "init_source_sha256": "3d54d6972299ec059e5afcee918b1fff1747ca8444a79186a9c61dff46db880c",
+    "kernel_archive_sha256": "4633bbda2ab95eaf2a7af4041236451d6759c72e6946265531af4b3aacefbf89",
+    "kiln": {
+      "archive_sha256": "6e9af37419bacd0bb8c7e4903796cc8a9ce5b0f401f41d4dd3353af8d10194af",
+      "commit": "00d61c546db7aa67ad283d10c2ca6165ca5f8166"
+    },
+    "pins_sha256": "3e5fd1c534cbb352b005cd68ac1b75d7a13d68f55d710e40503617327b0cf201",
+    "source": {
+      "digest": "19a873651f34028f83112b2bce53ccba74513fbbd78669c1c47d43a3f3c24522",
+      "files": [
+        {
+          "mode": 420,
+          "path": ".gitattributes",
+          "sha256": "8a1ddb287077e95a44cab6bc76eaf98da8ea2ae6ff877a8caefc4320c5682ec1",
+          "size": 129
+        },
+        {
+          "mode": 420,
+          "path": ".gitignore",
+          "sha256": "d279725b10ae6691c9581f9ff18d339a439bd105801e25b66b576e0f8f36e4a6",
+          "size": 26
+        },
+        {
+          "mode": 420,
+          "path": "AGENTS.md",
+          "sha256": "e1d2f6e2cc74bcb7b3f477149844d8f7415400e7b64691deed2dd8dad6538962",
+          "size": 1089
+        },
+        {
+          "mode": 420,
+          "path": "README.md",
+          "sha256": "b8e7bc6dcbdfc8e06f05872ba0463c6fecc34b5dfe6620f39d2428dab219bb68",
+          "size": 15315
+        },
+        {
+          "mode": 420,
+          "path": "config/alpine-ncopa.asc",
+          "sha256": "75a9a7e0cc35bfa946ce40c26133b3ed29a204fbd98a3b33331b659d927b3027",
+          "size": 3092
+        },
+        {
+          "mode": 420,
+          "path": "config/build-lock.json",
+          "sha256": "1127eb732f40b552438878a7ec49153a6ad6f43162f8319c06a805bb7b921bbe",
+          "size": 7076
+        },
+        {
+          "mode": 420,
+          "path": "config/firecracker-v1.17.0-aarch64.config",
+          "sha256": "35cce8e8b754a84523ca20dc068fc3f8f03a15523be36a8623bad54e11972e2a",
+          "size": 98096
+        },
+        {
+          "mode": 420,
+          "path": "config/kernel-sha256sums.asc",
+          "sha256": "09057481a7f58c55910a7194d57ee9247bbbbf81246f720263c3666598ff4b44",
+          "size": 257180
+        },
+        {
+          "mode": 420,
+          "path": "config/kernel.config",
+          "sha256": "f4cc5f557c66c86acd75276d5053db6bd56992cff40471f3044ab5570d2dea2d",
+          "size": 95560
+        },
+        {
+          "mode": 420,
+          "path": "config/pins.json",
+          "sha256": "3e5fd1c534cbb352b005cd68ac1b75d7a13d68f55d710e40503617327b0cf201",
+          "size": 1226
+        },
+        {
+          "mode": 420,
+          "path": "config/required-builtins.txt",
+          "sha256": "e40e90f43d4fa25bd87c669392783f1bdae29ce04ea4e587107468f517df66e0",
+          "size": 763
+        },
+        {
+          "mode": 420,
+          "path": "config/security-policy.json",
+          "sha256": "4fd5c9da18e5a2c141205089f391234b589980dba49171785aa2bbbbff0419a7",
+          "size": 1225
+        },
+        {
+          "mode": 420,
+          "path": "scripts/build.py",
+          "sha256": "4886ff99790ce35cdd7566cb9d7c38b1ef16eb1423cb9dd7196e5f9bc994b542",
+          "size": 17278
+        },
+        {
+          "mode": 420,
+          "path": "scripts/inputs.py",
+          "sha256": "3def9608d2b521118c7d2eb335b827ae9aa6bdb3d29787851bd60d4ace801129",
+          "size": 18090
+        },
+        {
+          "mode": 420,
+          "path": "scripts/kernel_policy.py",
+          "sha256": "8ac7dfff79c3f326851d5515d65c8b08f1aa5f75059a5c2f8be88d7c75a0498a",
+          "size": 1182
+        },
+        {
+          "mode": 420,
+          "path": "scripts/lima.py",
+          "sha256": "b9a5434eee881f67774ac478f4c10949adec52e5fa5731786b007fc998338538",
+          "size": 5399
+        },
+        {
+          "mode": 420,
+          "path": "scripts/verify.py",
+          "sha256": "64fc9f728fb7cf0398b08f4a9dcc920a29bd7eb9904ef422b9d11471727f90a8",
+          "size": 1160
+        },
+        {
+          "mode": 420,
+          "path": "src/dns_service.h",
+          "sha256": "b5be255c06611c78d9e76785600fb90a30ac884e1380e3e474ec2fea49aa9da0",
+          "size": 10011
+        },
+        {
+          "mode": 420,
+          "path": "src/init.c",
+          "sha256": "3d54d6972299ec059e5afcee918b1fff1747ca8444a79186a9c61dff46db880c",
+          "size": 14674
+        },
+        {
+          "mode": 420,
+          "path": "tests/firecracker.py",
+          "sha256": "a20c7a40959a4043067c0738db16aad47491feaa440302537b75891b0517a6fb",
+          "size": 12113
+        },
+        {
+          "mode": 420,
+          "path": "tests/test_inputs.py",
+          "sha256": "067cb30a398ff962a514bfec7128a925984517b955d55b30da1f6acc67085fb5",
+          "size": 34636
+        },
+        {
+          "mode": 420,
+          "path": "tests/test_verify.py",
+          "sha256": "bbdf6e9c637d05dffd9d19fd61b02dff7d8847169e745cdc095b1be7c4a4166e",
+          "size": 1850
+        }
+      ]
+    }
+  },
+  "kernel_version": "6.18.56-kiln-guest1",
+  "kiln_commit": "00d61c546db7aa67ad283d10c2ca6165ca5f8166",
+  "schema": 1,
+  "source_date_epoch": 1793318400,
+  "work_disk": {
+    "filesystem": "xfs",
+    "minimum_mib": 512,
+    "mount_options": [
+      "nosuid",
+      "nodev",
+      "noexec",
+      "prjquota"
+    ]
+  }
+}

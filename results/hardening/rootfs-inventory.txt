@@ -1,0 +1,557 @@
+drwxr-xr-x 0/0                     139 2026-10-29 20:00 squashfs-root
+drwxr-xr-x 0/0                       3 2026-10-29 20:00 squashfs-root/dev
+drwxr-xr-x 0/0                      68 2026-10-29 20:00 squashfs-root/etc
+-rw-r--r-- 0/0                      20 2026-10-29 20:00 squashfs-root/etc/hosts
+-rw-r--r-- 0/0                      17 2026-10-29 20:00 squashfs-root/etc/nsswitch.conf
+-rw-r--r-- 0/0                      48 2026-10-29 20:00 squashfs-root/etc/resolv.conf
+-rwxr-xr-x 0/0                  669728 2026-10-29 20:00 squashfs-root/init
+lrwxrwxrwx 0/0                       7 2026-10-29 20:00 squashfs-root/lib -> usr/lib
+drwxr-xr-x 0/0                       3 2026-10-29 20:00 squashfs-root/proc
+drwxr-xr-x 0/0                       3 2026-10-29 20:00 squashfs-root/run
+drwxr-xr-x 0/0                      25 2026-10-29 20:00 squashfs-root/sys
+drwxr-xr-x 0/0                      29 2026-10-29 20:00 squashfs-root/sys/fs
+drwxr-xr-x 0/0                       3 2026-10-29 20:00 squashfs-root/sys/fs/cgroup
+drwxr-xr-x 0/0                       3 2026-10-29 20:00 squashfs-root/tmp
+drwxr-xr-x 0/0                      49 2026-10-29 20:00 squashfs-root/usr
+drwxr-xr-x 0/0                      27 2026-10-29 20:00 squashfs-root/usr/bin
+-rwxr-xr-x 0/0                 2376016 2026-10-29 20:00 squashfs-root/usr/bin/kiln
+drwxr-xr-x 0/0                      69 2026-10-29 20:00 squashfs-root/usr/lib
+drwxr-xr-x 0/0                     271 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu
+-rwxr-xr-x 0/0                  203968 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+-rwxr-xr-x 0/0                  133944 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libbsd.so.0
+-rwxr-xr-x 0/0                 1722920 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libc.so.6
+-rwxr-xr-x 0/0                  265352 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libedit.so.2
+-rwxr-xr-x 0/0                  526632 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libgmp.so.10
+-rwxr-xr-x 0/0                   67920 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libjansson.so.4
+-rwxr-xr-x 0/0                   67584 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libmd.so.0
+-rwxr-xr-x 0/0                   67512 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libmnl.so.0
+-rwxr-xr-x 0/0                  990096 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libnftables.so.1
+-rwxr-xr-x 0/0                  267704 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libnftnl.so.11
+-rwxr-xr-x 0/0                  265416 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libtinfo.so.6
+-rwxr-xr-x 0/0                   67432 2026-10-29 20:00 squashfs-root/usr/lib/aarch64-linux-gnu/libxtables.so.12
+-rwxr-xr-x 0/0                  203968 2026-10-29 20:00 squashfs-root/usr/lib/ld-linux-aarch64.so.1
+drwxr-xr-x 0/0                      26 2026-10-29 20:00 squashfs-root/usr/sbin
+-rwxr-xr-x 0/0                   67592 2026-10-29 20:00 squashfs-root/usr/sbin/nft
+drwxr-xr-x 0/0                      26 2026-10-29 20:00 squashfs-root/var
+drwxr-xr-x 0/0                      27 2026-10-29 20:00 squashfs-root/var/lib
+drwxr-xr-x 0/0                      41 2026-10-29 20:00 squashfs-root/var/lib/kiln
+drwxr-xr-x 0/0                      29 2026-10-29 20:00 squashfs-root/var/lib/kiln/images
+drwxr-xr-x 2000000000/2000000000   249 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine
+drwxr-xr-x 2000000000/2000000000  1100 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/arch -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ash -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/base64 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/bbconfig -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000 919304 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/cat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/chattr -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/chgrp -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/chmod -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/chown -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/cp -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/date -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/dd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/df -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/dmesg -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/dnsdomainname -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/dumpkmap -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/echo -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/egrep -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/false -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/fatattr -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/fdflush -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/fgrep -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/fsync -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/getopt -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/grep -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/gunzip -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/gzip -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/hostname -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ionice -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/iostat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ipcalc -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/kbd_mode -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/kill -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/link -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/linux32 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/linux64 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ln -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/login -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ls -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/lsattr -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/lzop -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/makemime -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/mkdir -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/mknod -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/mktemp -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/more -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/mount -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/mountpoint -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/mpstat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/mv -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/netstat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/nice -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/pidof -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ping -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ping6 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/pipe_progress -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/printenv -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/ps -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/pwd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/reformime -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/rev -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/rm -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/rmdir -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/run-parts -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/sed -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/setpriv -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/setserial -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/sh -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/sleep -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/stat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/stty -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/su -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/sync -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/tar -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/touch -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/true -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/umount -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/uname -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/usleep -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/watch -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/bin/zcat -> /bin/busybox
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/dev
+drwxr-xr-x 2000000000/2000000000   565 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc
+-rw-r--r-- 2000000000/2000000000     7 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/alpine-release
+drwxr-xr-x 2000000000/2000000000    97 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk
+-rw-r--r-- 2000000000/2000000000     8 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk/arch
+drwxr-xr-x 2000000000/2000000000   133 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk/keys
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk/keys/alpine-devel@lists.alpinelinux.org-616ae350.rsa.pub
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk/protected_paths.d
+-rw-r--r-- 2000000000/2000000000   103 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk/repositories
+-rw-r--r-- 2000000000/2000000000    74 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/apk/world
+drwxr-xr-x 2000000000/2000000000    30 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/busybox-paths.d
+-rw-r--r-- 2000000000/2000000000  3986 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/busybox-paths.d/busybox
+drwxr-xr-x 2000000000/2000000000    27 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/crontabs
+-rw------- 2000000000/2000000000   283 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/crontabs/root
+-rw-r--r-- 2000000000/2000000000    89 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/fstab
+-rw-r--r-- 2000000000/2000000000   510 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/group
+-rw-r--r-- 2000000000/2000000000    10 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/hostname
+-rw-r--r-- 2000000000/2000000000    79 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/hosts
+-rw-r--r-- 2000000000/2000000000   570 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/inittab
+-rw-r--r-- 2000000000/2000000000    51 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/issue
+drwxr-xr-x 2000000000/2000000000    28 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/logrotate.d
+-rw-r--r-- 2000000000/2000000000   140 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/logrotate.d/acpid
+drwxr-xr-x 2000000000/2000000000    74 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/modprobe.d
+-rw-r--r-- 2000000000/2000000000  1545 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/modprobe.d/aliases.conf
+-rw-r--r-- 2000000000/2000000000  2247 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/modprobe.d/blacklist.conf
+-rw-r--r-- 2000000000/2000000000   122 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/modprobe.d/i386.conf
+-rw-r--r-- 2000000000/2000000000    15 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/modules
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/modules-load.d
+-rw-r--r-- 2000000000/2000000000   284 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/motd
+lrwxrwxrwx 2000000000/2000000000    14 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/mtab -> ../proc/mounts
+drwxr-xr-x 2000000000/2000000000   129 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network/if-down.d
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network/if-post-down.d
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network/if-post-up.d
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network/if-pre-down.d
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network/if-pre-up.d
+drwxr-xr-x 2000000000/2000000000    26 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network/if-up.d
+-rwxr-xr-x 2000000000/2000000000   285 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/network/if-up.d/dad
+-rw-r--r-- 2000000000/2000000000   205 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/nsswitch.conf
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/opt
+lrwxrwxrwx 2000000000/2000000000    21 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/os-release -> ../usr/lib/os-release
+-rw-r--r-- 2000000000/2000000000   702 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/passwd
+drwxr-xr-x 2000000000/2000000000    84 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/periodic
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/periodic/15min
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/periodic/daily
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/periodic/hourly
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/periodic/monthly
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/periodic/weekly
+-rw-r--r-- 2000000000/2000000000   547 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/profile
+drwxr-xr-x 2000000000/2000000000    80 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/profile.d
+-rw-r--r-- 2000000000/2000000000    97 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/profile.d/20locale.sh
+-rw-r--r-- 2000000000/2000000000   249 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/profile.d/README
+-rw-r--r-- 2000000000/2000000000   447 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/profile.d/color_prompt.sh.disabled
+-rw-r--r-- 2000000000/2000000000  3144 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/protocols
+drwxr-xr-x 2000000000/2000000000    29 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/secfixes.d
+-rw-r--r-- 2000000000/2000000000    97 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/secfixes.d/alpine
+-rw-r--r-- 2000000000/2000000000   156 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/securetty
+-rw-r--r-- 2000000000/2000000000 12813 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/services
+-rw-r----- 2000000000/2000000042   260 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/shadow
+-rw-r--r-- 2000000000/2000000000    38 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/shells
+drwxr-xr-x 2000000000/2000000000   153 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl
+lrwxrwxrwx 2000000000/2000000000    25 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/cert.pem -> certs/ca-certificates.crt
+drwxr-xr-x 2000000000/2000000000    42 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/certs
+-rw-r--r-- 2000000000/2000000000 181724 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/certs/ca-certificates.crt
+-rw-r--r-- 2000000000/2000000000   412 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/ct_log_list.cnf
+-rw-r--r-- 2000000000/2000000000   412 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/ct_log_list.cnf.dist
+-rw-r--r-- 2000000000/2000000000 12411 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/openssl.cnf
+-rw-r--r-- 2000000000/2000000000 12411 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/openssl.cnf.dist
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl/private
+drwxr-xr-x 2000000000/2000000000    44 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl1.1
+lrwxrwxrwx 2000000000/2000000000    17 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl1.1/cert.pem -> /etc/ssl/cert.pem
+lrwxrwxrwx 2000000000/2000000000    14 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/ssl1.1/certs -> /etc/ssl/certs
+-rw-r--r-- 2000000000/2000000000    53 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/sysctl.conf
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/sysctl.d
+drwxr-xr-x 2000000000/2000000000    34 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/udhcpc
+-rw-r--r-- 2000000000/2000000000   287 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/etc/udhcpc/udhcpc.conf
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/home
+drwxr-xr-x 2000000000/2000000000   138 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib
+drwxr-xr-x 2000000000/2000000000    37 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/apk
+drwxr-xr-x 2000000000/2000000000    70 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/apk/db
+-rw-r--r-- 2000000000/2000000000 15097 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/apk/db/installed
+-rw-r--r-- 2000000000/2000000000  1916 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/apk/db/scripts.tar.gz
+-rw-r--r-- 2000000000/2000000000    95 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/apk/db/triggers
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/apk/exec
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/firmware
+-rwxr-xr-x 2000000000/2000000000 723480 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/ld-musl-aarch64.so.1
+lrwxrwxrwx 2000000000/2000000000    20 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/libc.musl-aarch64.so.1 -> ld-musl-aarch64.so.1
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/modules-load.d
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/lib/sysctl.d
+drwxr-xr-x 2000000000/2000000000    53 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/media
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/media/cdrom
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/media/floppy
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/media/usb
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/mnt
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/opt
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/proc
+drwx------ 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/root
+drwxr-xr-x 2000000000/2000000000    27 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/run
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/run/lock
+drwxr-xr-x 2000000000/2000000000   928 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/acpid -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/adjtimex -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000 135248 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/apk
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/arp -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/blkdiscard -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/blkid -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/blockdev -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/depmod -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/fbsplash -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/fdisk -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/findfs -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/fsck -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/fstrim -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/getty -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/halt -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/hwclock -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ifconfig -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ifdown -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ifenslave -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ifup -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/init -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/inotifyd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/insmod -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ip -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ipaddr -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/iplink -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ipneigh -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/iproute -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/iprule -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/iptunnel -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/klogd -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000   393 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/ldconfig
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/loadkmap -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/logread -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/losetup -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/lsmod -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/mdev -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/mkdosfs -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/mkfs.vfat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/mkswap -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/modinfo -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/modprobe -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/nameif -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/nologin -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/pivot_root -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/poweroff -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/raidautorun -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/reboot -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/rmmod -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/route -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/setconsole -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/slattach -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/swapoff -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/swapon -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/switch_root -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/sysctl -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/syslogd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/tunctl -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/udhcpc -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/vconfig -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/watchdog -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sbin/zcip -> /bin/busybox
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/srv
+drwxr-xr-x 2000000000/2000000000    25 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sys
+drwxr-xr-x 2000000000/2000000000    29 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sys/fs
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/sys/fs/cgroup
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/tmp
+drwxr-xr-x 2000000000/2000000000    87 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr
+drwxr-xr-x 2000000000/2000000000  1899 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/[ -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/[[ -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/awk -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/basename -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/bc -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/beep -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/bunzip2 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/bzcat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/bzip2 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/cal -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/chvt -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/cksum -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/clear -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/cmp -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/comm -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/cpio -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/crontab -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/cryptpw -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/cut -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/dc -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/deallocvt -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/diff -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/dirname -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/dos2unix -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/du -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/eject -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/env -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/expand -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/expr -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/factor -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/fallocate -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/find -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/flock -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/fold -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/free -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/fuser -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000 67320 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/getconf
+-rwxr-xr-x 2000000000/2000000000 67528 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/getent
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/groups -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/hd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/head -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/hexdump -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/hostid -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000 67240 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/iconv
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/id -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/install -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/ipcrm -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/ipcs -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/killall -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/last -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000    53 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/ldd
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/less -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/logger -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/lsof -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/lsusb -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/lzcat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/lzma -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/lzopcat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/md5sum -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/mesg -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/microcom -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/mkfifo -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/mkpasswd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/nc -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/nl -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/nmeter -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/nohup -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/nproc -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/nsenter -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/nslookup -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/od -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/openvt -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/passwd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/paste -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/pgrep -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/pkill -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/pmap -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/printf -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/pscan -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/pstree -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/pwdx -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/readlink -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/realpath -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/renice -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/reset -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/resize -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000 67424 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/scanelf
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/seq -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/setkeycodes -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/setsid -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/sha1sum -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/sha256sum -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/sha3sum -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/sha512sum -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/showkey -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/shred -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/shuf -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/sort -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/split -> /bin/busybox
+-rwxr-xr-x 2000000000/2000000000 67472 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/ssl_client
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/strings -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/sum -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/tac -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/tail -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/tee -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/test -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/time -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/timeout -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/top -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/tr -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/traceroute -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/traceroute6 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/tree -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/truncate -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/tty -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/ttysize -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/udhcpc6 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unexpand -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/uniq -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unix2dos -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unlink -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unlzma -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unlzop -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unshare -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unxz -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/unzip -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/uptime -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/uudecode -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/uuencode -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/vi -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/vlock -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/volname -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/wc -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/wget -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/which -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/who -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/whoami -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/whois -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/xargs -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/xxd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/xzcat -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/bin/yes -> /bin/busybox
+drwxr-xr-x 2000000000/2000000000   210 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib
+drwxr-xr-x 2000000000/2000000000    87 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/engines-3
+-rwxr-xr-x 2000000000/2000000000 67680 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/engines-3/afalg.so
+-rwxr-xr-x 2000000000/2000000000 67168 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/engines-3/capi.so
+-rwxr-xr-x 2000000000/2000000000 67952 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/engines-3/loader_attic.so
+-rwxr-xr-x 2000000000/2000000000 67168 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/engines-3/padlock.so
+-rwxr-xr-x 2000000000/2000000000 330360 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/libapk.so.3.0.0
+-rwxr-xr-x 2000000000/2000000000 4533144 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/libcrypto.so.3
+-rwxr-xr-x 2000000000/2000000000 868240 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/libssl.so.3
+lrwxrwxrwx 2000000000/2000000000    13 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/libz.so.1 -> libz.so.1.3.2
+-rwxr-xr-x 2000000000/2000000000 133008 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/libz.so.1.3.2
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/modules-load.d
+-rw-r--r-- 2000000000/2000000000   188 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/os-release
+drwxr-xr-x 2000000000/2000000000    32 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/ossl-modules
+-rwxr-xr-x 2000000000/2000000000 133008 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/ossl-modules/legacy.so
+drwxr-xr-x 2000000000/2000000000    37 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/sysctl.d
+-rw-r--r-- 2000000000/2000000000  1278 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/lib/sysctl.d/00-alpine.conf
+drwxr-xr-x 2000000000/2000000000    50 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/local
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/local/bin
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/local/lib
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/local/share
+drwxr-xr-x 2000000000/2000000000   444 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/add-shell -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/addgroup -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/adduser -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/arping -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/brctl -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/chpasswd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/chroot -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/crond -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/delgroup -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/deluser -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/ether-wake -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/fbset -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/killall5 -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/loadfont -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/nanddump -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/nandwrite -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/nbd-client -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/ntpd -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/partprobe -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/rdate -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/rdev -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/readahead -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/remove-shell -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/rfkill -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/sendmail -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/setfont -> /bin/busybox
+lrwxrwxrwx 2000000000/2000000000    12 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/sbin/setlogcons -> /bin/busybox
+drwxr-xr-x 2000000000/2000000000    52 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share
+drwxr-xr-x 2000000000/2000000000    27 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk
+drwxr-xr-x 2000000000/2000000000  1219 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys
+drwxr-xr-x 2000000000/2000000000   133 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/aarch64
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-616ae350.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-616ae350.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5e69ca50.rsa.pub
+-rw-r--r-- 2000000000/2000000000   451 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-60ac2099.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-61666e3f.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616a9724.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616abc23.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616ac3bc.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616adfeb.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616ae350.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616db30d.rsa.pub
+-rw-r--r-- 2000000000/2000000000   800 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-66ba20fe.rsa.pub
+drwxr-xr-x 2000000000/2000000000   133 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/armhf
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-616a9724.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-616a9724.rsa.pub
+drwxr-xr-x 2000000000/2000000000   133 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/armv7
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/armv7/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/armv7/alpine-devel@lists.alpinelinux.org-616adfeb.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-616adfeb.rsa.pub
+drwxr-xr-x 2000000000/2000000000    74 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/loongarch64
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/loongarch64/alpine-devel@lists.alpinelinux.org-66ba20fe.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-66ba20fe.rsa.pub
+drwxr-xr-x 2000000000/2000000000    74 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/mips64
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/mips64/alpine-devel@lists.alpinelinux.org-5e69ca50.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-5e69ca50.rsa.pub
+drwxr-xr-x 2000000000/2000000000   133 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/ppc64le
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-616abc23.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-616abc23.rsa.pub
+drwxr-xr-x 2000000000/2000000000   133 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/riscv64
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/riscv64/alpine-devel@lists.alpinelinux.org-60ac2099.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-60ac2099.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/riscv64/alpine-devel@lists.alpinelinux.org-616db30d.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-616db30d.rsa.pub
+drwxr-xr-x 2000000000/2000000000   133 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/s390x
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-616ac3bc.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-616ac3bc.rsa.pub
+drwxr-xr-x 2000000000/2000000000   192 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-61666e3f.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-61666e3f.rsa.pub
+drwxr-xr-x 2000000000/2000000000   192 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86_64
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub
+lrwxrwxrwx 2000000000/2000000000    54 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub -> ../alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/misc
+drwxr-xr-x 2000000000/2000000000    37 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/udhcpc
+-rwxr-xr-x 2000000000/2000000000  4010 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/usr/share/udhcpc/default.script
+drwxr-xr-x 2000000000/2000000000   146 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var
+drwxr-xr-x 2000000000/2000000000    38 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/cache
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/cache/apk
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/cache/misc
+dr-xr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/empty
+drwxr-xr-x 2000000000/2000000000    27 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/lib
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/lib/misc
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/local
+lrwxrwxrwx 2000000000/2000000000    11 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/lock -> ../run/lock
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/log
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/mail
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/opt
+lrwxrwxrwx 2000000000/2000000000     6 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/run -> ../run
+drwxr-xr-x 2000000000/2000000000    39 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/spool
+drwxr-xr-x 2000000000/2000000000    31 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/spool/cron
+lrwxrwxrwx 2000000000/2000000000    21 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/spool/cron/crontabs -> ../../../etc/crontabs
+lrwxrwxrwx 2000000000/2000000000     7 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/spool/mail -> ../mail
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/var/tmp
+drwxr-xr-x 2000000000/2000000000     3 2026-10-29 20:00 squashfs-root/var/lib/kiln/images/alpine/workspace
+drwxr-xr-x 0/0                       3 2026-10-29 20:00 squashfs-root/var/lib/kiln/runs

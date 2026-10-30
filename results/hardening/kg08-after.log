@@ -1,4 +1,16 @@
-Phase 0 pin=00d61c546db7aa67ad283d10c2ca6165ca5f8166
-source archive SHA256=6e9af37419bacd0bb8c7e4903796cc8a9ce5b0f401f41d4dd3353af8d10194af
-Linux aarch64 static init compile with -Wall -Wextra -Werror: exit 0
-Runtime DNS credential/capability/seccomp/negative probes: required by integration, pending full build
+offline:
+KG_TEST dns-nonroot PASS
+KG_TEST dns-only-bind-capability PASS
+KG_TEST dns-no-new-privileges PASS
+KG_TEST dns-seccomp PASS
+KG_TEST dns-root-denied PASS
+KG_TEST dns-policy-readonly PASS
+KG_TEST dns-tenant-storage-hidden PASS
+network:
+KG_TEST dns-nonroot PASS
+KG_TEST dns-only-bind-capability PASS
+KG_TEST dns-no-new-privileges PASS
+KG_TEST dns-seccomp PASS
+KG_TEST dns-root-denied PASS
+KG_TEST dns-policy-readonly PASS
+KG_TEST dns-tenant-storage-hidden PASS

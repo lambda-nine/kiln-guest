@@ -1,0 +1,3 @@
+{"case": "fc-jailer-kiln-none-768", "elapsed_ns": 8331423857, "gap_ms": 100, "kind": "latency", "ok": true, "round": -2, "schema": 1, "session": "eab785a8-6820-4e61-b812-cf2decc3d4e5", "warmup": true}
+{"case": "fc-jailer-kiln-none-768", "elapsed_ns": 8497514347, "gap_ms": 100, "kind": "latency", "ok": true, "round": -1, "schema": 1, "session": "eab785a8-6820-4e61-b812-cf2decc3d4e5", "warmup": true}
+{"case": "fc-jailer-kiln-none-768", "elapsed_ns": 8077547703, "gap_ms": 100, "kind": "latency", "ok": true, "round": 0, "schema": 1, "session": "eab785a8-6820-4e61-b812-cf2decc3d4e5", "warmup": false}

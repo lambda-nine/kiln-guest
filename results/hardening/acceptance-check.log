@@ -1,0 +1,89 @@
+{
+  "artifacts": {
+    "Image": {
+      "bytes": 17807872,
+      "bytes_equal": true,
+      "sha256": "62d02303bad5272946cdb37d76a501c6a38209e7d2c3378f9fe8fd9015d8e032"
+    },
+    "kernel.config": {
+      "bytes": 95560,
+      "bytes_equal": true,
+      "sha256": "f4cc5f557c66c86acd75276d5053db6bd56992cff40471f3044ab5570d2dea2d"
+    },
+    "kiln": {
+      "bytes": 2376016,
+      "bytes_equal": true,
+      "sha256": "54442ccc0ce12b9a9236c927b9073019d7d4774c2e2d82f4d55d0db491925c64"
+    },
+    "rootfs.squashfs": {
+      "bytes": 7380992,
+      "bytes_equal": true,
+      "sha256": "6f29963ab5d6813d95fe33013d51c46b8d5c1c08f540edd1dcc2e917743ed46a"
+    }
+  },
+  "conditions": {
+    "cache_drop": false,
+    "case": "fc-jailer-kiln-none-768",
+    "cgroup_version": 2,
+    "default_seccomp": true,
+    "gap_ms": 100,
+    "host_services": "installed kiln/kilnd/DNS/metrics left active; other host applications uncontrolled",
+    "l1_boot_id": "eab785a8-6820-4e61-b812-cf2decc3d4e5",
+    "l1_sessions": 1,
+    "manifest_sha256": "dfc3494e84f81848536fb6efd8aeaf61350e59a1c5dfc859064a3d06f284e59e",
+    "mem_size_mib": 768,
+    "new_pid_namespace": false,
+    "outer_cgroup_limits": false,
+    "rootfs": "squashfs, read-only",
+    "runs": 20,
+    "tier": "strong-isolation",
+    "timing": "before Popen(jailer) to serial KG_FIRST_COMMAND after first kiln true exits; staging and teardown excluded",
+    "uid_gid": 10000,
+    "uname": [
+      "Linux",
+      "lima-kiln",
+      "6.8.0-147-generic",
+      "#147-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep 24 11:39:52 UTC 2026",
+      "aarch64"
+    ],
+    "vcpu_count": 1,
+    "warmups": 2,
+    "work_disk": "private 512 MiB XFS, nosuid,nodev,noexec,prjquota",
+    "workload": [
+      "kiln",
+      "run",
+      "--",
+      "true"
+    ]
+  },
+  "installed_binaries_unchanged": true,
+  "integration": {
+    "network": "passed",
+    "offline": "passed"
+  },
+  "kernel_policy": {
+    "forbidden": 26,
+    "passed": true,
+    "required": 22
+  },
+  "latency_ms": {
+    "failures": 0,
+    "max": 27580.155063,
+    "min": 21188.711362,
+    "n": 20,
+    "p50": 24839.717450999997,
+    "p95_nearest_rank": 27335.940564
+  },
+  "manifest_sha256": {
+    "a": "dfc3494e84f81848536fb6efd8aeaf61350e59a1c5dfc859064a3d06f284e59e",
+    "b": "dfc3494e84f81848536fb6efd8aeaf61350e59a1c5dfc859064a3d06f284e59e"
+  },
+  "reproducible": true,
+  "residual_risks": [
+    "cold boots only; snapshots disabled",
+    "Phase 1b admission, broker, outer cgroups and PID isolation remain unimplemented",
+    "local KASLR seed compatibility replacement must be reviewed on kernel/VMM upgrades",
+    "environment/toolchain lock is not a hermetic build container; nested measurements are not bare-metal production results"
+  ],
+  "source_inventory_sha256": "9487049cbeb124d1fc99598affaf88663e4622308d72e6f5bc67dccad42a603b"
+}

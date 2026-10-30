@@ -1,0 +1,146 @@
+1093-		node = fdt_path_offset(fdt, "/chosen@0");
+1094-	if (node < 0)
+1095-		/* Handle the cmdline config options even if no /chosen node */
+1096-		goto handle_cmdline;
+1097-
+1098-	chosen_node_offset = node;
+1099-
+1100-	early_init_dt_check_for_initrd(node);
+1101-	early_init_dt_check_for_elfcorehdr(node);
+1102-
+1103:	rng_seed = of_get_flat_dt_prop(node, "rng-seed", &l);
+1104-	if (rng_seed && l > 0) {
+1105-		add_bootloader_randomness(rng_seed, l);
+1106-
+1107-		/* try to clear seed so it won't be found. */
+1108:		fdt_nop_property(initial_boot_params, node, "rng-seed");
+1109-
+1110-		/* update CRC check value */
+1111-		of_fdt_crc32 = crc32_be(~0, initial_boot_params,
+1112-				fdt_totalsize(initial_boot_params));
+1113-	}
+1114-
+1115-	/* Retrieve command line */
+1116-	p = of_get_flat_dt_prop(node, "bootargs", &l);
+1117-	if (p != NULL && l > 0)
+1118-		strscpy(cmdline, p, min(l, COMMAND_LINE_SIZE));
+1119-
+1120-handle_cmdline:
+1121-	/*
+1122-	 * CONFIG_CMDLINE is meant to be a default in case nothing else
+1123-	 * managed to set the command line, unless CONFIG_CMDLINE_FORCE
+1124-	 * is set in which case we override whatever was found earlier.
+1125-	 */
+1126-#ifdef CONFIG_CMDLINE
+1127-#if defined(CONFIG_CMDLINE_EXTEND)
+1128-	strlcat(cmdline, " ", COMMAND_LINE_SIZE);
+1129-	strlcat(cmdline, CONFIG_CMDLINE, COMMAND_LINE_SIZE);
+1130-#elif defined(CONFIG_CMDLINE_FORCE)
+1131-	strscpy(cmdline, CONFIG_CMDLINE, COMMAND_LINE_SIZE);
+1132-#else
+# SPDX-License-Identifier: GPL-2.0
+# Copyright 2022 Google LLC
+
+KBUILD_CFLAGS	:= $(subst $(CC_FLAGS_FTRACE),,$(KBUILD_CFLAGS)) -fpie \
+		   -Os -DDISABLE_BRANCH_PROFILING $(DISABLE_KSTACK_ERASE) \
+		   $(DISABLE_LATENT_ENTROPY_PLUGIN) \
+		   $(call cc-option,-mbranch-protection=none) \
+		   -I$(srctree)/scripts/dtc/libfdt -fno-stack-protector \
+		   -include $(srctree)/include/linux/hidden.h \
+		   -D__DISABLE_EXPORTS -ffreestanding -D__NO_FORTIFY \
+		   -fno-asynchronous-unwind-tables -fno-unwind-tables \
+		   $(call cc-option,-fno-addrsig)
+
+# this code may run with the MMU off so disable unaligned accesses
+CFLAGS_map_range.o += -mstrict-align
+
+# remove SCS flags from all objects in this directory
+KBUILD_CFLAGS	:= $(filter-out $(CC_FLAGS_SCS), $(KBUILD_CFLAGS))
+# disable LTO
+KBUILD_CFLAGS	:= $(filter-out $(CC_FLAGS_LTO), $(KBUILD_CFLAGS))
+
+hostprogs	:= relacheck
+
+quiet_cmd_piobjcopy = $(quiet_cmd_objcopy)
+      cmd_piobjcopy = $(cmd_objcopy) && $(obj)/relacheck $(@) $(<)
+
+$(obj)/%.pi.o: OBJCOPYFLAGS := --prefix-symbols=__pi_ \
+			       --remove-section=.note.gnu.property
+$(obj)/%.pi.o: $(obj)/%.o $(obj)/relacheck FORCE
+	$(call if_changed,piobjcopy)
+
+# ensure that all the lib- code ends up as __init code and data
+$(obj)/lib-%.pi.o: OBJCOPYFLAGS += --prefix-alloc-sections=.init
+
+$(obj)/lib-%.o: $(srctree)/lib/%.c FORCE
+	$(call if_changed_rule,cc_o_c)
+
+obj-y					:= idreg-override.pi.o \
+					   map_kernel.pi.o map_range.pi.o \
+					   lib-fdt.pi.o lib-fdt_ro.pi.o
+obj-$(CONFIG_RELOCATABLE)		+= relocate.pi.o
+obj-$(CONFIG_RANDOMIZE_BASE)		+= kaslr_early.pi.o
+obj-$(CONFIG_UNWIND_PATCH_PAC_INTO_SCS)	+= patch-scs.pi.o
+targets					:= $(patsubst %.pi.o,%.o,$(obj-y))
+// SPDX-License-Identifier: GPL-2.0-only
+// Copyright 2022 Google LLC
+// Author: Ard Biesheuvel <ardb@google.com>
+
+// NOTE: code in this file runs *very* early, and is not permitted to use
+// global variables or anything that relies on absolute addressing.
+
+#include <linux/libfdt.h>
+#include <linux/init.h>
+#include <linux/linkage.h>
+#include <linux/types.h>
+#include <linux/sizes.h>
+#include <linux/string.h>
+
+#include <asm/archrandom.h>
+#include <asm/memory.h>
+#include <asm/pgtable.h>
+
+#include "pi.h"
+
+static u64 __init get_kaslr_seed(void *fdt, int node)
+{
+	static char const seed_str[] __initconst = "kaslr-seed";
+	fdt64_t *prop;
+	u64 ret;
+	int len;
+
+	if (node < 0)
+		return 0;
+
+	prop = fdt_getprop_w(fdt, node, seed_str, &len);
+	if (!prop || len != sizeof(u64))
+		return 0;
+
+	ret = fdt64_to_cpu(*prop);
+	*prop = 0;
+	return ret;
+}
+
+u64 __init kaslr_early_init(void *fdt, int chosen)
+{
+	u64 seed, range;
+
+	if (kaslr_disabled_cmdline())
+		return 0;
+
+	seed = get_kaslr_seed(fdt, chosen);
+	if (!seed) {
+		if (!__early_cpu_has_rndr() ||
+		    !__arm64_rndr((unsigned long *)&seed))
+			return 0;
+	}
+
+	/*
+	 * OK, so we are proceeding with KASLR enabled. Calculate a suitable
+	 * kernel image offset from the seed. Let's place the kernel in the
+	 * 'middle' half of the VMALLOC area, and stay clear of the lower and
+	 * upper quarters to avoid colliding with other allocations.
+	 */
+	range = (VMALLOC_END - KIMAGE_VADDR) / 2;
+	return range / 2 + (((__uint128_t)range * seed) >> 64);
+}

@@ -1,0 +1,37 @@
+test_coalesced_markers_keep_their_first_observation (tests.test_validation.ValidationTests) ... ERROR
+test_modified_vmm_and_adjacent_checksum_are_rejected (tests.test_validation.ValidationTests) ... ERROR
+test_old_matching_lock_and_archive_cannot_mislabel_new_pin (tests.test_validation.ValidationTests) ... FAIL
+
+======================================================================
+ERROR: test_coalesced_markers_keep_their_first_observation (tests.test_validation.ValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>/tests/test_validation.py", line 28, in test_coalesced_markers_keep_their_first_observation
+    ready=vm.until(b'KG_READY',timeout=.05)
+  File "<checkout>/tests/firecracker.py", line 120, in until
+    raise RuntimeError(f'{self.name} missing {marker!r}:\n'+self.buf.decode(errors='replace'))
+RuntimeError: fixture missing b'KG_READY':
+KG_FIRST_COMMAND
+KG_READY
+
+
+======================================================================
+ERROR: test_modified_vmm_and_adjacent_checksum_are_rejected (tests.test_validation.ValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>/tests/test_validation.py", line 42, in test_modified_vmm_and_adjacent_checksum_are_rejected
+    fc.verify_release(cache,expected)
+AttributeError: module 'tests.firecracker' has no attribute 'verify_release'
+
+======================================================================
+FAIL: test_old_matching_lock_and_archive_cannot_mislabel_new_pin (tests.test_validation.ValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>/tests/test_validation.py", line 62, in test_old_matching_lock_and_archive_cannot_mislabel_new_pin
+    build.build(cache,root/'work',root/'out',1)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.133s
+
+FAILED (failures=1, errors=2)

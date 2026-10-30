@@ -53,7 +53,8 @@ def main():
             time.sleep(180)
     (LOCK/'owner').write_text(f'Guest image {os.getpid()}\n')
     atexit.register(release)
-    signal.signal(signal.SIGTERM,lambda *_:sys.exit(143))
+    for number in [signal.SIGTERM,signal.SIGHUP]:
+        signal.signal(number,lambda *_:sys.exit(143))
     try:
         if args.action == 'stage':
             stage_source()
@@ -64,18 +65,21 @@ def main():
             dest=ROOT/'dist'; dest.mkdir(exist_ok=True)
             with (dest/'collected.tar').open('wb') as f:
                 # prepare and configure results must reach the checkout before any bundle exists.
-                shell('cd ~/kiln-guest-build; sudo tar -cf - $(ls -d bundle-a bundle-b repo/config results 2>/dev/null)',stdout=f)
+                shell('cd ~/kiln-guest-build; sudo tar -cf - $(ls -d bundle-a bundle-b repo/config results results-hardening 2>/dev/null)',stdout=f)
             with tarfile.open(dest/'collected.tar') as t:
                 for member in t.getmembers():
                     path=Path(member.name)
                     if path.is_absolute() or '..' in path.parts or not (member.isfile() or member.isdir()):
                         raise ValueError('unsafe artifact archive')
-                    if path.parts[0] not in ['bundle-a','bundle-b','repo','results']:
+                    if path.parts[0] not in ['bundle-a','bundle-b','repo','results','results-hardening']:
                         raise ValueError('unexpected artifact archive path')
                 t.extractall(dest)
             (dest/'collected.tar').unlink()
             for f in (dest/'repo/config').glob('*'): shutil.copyfile(f,ROOT/'config'/f.name)
             if (dest/'results').exists(): shutil.copytree(dest/'results',ROOT/'results',dirs_exist_ok=True)
+            if (dest/'results-hardening').exists():
+                shutil.copytree(dest/'results-hardening',ROOT/'results/hardening/validation',dirs_exist_ok=True)
+                shutil.rmtree(dest/'results-hardening')
             shutil.rmtree(dest/'repo')
             shutil.rmtree(dest/'results',ignore_errors=True)
         elif args.action == 'cleanup':
@@ -93,7 +97,7 @@ def main():
             elif args.action.startswith('build-'):
                 name=args.action[-1]; digest=stage_source()
                 cmd=f'python3 scripts/build.py build --cache ../cache --work ../work-{name} --out ../bundle-{name} --source-digest {digest}'
-            else: cmd='python3 tests/firecracker.py --bundle ../bundle-a --cache ../cache --out ../results'
+            else: cmd='python3 tests/firecracker.py --bundle ../bundle-a --cache ../cache --out ../results-hardening'
             shell(prefix+env+cmd)
     finally: release()
 
