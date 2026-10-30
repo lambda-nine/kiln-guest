@@ -13,9 +13,12 @@ import statistics
 import subprocess as sp
 import tarfile
 import time
+import sys
 
 ROOT=Path(__file__).resolve().parents[1]
 PINS=json.loads((ROOT/'config/pins.json').read_text())
+sys.path.insert(0,str(ROOT/'scripts'))
+from kernel_policy import validate as validate_kernel_policy
 
 def run(argv,**kw): return sp.run(list(map(str,argv)),check=True,**kw)
 def sha(path):
@@ -134,6 +137,7 @@ def main():
     a=p.parse_args(); bundle=a.bundle.resolve(); cache=a.cache.resolve(); out=a.out.resolve()
     out.mkdir(parents=True,exist_ok=False)
     manifest=json.loads((bundle/'manifest.json').read_text())
+    validate_kernel_policy(bundle/'kernel.config')
     if manifest['schema']!=1: raise ValueError('unknown manifest schema')
     for name,entry in manifest['artifacts'].items():
         if Path(name).name!=name or sha(bundle/name)!=entry['sha256'] or (bundle/name).stat().st_size!=entry['bytes']:
@@ -164,6 +168,12 @@ def main():
                 try:
                     v.until(b'KG_TESTS_COMPLETE',timeout=150)
                     if b' FAIL' in v.buf or b'KG_FATAL' in v.buf: raise RuntimeError('guest test failure')
+                    for name in ['kexec-load-absent','kexec-file-absent','bpf-syscall-absent',
+                                 'io-uring-absent','userfaultfd-absent','perf-events-absent',
+                                 'modules-absent','proc-kcore-absent','devmem-absent',
+                                 'devkmem-absent','debugfs-absent','lockdown-confidentiality']:
+                        if f'KG_TEST {name} PASS'.encode() not in v.buf:
+                            raise RuntimeError(f'missing security assertion: {name}')
                     v.until(b'Firecracker exiting successfully',timeout=20)
                     if v.p.wait(timeout=5)!=0: raise RuntimeError('guest shutdown failed')
                     result['integration'][mode]='passed'

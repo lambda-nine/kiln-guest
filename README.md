@@ -188,3 +188,31 @@ separate concepts. Phase 1b follows kilnd Phase 0 and is outside this repo.
 Source basis: [Firecracker custom image documentation](https://github.com/firecracker-microvm/firecracker/blob/v1.17.0/docs/rootfs-and-kernel-setup.md),
 the sibling spike report `research/2026-10-30-firecracker-spike.md`, and kiln's
 README/agent notes at the source pin.
+
+## Kernel security policy
+
+`config/security-policy.json` lists required values and forbidden interfaces.
+The builder checks the resolved config after `olddefconfig`; the jailer suite
+checks the bundled config and probes the unavailable interfaces as guest root.
+Kexec is compiled out; init also sets `kernel.kexec_load_disabled=1` before
+starting children when that sysctl exists. With kexec entirely absent Linux
+omits that sysctl, which the integration suite checks along with both syscalls.
+
+Kiln at Phase 0 commit `00d61c5` uses classic BPF for seccomp through
+`seccomp(SECCOMP_SET_MODE_FILTER)`; it never calls the general BPF syscall or
+uses cgroup BPF device programs. Thus BPF's interpreter and seccomp remain,
+while the BPF syscall, cgroup BPF, JIT, io_uring, userfaultfd, perf, debugfs,
+proc kcore, devmem/kmem, modules, probes, ftrace, hibernation, checkpoint/restore,
+and binfmt_misc are forbidden. User namespaces remain necessary for kiln's
+shifted sandbox IDs. Cgroup controllers, nftables, overlayfs and XFS remain
+necessary and are exercised by the integration suite.
+
+Required defenses include KASLR, FORTIFY, default-on hardened usercopy,
+allocation/free initialization, zeroed stack variables, strong stack canaries,
+shadow call stack, strict kernel W^X, slab freelist and list hardening, and early
+forced confidentiality lockdown. GCC 13 supports the selected static arm64
+shadow call stack and zero-initialization. Dynamic SCS requires Clang; CFI's
+KCFI toolchain requirement is not met by this pinned GCC toolchain. Neither is
+claimed. Kernel Kconfig evidence is preserved in
+`results/hardening/toolchain-hardening-evaluation.txt`. This is an enforced
+security baseline derived from kiln's needs, not an exhaustive kernel audit.

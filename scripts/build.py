@@ -102,6 +102,12 @@ def kernel_config(src, out, refresh=False):
     target = ROOT/'config/kernel.config'
     shutil.copyfile(target if target.exists() else ROOT/'config/firecracker-v1.17.0-aarch64.config', out/'.config')
     cfg = [src/'scripts/config', '--file', out/'.config']
+    if refresh:
+        policy=json.loads((ROOT/'config/security-policy.json').read_text())
+        for name,value in policy['required'].items():
+            if value != 'y': raise ValueError('configure requires a boolean policy')
+            run(cfg+['--enable',name])
+        for name in policy['forbidden']: run(cfg+['--disable',name])
     if not target.exists():
         for name in (ROOT/'config/required-builtins.txt').read_text().split(): run(cfg+['--enable',name])
         for name in ['MODULES','DEBUG_INFO','DEBUG_INFO_BTF','DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT',

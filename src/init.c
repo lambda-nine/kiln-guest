@@ -149,6 +149,18 @@ static void tests(bool net) {
         check("kexec-sysctl-irreversible", fd >= 0 && write(fd, "0\n", 2) == -1);
         close(fd);
     }
+    check("bpf-syscall-absent", syscall(SYS_bpf, 0, NULL, 0) == -1 && errno == ENOSYS);
+    check("io-uring-absent", syscall(SYS_io_uring_setup, 0, NULL) == -1 && errno == ENOSYS);
+    check("userfaultfd-absent", syscall(SYS_userfaultfd, 0) == -1 && errno == ENOSYS);
+    check("perf-events-absent", syscall(SYS_perf_event_open, NULL, 0, -1, -1, 0) == -1 && errno == ENOSYS);
+    check("modules-absent", syscall(SYS_init_module, NULL, 0, "") == -1 && errno == ENOSYS);
+    check("proc-kcore-absent", access("/proc/kcore", F_OK) == -1 && errno == ENOENT);
+    check("devmem-absent", access("/dev/mem", F_OK) == -1 && errno == ENOENT);
+    check("devkmem-absent", access("/dev/kmem", F_OK) == -1 && errno == ENOENT);
+    check("debugfs-absent", mount("debugfs", "/tmp", "debugfs", 0, NULL) == -1);
+    char lockdown[128] = {0}; FILE *lf = fopen("/sys/kernel/security/lockdown", "r");
+    check("lockdown-readable", lf && fgets(lockdown, sizeof(lockdown), lf)); fclose(lf);
+    check("lockdown-confidentiality", strstr(lockdown, "[confidentiality]") != NULL);
     check("readonly", RUN("run", "--read-only", "--", "sh", "-c",
         "! touch /etc/should-fail && touch /workspace/ok") == 0);
     check("limits", RUN("run", "--memory", "64M", "--pids", "16", "--disk", "16M", "--", "sh", "-c",
@@ -186,6 +198,7 @@ int main(void) {
     mountfs("proc", "/proc", "proc", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
     put_if_present("/proc/sys/kernel/kexec_load_disabled", "1\n");
     mountfs("sysfs", "/sys", "sysfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
+    mountfs("securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
     /* devtmpfs is mounted by the kernel; refuse a missing console/device tree. */
     if (access("/dev/vdb", F_OK)) die("work disk");
     int null = open("/dev/null", O_RDONLY | O_CLOEXEC);
@@ -201,7 +214,7 @@ int main(void) {
     mountfs("/dev/vdb", "/var/lib/kiln/runs", "xfs", MS_NOSUID|MS_NODEV, "prjquota");
     put("/proc/sys/kernel/kptr_restrict", "2\n");
     put("/proc/sys/kernel/dmesg_restrict", "1\n");
-    put("/proc/sys/kernel/unprivileged_bpf_disabled", "1\n");
+    put_if_present("/proc/sys/kernel/unprivileged_bpf_disabled", "1\n");
     loopback();
     if (option("kiln.net=1")) network();
     check("first-true", RUN("run", "--", "true") == 0);

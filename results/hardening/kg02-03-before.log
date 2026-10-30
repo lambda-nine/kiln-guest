@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<checkout>/scripts/kernel_policy.py", line 27, in <module>
+    print(json.dumps(validate(a.config), sort_keys=True))
+  File "<checkout>/scripts/kernel_policy.py", line 20, in validate
+    raise ValueError('kernel security policy: ' + '; '.join(errors))
+ValueError: kernel security policy: FORTIFY_SOURCE: require y, got n; HARDENED_USERCOPY_DEFAULT_ON: require y, got n; INIT_ON_ALLOC_DEFAULT_ON: require y, got n; INIT_ON_FREE_DEFAULT_ON: require y, got n; INIT_STACK_ALL_ZERO: require y, got n; LOCK_DOWN_KERNEL_FORCE_CONFIDENTIALITY: require y, got n; RANDOMIZE_BASE: require y, got n; SECURITY_LOCKDOWN_LSM: require y, got n; SECURITY_LOCKDOWN_LSM_EARLY: require y, got n; BPF_SYSCALL: forbidden, got y; CGROUP_BPF: forbidden, got y; IO_URING: forbidden, got y; USERFAULTFD: forbidden, got y; PERF_EVENTS: forbidden, got y; DEBUG_FS: forbidden, got y; DEBUG_FS_ALLOW_ALL: forbidden, got y; PROC_KCORE: forbidden, got y; HIBERNATION: forbidden, got y; CHECKPOINT_RESTORE: forbidden, got y; BINFMT_MISC: forbidden, got y; INIT_STACK_NONE: forbidden, got y; SLAB_MERGE_DEFAULT: forbidden, got y
