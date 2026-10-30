@@ -171,7 +171,10 @@ def main():
                     for name in ['kexec-load-absent','kexec-file-absent','bpf-syscall-absent',
                                  'io-uring-absent','userfaultfd-absent','perf-events-absent',
                                  'modules-absent','proc-kcore-absent','devmem-absent',
-                                 'devkmem-absent','debugfs-absent','lockdown-confidentiality']:
+                                 'devkmem-absent','debugfs-absent','lockdown-confidentiality',
+                                 'dns-nonroot','dns-only-bind-capability','dns-no-new-privileges',
+                                 'dns-seccomp','dns-root-denied','dns-namespace-denied',
+                                 'dns-netlink-denied','dns-policy-readonly','dns-tenant-storage-hidden']:
                         if f'KG_TEST {name} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing security assertion: {name}')
                     v.until(b'Firecracker exiting successfully',timeout=20)

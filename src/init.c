@@ -106,6 +106,7 @@ static void check(const char *name, bool ok) {
     printf("KG_TEST %s %s\n", name, ok ? "PASS" : "FAIL"); fflush(stdout);
     if (!ok) stop(2);
 }
+#include "dns_service.h"
 static void loopback(void) {
     int fd = socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC, 0);
     if (fd < 0) die("loopback socket");
@@ -137,6 +138,7 @@ static void network(void) {
     close(fd);
 }
 static void tests(bool net) {
+    test_dns_status();
     check("kexec-load-absent", syscall(SYS_kexec_load, 0, 0, NULL, 0) == -1 && errno == ENOSYS);
     check("kexec-file-absent", syscall(SYS_kexec_file_load, -1, -1, 0, NULL, 0) == -1 && errno == ENOSYS);
     const char *kexec = "/proc/sys/kernel/kexec_load_disabled";
@@ -219,9 +221,13 @@ int main(void) {
     if (option("kiln.net=1")) network();
     check("first-true", RUN("run", "--", "true") == 0);
     puts("KG_FIRST_COMMAND");
-    /* e48f0e7 predates the network-setup CLI. Its DNS service creates the
-       bridge and loads the complete shared ruleset before binding. */
-    dns_pid = spawn((char *const[]){K,"dns",NULL}, -1, -1);
+    const char *dirs[] = {"/run/kiln", "/run/kiln/net", "/run/kiln/net/dns", "/run/kiln/net/leases"};
+    for (size_t i=0; i<sizeof(dirs)/sizeof(dirs[0]); i++) {
+        if (mkdir(dirs[i],0755) && errno != EEXIST) die("DNS runtime directory");
+        if (chmod(dirs[i],0755)) die("DNS runtime directory mode");
+    }
+    check("network-setup", RUN("network-setup") == 0);
+    dns_pid = start_dns(option("kiln.test=1"));
     bool ready = false;
     for (int i=0; i<100; i++) {
         int fd = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0);

@@ -1,0 +1,8 @@
+{"stage": "/home/estradafamily.guest/kiln-guest-build/repo", "digest": "e6583f8720ceed4f621139c6b46d487a5550a99cce6935120c91e85fe5da5561"}
++ curl --proto =https -fLsS https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/aarch64/alpine-minirootfs-3.24.2-aarch64.tar.gz.asc -o /home/estradafamily.guest/kiln-guest-build/cache/alpine.tar.gz.asc
++ gpg --batch --yes --dearmor --output /home/estradafamily.guest/kiln-guest-build/cache/alpine-keyring.gpg /home/estradafamily.guest/kiln-guest-build/repo/config/alpine-ncopa.asc
++ gpgv --keyring /home/estradafamily.guest/kiln-guest-build/cache/alpine-keyring.gpg /home/estradafamily.guest/kiln-guest-build/cache/alpine.tar.gz.asc /home/estradafamily.guest/kiln-guest-build/cache/alpine.tar.gz
+gpgv: Signature made Thu Sep 17 16:13:04 2026 EDT
+gpgv:                using RSA key 0482D84022F52DF1C4E7CD43293ACD0907D9495A
+gpgv: Good signature from "Natanael Copa <ncopa@alpinelinux.org>"
++ git -C /Users/estradafamily/Projects/lambda-nine/kiln archive --format=tar 00d61c546db7aa67ad283d10c2ca6165ca5f8166
