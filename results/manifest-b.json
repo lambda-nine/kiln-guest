@@ -1,0 +1,43 @@
+{
+  "architecture": "aarch64",
+  "artifacts": {
+    "Image": {
+      "bytes": 18883072,
+      "sha256": "98934ea4cca69b8cd0b7a865d9d419d99694dae8b7c638e4fd97e47a87c28f64"
+    },
+    "kernel.config": {
+      "bytes": 97832,
+      "sha256": "b98c91dcf1ba4a3f7e50eb4d7c494132d7b34c8379fb9ad3fc90dcbf9ab617b1"
+    },
+    "kiln": {
+      "bytes": 2376016,
+      "sha256": "adf4de500d16a0a51cd6bb1a63626b4d1424fd226cae019445d6085a808e2b35"
+    },
+    "rootfs.squashfs": {
+      "bytes": 7335936,
+      "sha256": "fb701cd3432c759d46f2bc14f62cdac921c1707d3a4c6f8256f129f433987b41"
+    }
+  },
+  "broker": {
+    "enabled": false,
+    "protocol": null
+  },
+  "bundle_version": "0.1.0",
+  "firecracker_version": "1.17.0",
+  "inputs": {
+    "build_lock_sha256": "1f0dec1ae3acb1dbe2f2f1e93e37e5865997a2299f29a3f99e82d7e3fcc9565e",
+    "init_source_sha256": "f997917412b2e249cd13bd462785ef98593db89e611dc3a0c44de91a22f74a2c",
+    "pins_sha256": "384dd09bbf57d8259cb8b83471bae060cc37be5c2e700b4561d7bca1ba9b9588"
+  },
+  "kernel_version": "6.18.56-kiln-guest1",
+  "kiln_commit": "e48f0e785ad484d0b2947897f6d48d0756059d7e",
+  "schema": 1,
+  "source_date_epoch": 1793318400,
+  "work_disk": {
+    "filesystem": "xfs",
+    "minimum_mib": 512,
+    "mount_options": [
+      "prjquota"
+    ]
+  }
+}

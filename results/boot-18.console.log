@@ -1,0 +1,14 @@
+2026-10-30T19:21:09.549830199 [boot-18:main] Running Firecracker v1.17.0
+2026-10-30T19:21:09.550038868 [boot-18:main] Listening on API socket ("/api.sock").
+2026-10-30T19:21:09.550423581 [boot-18:fc_api] API server started.
+2026-10-30T19:21:09.556606566 [boot-18:main] Could not read the coherency line size, size, number of sets for cache level 1.
+2026-10-30T19:21:09.556864194 [boot-18:main] Artificially kick devices
+2026-10-30T19:21:09.556944778 [boot-18:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding
+2026-10-30T19:21:09.556982987 [boot-18:main] Successfully started microvm that was configured from one single json
+2026-10-30T19:21:10.147383756 [boot-18:fc_vcpu 0] [Block:rootfs] notifying queues
+2026-10-30T19:21:10.158009456 [boot-18:fc_vcpu 0] [Block:work] notifying queues
+KG_TEST first-true PASS
+KG_FIRST_COMMAND
+kiln dns: listening on 10.88.0.1:53, forwarding to 1.1.1.1
+KG_TEST dns-ready PASS
+KG_READY

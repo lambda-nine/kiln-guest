@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "architecture": "aarch64",
+  "source_date_epoch": 1793318400,
+  "kernel": {
+    "version": "6.18.56",
+    "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.56.tar.xz",
+    "sha256": "4633bbda2ab95eaf2a7af4041236451d6759c72e6946265531af4b3aacefbf89"
+  },
+  "firecracker": {
+    "version": "1.17.0",
+    "url": "https://github.com/firecracker-microvm/firecracker/releases/download/v1.17.0/firecracker-v1.17.0-aarch64.tgz",
+    "sha256": "e351ebe4f7a16b5873bbd51005d2e6767103cff4d5ebc829df2d3f95a93e2256"
+  },
+  "kernel_config_source": "https://raw.githubusercontent.com/firecracker-microvm/firecracker/v1.17.0/resources/guest_configs/microvm-kernel-ci-aarch64-6.18.config",
+  "kiln_commit": "e48f0e785ad484d0b2947897f6d48d0756059d7e",
+  "sandbox_id_base": 2000000000,
+  "kernel_config_sha256": "35cce8e8b754a84523ca20dc068fc3f8f03a15523be36a8623bad54e11972e2a",
+  "alpine": {
+    "version": "3.24.2",
+    "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/aarch64/alpine-minirootfs-3.24.2-aarch64.tar.gz",
+    "sha256": "9bf70a7f18ea44094cbb5f70c58f9af129c8214745743db0e68e5502cc2ce773"
+  },
+  "kiln_source_sha256": "e1b962999770e680a9fc12868aff10c225e538c9e931c420744b9f57211abdd0"
+}

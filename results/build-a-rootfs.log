@@ -1,0 +1,98 @@
++ cargo build --locked --release --target aarch64-unknown-linux-gnu
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.26
+   Compiling quote v1.0.47
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling libc v0.2.190
+   Compiling anstyle v1.0.14
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling cfg_aliases v0.2.2
+   Compiling nix v0.31.3
+   Compiling anstream v1.0.0
+   Compiling strsim v0.11.1
+   Compiling syn v3.0.6
+   Compiling clap_lex v1.1.1
+   Compiling anyhow v1.0.104
+   Compiling heck v0.5.0
+   Compiling clap_builder v4.6.7
+   Compiling kiln v0.1.0 (/home/estradafamily.guest/kiln-guest-build/work-a/kiln/runtime)
+   Compiling bitflags v2.13.2
+   Compiling cfg-if v1.0.5
+   Compiling clap_derive v4.6.7
+   Compiling clap v4.6.7
+warning: linker stderr: /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): in function `<nix::unistd::Group>::from_gid':
+         nix.5f53304bea51f4f-cgu.2:(.text._RNvMs1k_NtCsvIdQVBsvZX_3nix6unistdNtB6_5Group8from_gid+0xa0): Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): in function `<nix::unistd::Group>::from_name':
+         nix.5f53304bea51f4f-cgu.2:(.text._RNvMs1k_NtCsvIdQVBsvZX_3nix6unistdNtB6_5Group9from_name+0xcc): Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): in function `nix::unistd::getgrouplist':
+         nix.5f53304bea51f4f-cgu.2:(.text._RNvNtCsvIdQVBsvZX_3nix6unistd12getgrouplist+0xd4): Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): in function `nix::unistd::initgroups':
+         nix.5f53304bea51f4f-cgu.2:(.text._RNvNtCsvIdQVBsvZX_3nix6unistd10initgroups+0xc): Using 'initgroups' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+         /usr/bin/ld: /home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/lib/rustlib/aarch64-unknown-linux-gnu/lib/libstd-d76bf28282d3b4a7.rlib(std-d76bf28282d3b4a7.std.ad1da5b0f5a79652-cgu.0.rcgu.o): in function `std::sys::net::connection::socket::lookup_host::{closure#0}':
+         /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library/std/src/sys/net/connection/socket/mod.rs:356:(.text._RNCNvNtNtNtNtCseRusUqf3t16_3std3sys3net10connection6socket11lookup_host0Bb_+0x44): Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): in function `<nix::unistd::User>::from_name':
+         nix.5f53304bea51f4f-cgu.2:(.text._RNvMs1i_NtCsvIdQVBsvZX_3nix6unistdNtB6_4User9from_name+0xd0): Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): in function `<nix::unistd::User>::from_uid':
+         nix.5f53304bea51f4f-cgu.2:(.text._RNvMs1i_NtCsvIdQVBsvZX_3nix6unistdNtB6_4User8from_uid+0xa0): Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+  |
+  = note: `#[warn(linker_messages)]` on by default
+
+warning: linker stdout: /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): note: the message above does not take linker garbage collection into account
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): note: the message above does not take linker garbage collection into account
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): note: the message above does not take linker garbage collection into account
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): note: the message above does not take linker garbage collection into account
+         /usr/bin/ld: /home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/lib/rustlib/aarch64-unknown-linux-gnu/lib/libstd-d76bf28282d3b4a7.rlib(std-d76bf28282d3b4a7.std.ad1da5b0f5a79652-cgu.0.rcgu.o): note: the message above does not take linker garbage collection into account
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): note: the message above does not take linker garbage collection into account
+         /usr/bin/ld: /home/estradafamily.guest/kiln-guest-build/work-a/kiln/target/aarch64-unknown-linux-gnu/release/deps/libnix-fb0a10a63dc3570b.rlib(nix-fb0a10a63dc3570b.nix.5f53304bea51f4f-cgu.2.rcgu.o): note: the message above does not take linker garbage collection into account
+
+warning: `kiln` (bin "kiln") generated 2 warnings
+    Finished `release` profile [optimized] target(s) in 4.57s
++ gcc -static -Os -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=2 -ffile-prefix-map=/home/estradafamily.guest/kiln-guest-build/repo=/src -Wl,--build-id=none -o /home/estradafamily.guest/kiln-guest-build/work-a/root/init /home/estradafamily.guest/kiln-guest-build/repo/src/init.c
++ strip --strip-all /home/estradafamily.guest/kiln-guest-build/work-a/root/init
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/nftables_1.0.9-1ubuntu0.1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libnftables1_1.0.9-1ubuntu0.1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libnftnl11_1.2.6-2build1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libmnl0_1.0.5-2build1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libedit2_3.1-20230828-1build1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libxtables12_1.8.10-3ubuntu2_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libjansson4_2.14-2build2_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libgmp10_2%3a6.3.0+dfsg-2ubuntu6.1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libc6_2.39-0ubuntu8.9_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libtinfo6_6.4+20240113-1ubuntu2.2_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libbsd0_0.12.1-1build1.1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libmd0_1.1.0-2build1.1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ dpkg-deb -x /home/estradafamily.guest/kiln-guest-build/cache/libgcc-s1_14.2.0-4ubuntu2~24.04.1_arm64.deb /home/estradafamily.guest/kiln-guest-build/work-a/deb-root
++ mksquashfs /home/estradafamily.guest/kiln-guest-build/work-a/root /home/estradafamily.guest/kiln-guest-build/bundle-a/rootfs.squashfs -noappend -comp gzip -processors 1 -no-xattrs -no-exports -no-fragments -all-time 1793318400 -mkfs-time 1793318400 -no-progress
+Parallel mksquashfs: Using 1 processor
+Creating 4.0 filesystem on /home/estradafamily.guest/kiln-guest-build/bundle-a/rootfs.squashfs, block size 131072.
+
+Squashfs 4.0 filesystem, gzip compressed, data block size 131072
+	compressed data, compressed metadata, no fragments,
+	no xattrs, compressed ids
+	duplicates are removed
+Filesystem size 7163.75 Kbytes (7.00 Mbytes)
+	44.23% of uncompressed filesystem size (16196.33 Kbytes)
+Inode table size 4172 bytes (4.07 Kbytes)
+	19.96% of uncompressed inode table size (20906 bytes)
+Directory table size 5408 bytes (5.28 Kbytes)
+	50.76% of uncompressed directory table size (10655 bytes)
+Number of duplicate files found 5
+Number of inodes 557
+Number of files 102
+Number of symbolic links 336
+Number of device nodes 0
+Number of fifo nodes 0
+Number of socket nodes 0
+Number of directories 119
+Number of hard-links 0
+Number of ids (unique uids + gids) 3
+Number of uids 2
+	root (0)
+	unknown (2000000000)
+Number of gids 3
+	root (0)
+	unknown (2000000000)
+	unknown (2000000042)

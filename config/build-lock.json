@@ -1,0 +1,151 @@
+{
+  "debs": [
+    {
+      "file": "nftables_1.0.9-1ubuntu0.1_arm64.deb",
+      "package": "nftables",
+      "sha256": "8b26cbe6e1155e1507128b0c5183713226d10570462216cf2f41c27f3028de3b",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/n/nftables/nftables_1.0.9-1ubuntu0.1_arm64.deb",
+      "version": "1.0.9-1ubuntu0.1"
+    },
+    {
+      "file": "libnftables1_1.0.9-1ubuntu0.1_arm64.deb",
+      "package": "libnftables1",
+      "sha256": "69f16c2f161ddfd196a00d7dbcf52a25821a5eadcca07a8ddd03f05dede148d0",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/n/nftables/libnftables1_1.0.9-1ubuntu0.1_arm64.deb",
+      "version": "1.0.9-1ubuntu0.1"
+    },
+    {
+      "file": "libnftnl11_1.2.6-2build1_arm64.deb",
+      "package": "libnftnl11",
+      "sha256": "678792e1aa102892b594e0ee13ee93b763011674bddba800a3974a68a83c6ed1",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libn/libnftnl/libnftnl11_1.2.6-2build1_arm64.deb",
+      "version": "1.2.6-2build1"
+    },
+    {
+      "file": "libmnl0_1.0.5-2build1_arm64.deb",
+      "package": "libmnl0",
+      "sha256": "9442f15a4bbc6148e527045adaf85c86ae3ffe159176d6a5f3b471b49150e470",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libm/libmnl/libmnl0_1.0.5-2build1_arm64.deb",
+      "version": "1.0.5-2build1"
+    },
+    {
+      "file": "libedit2_3.1-20230828-1build1_arm64.deb",
+      "package": "libedit2",
+      "sha256": "cf642fec16d86517e0e715520c3a7cdaee650e7ae8a4993f82d0e1e7a5883efb",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libe/libedit/libedit2_3.1-20230828-1build1_arm64.deb",
+      "version": "3.1-20230828-1build1"
+    },
+    {
+      "file": "libxtables12_1.8.10-3ubuntu2_arm64.deb",
+      "package": "libxtables12",
+      "sha256": "72cd6add0f8eaaa45f44dd5c0903df083ab3847091d0633b4e46e8f80443718a",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/i/iptables/libxtables12_1.8.10-3ubuntu2_arm64.deb",
+      "version": "1.8.10-3ubuntu2"
+    },
+    {
+      "file": "libjansson4_2.14-2build2_arm64.deb",
+      "package": "libjansson4",
+      "sha256": "a9d513eae76f4efb1c7370413bd21634fcfc0955e103d26af95f298af6c90abd",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/j/jansson/libjansson4_2.14-2build2_arm64.deb",
+      "version": "2.14-2build2"
+    },
+    {
+      "file": "libgmp10_2%3a6.3.0+dfsg-2ubuntu6.1_arm64.deb",
+      "package": "libgmp10",
+      "sha256": "5a783429ec1a29fb74a9a59c1699579dd9742bd35722280b9ce10e1f3916b003",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/gmp/libgmp10_6.3.0%2bdfsg-2ubuntu6.1_arm64.deb",
+      "version": "2:6.3.0+dfsg-2ubuntu6.1"
+    },
+    {
+      "file": "libc6_2.39-0ubuntu8.9_arm64.deb",
+      "package": "libc6",
+      "sha256": "ad109797c5f78a5eeb6d4c296bfbaae68b239111a0c9ac0eb97b8d430284ac45",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/glibc/libc6_2.39-0ubuntu8.9_arm64.deb",
+      "version": "2.39-0ubuntu8.9"
+    },
+    {
+      "file": "libtinfo6_6.4+20240113-1ubuntu2.2_arm64.deb",
+      "package": "libtinfo6",
+      "sha256": "00570dce13bd89b31e4f433001fb0a55436e57a76370afbae6c5ac491b3dd3e9",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/n/ncurses/libtinfo6_6.4%2b20240113-1ubuntu2.2_arm64.deb",
+      "version": "6.4+20240113-1ubuntu2.2"
+    },
+    {
+      "file": "libbsd0_0.12.1-1build1.1_arm64.deb",
+      "package": "libbsd0",
+      "sha256": "cdf9ff601244e64482584d9d9b98aa54a573c081ab5956227c737307196c1ce3",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libb/libbsd/libbsd0_0.12.1-1build1.1_arm64.deb",
+      "version": "0.12.1-1build1.1"
+    },
+    {
+      "file": "libmd0_1.1.0-2build1.1_arm64.deb",
+      "package": "libmd0",
+      "sha256": "c28583825f7191cdc8b6b71c6150e2cbfc29616d6570680e5284fabc19765ea5",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/libm/libmd/libmd0_1.1.0-2build1.1_arm64.deb",
+      "version": "1.1.0-2build1.1"
+    },
+    {
+      "file": "libgcc-s1_14.2.0-4ubuntu2~24.04.1_arm64.deb",
+      "package": "libgcc-s1",
+      "sha256": "5b191f79ad985a9a653dbba45214619f729f9178a9bdf92f7c68db06c50d070b",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/g/gcc-14/libgcc-s1_14.2.0-4ubuntu2%7e24.04.1_arm64.deb",
+      "version": "14.2.0-4ubuntu2~24.04.1"
+    }
+  ],
+  "kiln_source_sha256": "e1b962999770e680a9fc12868aff10c225e538c9e931c420744b9f57211abdd0",
+  "schema": 1,
+  "toolchain": {
+    "packages": "bc=1.07.1-3ubuntu4\nbinutils=2.42-4ubuntu2.10\nbison=2:3.8.2+dfsg-1ubuntu0.24.04.1\nflex=2.6.4-8.2build1\ngcc=4:13.2.0-7ubuntu1\ngcc-13=13.3.0-6ubuntu2~24.04.1\nlibc6=2.39-0ubuntu8.9\nlibc6-dev=2.39-0ubuntu8.9\nlibelf-dev=0.190-1.1ubuntu0.1\nlibssl-dev=3.0.13-0ubuntu3.16\nmake=4.3-4.1build2\nsquashfs-tools=1:4.6.1-1build1\nxfsprogs=6.6.0-1ubuntu2.1",
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1",
+    "tools": {
+      "ar": {
+        "path": "/usr/bin/aarch64-linux-gnu-ar",
+        "sha256": "f4583a612510e038dbc1ae8afb5eae5f0445c435bdd7c4c28e78acc7e757d2b1"
+      },
+      "as": {
+        "path": "/usr/bin/aarch64-linux-gnu-as",
+        "sha256": "1ffda50efb6d91b6b05ef933aced099595c36577594c0296c91161f2d13db374"
+      },
+      "cargo": {
+        "path": "/home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/cargo",
+        "sha256": "a7a2b55d440156ac2c83b4cda27a25a7d100b8e69c6ac62232ebeb643859ae8a"
+      },
+      "gcc": {
+        "path": "/usr/bin/aarch64-linux-gnu-gcc-13",
+        "sha256": "a20520ee21543f243d40636a9181a142c45ecd989de31ab86b99a8ea5ada870d"
+      },
+      "ld": {
+        "path": "/usr/bin/aarch64-linux-gnu-ld.bfd",
+        "sha256": "1e4d3369b76845fa8e099b83513bf28f6f722e046f9b2cde1378c9e27f96d19c"
+      },
+      "make": {
+        "path": "/usr/bin/make",
+        "sha256": "abbecc214fcadef6530d1cc137bde7ceb74cae3f6b992c7d10a8669a7314c7e0"
+      },
+      "mksquashfs": {
+        "path": "/usr/bin/mksquashfs",
+        "sha256": "4bc5c66a81a1d86a5743e1c1ced12b6362e1b56c088d8241ef9ed5a3b8659317"
+      },
+      "objcopy": {
+        "path": "/usr/bin/aarch64-linux-gnu-objcopy",
+        "sha256": "1216ee3b084501a5132643fef4bba7221186f4b7dc99cd46e2bf9e3e7d37c344"
+      },
+      "python3": {
+        "path": "/usr/bin/python3.12",
+        "sha256": "c86f21d0da9290ece2d7d49a3f7ed52aed59cb029abdf0ea25c79634f6cbe960"
+      },
+      "readelf": {
+        "path": "/usr/bin/aarch64-linux-gnu-readelf",
+        "sha256": "6bca2bbd23b072db9e9a19ae0e65cf7b7c15c08a3c2cf01dd56453e1ac9340b1"
+      },
+      "rustc": {
+        "path": "/home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/rustc",
+        "sha256": "b3a6b57674bb153f842dbed5de751b35fe9464768cb986f469451b6480b1ba5f"
+      },
+      "strip": {
+        "path": "/usr/bin/aarch64-linux-gnu-strip",
+        "sha256": "3a69e3786ea2884baf4d9811e509ba6d16be03d5d6f541103b8de317a2465fca"
+      }
+    }
+  }
+}
