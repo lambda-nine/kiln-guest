@@ -162,4 +162,3 @@ def verify_plan(raw_manifest, approved_sha256, substitutions, actual):
     """Compare the object about to be used with an independent expansion."""
     if canonical(plan(raw_manifest, approved_sha256, substitutions).document) != canonical(actual):
         raise ValueError('effective configuration/argv/resource recipe mismatch')
-
