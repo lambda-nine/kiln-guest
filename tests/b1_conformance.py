@@ -153,6 +153,9 @@ def generate(dest):
     for path, accept in [('/'+'雪'*341, True),('/'+'雪'*342, False),('/'+'a'*1023, True),('/'+'a'*1024, False)]:
         add('path-byte-bound-'+str(len(path.encode())), 'guest_exec_spec',
             p1.canonical({**spec,'read_only_root':True,'writable_paths':[path]}), accept)
+    for network in [{'none':None},{'none':{}},{'allow':[]}]:
+        add('host-network-confusion-'+str(len(cases)), 'host_spec',
+            p1.canonical({**host,'network':network}),False)
     # Label collision PoC becomes both a valid host and a stale journal rejection.
     beta = {**host, 'labels': {'tenant': 'beta'}}
     add('label-beta','host_spec',p1.canonical(beta),True)

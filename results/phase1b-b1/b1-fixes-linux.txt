@@ -1,5 +1,40 @@
-{"stage": "/home/estradafamily.guest/kiln-guest-build/repo", "digest": "2c8c11c9372d620f57f09dd985206c0d09e509317f87b051c89c3a02220da19e"}
-B1 source inventory: 2c8c11c9372d620f57f09dd985206c0d09e509317f87b051c89c3a02220da19e
+time="2026-10-31T06:18:23-04:00" level=info msg="Using the existing instance `kiln`"
+time="2026-10-31T06:18:23-04:00" level=info msg="Starting the instance `kiln` with internal VM driver `vz`"
+time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] hostagent socket created at /Users/estradafamily/.lima/kiln/ha.sock"
+time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] Starting VZ (hint: to watch the boot progress, see `/Users/estradafamily/.lima/kiln/serial*.log`)"
+time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] [VZ] - vm state change: running"
+time="2026-10-31T06:18:31-04:00" level=info msg="[hostagent] SSH server does not seem to be running on vsock port, using usernet forwarder"
+time="2026-10-31T06:18:32-04:00" level=info msg="SSH Local Port: 60876"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Waiting for the essential requirement 1 of 3: `ssh`"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] The essential requirement 1 of 3 is satisfied"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Waiting for the essential requirement 2 of 3: `user session is ready for ssh`"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] The essential requirement 2 of 3 is satisfied"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Waiting for the essential requirement 3 of 3: `Explicitly start ssh ControlMaster`"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] The essential requirement 3 of 3 is satisfied"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Waiting for the guest agent to be running"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Guest agent is running"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Time sync: guest agent is alive, starting time synchronization"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Waiting for the final requirement 1 of 1: `boot scripts must have finished`"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding TCP 0.0.0.0:22"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding TCP 127.0.0.54:53"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Forwarding TCP from 127.0.0.1:9841 to 127.0.0.1:9841"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Forwarding TCP from 127.0.0.1:9840 to 127.0.0.1:9840"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding TCP 127.0.0.53:53"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding TCP 10.88.0.1:53"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding TCP [::]:22"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 10.88.0.1:53"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.54:53"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.53:53"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 192.168.5.15:68"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Forwarding UDP from 0.0.0.0:5353 to 127.0.0.1:5353"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Forwarding UDP from [::]:5353 to 127.0.0.1:5353"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.1:5353"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.1:5353"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.1:5353"
+time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.1:5353"
+time="2026-10-31T06:18:35-04:00" level=info msg="READY. Run `limactl shell kiln` to open the shell."
+{"stage": "/home/estradafamily.guest/kiln-guest-build/repo", "digest": "c278b766cfb935c27239db55fd2fd500181c1bc0b79b5b745ced9ca8b59ec875"}
+B1 source inventory: c278b766cfb935c27239db55fd2fd500181c1bc0b79b5b745ced9ca8b59ec875
 test_canonical_rejects_constructed_float_and_deep_values (test_b1_conformance.B1ConformanceTests.test_canonical_rejects_constructed_float_and_deep_values) ... ok
 test_fixture_mode_poc_cannot_make_production_plan (test_b1_conformance.B1ConformanceTests.test_fixture_mode_poc_cannot_make_production_plan) ... ok
 test_label_collision_and_journal_replay (test_b1_conformance.B1ConformanceTests.test_label_collision_and_journal_replay) ... ok
@@ -123,6 +158,15 @@ test_unsafe_components_symlinks_and_modified_file_rejected (test_vmm_path_race.V
 test_vm_executes_held_jailer_inode (test_vmm_path_race.VmmPathRaceTests.test_vm_executes_held_jailer_inode) ... ok
 
 ----------------------------------------------------------------------
-Ran 118 tests in 10.290s
+Ran 118 tests in 10.203s
 
 OK (skipped=9)
+time="2026-10-31T06:18:46-04:00" level=info msg="Sending SIGINT to hostagent process 57586"
+time="2026-10-31T06:18:46-04:00" level=info msg="Waiting for the host agent and the driver processes to shut down"
+time="2026-10-31T06:18:46-04:00" level=info msg="[hostagent] Received SIGINT, shutting down the host agent"
+time="2026-10-31T06:18:46-04:00" level=info msg="[hostagent] Shutting down the host agent"
+time="2026-10-31T06:18:46-04:00" level=info msg="[hostagent] Shutting down VZ"
+time="2026-10-31T06:18:46-04:00" level=info msg="[hostagent] [VZ] - vm state change: stopped"
+time="2026-10-31T06:18:46-04:00" level=error msg="[hostagent] accept tcp 127.0.0.1:60876: use of closed network connection"
+time="2026-10-31T06:18:46-04:00" level=info msg="Waiting for the instance to shut down"
+time="2026-10-31T06:18:47-04:00" level=info msg="The instance kiln has shut down"
