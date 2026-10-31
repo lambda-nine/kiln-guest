@@ -14,6 +14,7 @@ import urllib.request
 from inputs import cargo_arguments, cargo_environment, publish_new_directory, sha, vendor_crates, verify_source
 from kernel_policy import validate as validate_kernel_policy
 from launch_contract import contract, CMDLINE, FC_SUFFIX
+from build_environment import FIXED_PATH
 
 ROOT = Path(__file__).resolve().parents[1]
 PINS = json.loads((ROOT / 'config/pins.json').read_text())
@@ -35,7 +36,11 @@ def fetch(url, dest, digest):
     if sha(dest) != digest: raise ValueError(f'checksum mismatch: {dest}')
 
 def toolchain():
-    names = ['gcc', 'ld', 'as', 'ar', 'objcopy', 'strip', 'readelf', 'make', 'mksquashfs', 'rustc', 'cargo', 'python3']
+    if os.environ.get('PATH') != FIXED_PATH:
+        raise ValueError('unapproved build PATH')
+    if not (os.statvfs('/').f_flag & os.ST_RDONLY):
+        raise ValueError('build requires verified read-only toolchain rootfs')
+    names = ['dpkg-deb','tar','bash','sh','curl','gpg','gpgv','git','apt-get','apt-cache','dpkg-query','gcc', 'ld', 'as', 'ar', 'objcopy', 'strip', 'readelf', 'make', 'mksquashfs', 'rustc', 'cargo', 'python3']
     tools = {}
     for name in names:
         p = Path(shutil.which(name)).resolve()
@@ -71,8 +76,9 @@ def prepare(cache, kiln_repo):
     run(['gpg','--batch','--yes','--dearmor','--output',keyring,key])
     run(['gpgv','--keyring',keyring,cache/'alpine.tar.gz.asc',cache/'alpine.tar.gz'])
     source = cache/'kiln.tar'
-    with source.open('wb') as f:
-        run(['git','-C',kiln_repo,'archive','--format=tar',PINS['kiln_commit']],stdout=f)
+    if not source.exists():
+        with source.open('wb') as f:
+            run(['git','-C',kiln_repo,'archive','--format=tar',PINS['kiln_commit']],stdout=f)
     if 'kiln_source_sha256' in PINS and sha(source) != PINS['kiln_source_sha256']:
         raise ValueError('kiln source archive mismatch')
     # Freeze repository-authenticated .debs, without running their maintainer scripts.
@@ -242,7 +248,9 @@ def input_provenance(cache, lock, source, cargo):
         'kernel_archive_sha256':sha(cache/'linux.tar.xz'),
         'kernel_kaslr_patch':PINS['kernel_kaslr_patch'],
         'alpine_archive_sha256':sha(cache/'alpine.tar.gz'),
-        'build_lock':lock,'cargo':cargo,'source':source}
+        'build_lock':lock,'cargo':cargo,'source':source,
+        'build_environment':json.loads((ROOT/'config/build-environment.json').read_text()),
+        'toolchain_files':json.loads((ROOT/'config/toolchain-files.json').read_text())}
 
 def assemble(cache, work, out, jobs, lock, source):
     unpack(cache/'linux.tar.xz',work/'linux-source')
@@ -307,7 +315,7 @@ def apply_kernel_patch(source):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['prepare','build','configure'])
+    parser.add_argument('action',choices=['prepare','build','configure','pin-toolchain'])
     parser.add_argument('--cache',type=Path,required=True)
     parser.add_argument('--work',type=Path)
     parser.add_argument('--out',type=Path)
@@ -316,6 +324,12 @@ if __name__ == '__main__':
     parser.add_argument('--source-digest',help='stable inventory digest the staged source must match')
     args = parser.parse_args()
     for number in [signal.SIGTERM,signal.SIGHUP]: signal.signal(number,lambda *_:sys.exit(143))
-    if args.action == 'prepare': prepare(args.cache.resolve(),args.kiln_repo.resolve())
+    if args.action == 'pin-toolchain':
+        path=ROOT/'config/build-lock.json';lock=json.loads(path.read_text());current=toolchain()
+        for name,record in lock['toolchain']['tools'].items():
+            if record['sha256']!=current['tools'][name]['sha256']:
+                raise ValueError('snapshot changed previously pinned tool: '+name)
+        lock['toolchain']=current;writejson(path,lock)
+    elif args.action == 'prepare': prepare(args.cache.resolve(),args.kiln_repo.resolve())
     elif args.action == 'configure': configure(args.cache.resolve(),args.work.resolve())
     else: build(args.cache.resolve(),args.work.resolve(),args.out.resolve(),args.jobs,args.source_digest)

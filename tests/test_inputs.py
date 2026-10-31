@@ -540,6 +540,7 @@ class WrapperTests(Case):
         events=[]
         with mock.patch.object(self.lima,'LOCK',self.tmp/'lock'), \
                 mock.patch.object(self.lima,'stage_source',side_effect=lambda:(events.append('stage'),'f'*64)[1]), \
+                mock.patch.object(self.lima,'stage_kiln'), \
                 mock.patch.object(self.lima,'shell',side_effect=lambda c,**k:events.append(c)), \
                 mock.patch.object(sys,'argv',['lima.py',name]):
             self.lima.main()
@@ -552,13 +553,14 @@ class WrapperTests(Case):
                 events=self.action(name)
                 self.assertEqual(events[0],'stage')
                 self.assertEqual(len(events),2)
-                self.assertIn(f'--work ../work-{letter} --out ../bundle-{letter} --source-digest {"f"*64}',events[1])
+                self.assertIn(f'--work /build/work-{letter} --out /build/bundle-{letter} --source-digest {"f"*64}',events[1])
                 self.assertNotIn('CARGO_HOME',events[1])
 
     def test_prepare_names_kiln_from_the_common_dir_sibling(self):
         events=self.action('prepare')
         self.assertEqual(events[0],'stage')
-        self.assertIn(f'--kiln-repo {shlex.quote(str(self.lima.COMMON.parent.parent/"kiln"))}',events[1])
+        self.assertIn('--kiln-repo /build/kiln-source',events[1])
+        self.assertIn('build_environment.py enter',events[1])
         self.assertNotIn('CARGO_HOME',events[1])
         self.assertEqual(self.lima.LOCK,self.lima.COMMON.parent.parent/'.vm-lock')
 

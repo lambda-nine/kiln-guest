@@ -1,0 +1,7 @@
+{
+  "bytes": 920264704,
+  "inventory_sha256": "9e2282600cc0959d25247c3b90a04cd566a295f940965dc5b4224e38637682a9",
+  "path": "/opt/rust/bin:/usr/sbin:/usr/bin",
+  "schema": 1,
+  "sha256": "550a35f981f941735c49ad3b401ba67f709a6cfe4e6c715661e46788234310a0"
+}

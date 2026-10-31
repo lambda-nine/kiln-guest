@@ -2,6 +2,9 @@
 """Stage or retrieve this repo without adding a shared mount. Own the VM lock."""
 import argparse
 import atexit
+import hashlib
+import io
+import json
 from pathlib import Path
 import os
 import shlex
@@ -20,7 +23,7 @@ KILN_REPO = COMMON.parent.parent/'kiln'
 BUILD_ROOT = '/home/estradafamily.guest/kiln-guest-build'
 
 def release():
-    if (LOCK/'owner').exists() and (LOCK/'owner').read_text() == f'Guest image {os.getpid()}\n':
+    if (LOCK/'owner').exists() and (LOCK/'owner').read_text() == f'Guest launch contract {os.getpid()}\n':
         shutil.rmtree(LOCK)
 
 def shell(command, **kwargs):
@@ -41,22 +44,32 @@ def stage_source():
     if p.wait(): raise RuntimeError('staging failed')
     return digest
 
+def stage_kiln():
+    """Export only approved source bytes on the host, never execute them here."""
+    pins=json.loads((ROOT/'config/pins.json').read_text())
+    data=sp.check_output(['git','-C',str(KILN_REPO),'archive','--format=tar',pins['kiln_commit']])
+    if hashlib.sha256(data).hexdigest()!=pins['kiln_source_sha256']:
+        raise ValueError('kiln export differs from approved source pin')
+    shell('cat > ~/kiln-guest-build/cache/kiln.tar',stdin=io.BytesIO(data))
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['stage','prepare','configure','build-a','build-b','test','collect','cleanup','command'])
+    parser.add_argument('action',choices=['stage','prepare','configure','build-a','build-b','test','collect','cleanup','command','snapshot','start'])
     parser.add_argument('command',nargs='?')
     args = parser.parse_args()
     while True:
         try: LOCK.mkdir(); break
         except FileExistsError:
             print('VM busy:',(LOCK/'owner').read_text().strip() if (LOCK/'owner').exists() else 'owner pending',flush=True,file=sys.stderr)
-            time.sleep(180)
-    (LOCK/'owner').write_text(f'Guest image {os.getpid()}\n')
+            time.sleep(5)
+    (LOCK/'owner').write_text(f'Guest launch contract {os.getpid()}\n')
     atexit.register(release)
     for number in [signal.SIGTERM,signal.SIGHUP]:
         signal.signal(number,lambda *_:sys.exit(143))
     try:
-        if args.action == 'stage':
+        if args.action == 'start':
+            sp.run(['limactl','start','--tty=false','kiln'],check=True)
+        elif args.action == 'stage':
             stage_source()
             source = Path('/tmp/kiln-guest-linux-6.18.56.tar.xz')
             if source.exists():
@@ -65,13 +78,13 @@ def main():
             dest=ROOT/'dist'; dest.mkdir(exist_ok=True)
             with (dest/'collected.tar').open('wb') as f:
                 # prepare and configure results must reach the checkout before any bundle exists.
-                shell('cd ~/kiln-guest-build; sudo tar -cf - $(ls -d bundle-a bundle-b repo/config results results-hardening 2>/dev/null)',stdout=f)
+                shell('cd ~/kiln-guest-build; sudo tar -cf - $(ls -d bundle-a bundle-b repo/config results results-hardening results-launch-contract 2>/dev/null)',stdout=f)
             with tarfile.open(dest/'collected.tar') as t:
                 for member in t.getmembers():
                     path=Path(member.name)
                     if path.is_absolute() or '..' in path.parts or not (member.isfile() or member.isdir()):
                         raise ValueError('unsafe artifact archive')
-                    if path.parts[0] not in ['bundle-a','bundle-b','repo','results','results-hardening']:
+                    if path.parts[0] not in ['bundle-a','bundle-b','repo','results','results-hardening','results-launch-contract']:
                         raise ValueError('unexpected artifact archive path')
                 t.extractall(dest)
             (dest/'collected.tar').unlink()
@@ -80,24 +93,34 @@ def main():
             if (dest/'results-hardening').exists():
                 shutil.copytree(dest/'results-hardening',ROOT/'results/hardening/validation',dirs_exist_ok=True)
                 shutil.rmtree(dest/'results-hardening')
+            if (dest/'results-launch-contract').exists():
+                shutil.copytree(dest/'results-launch-contract',ROOT/'results/launch-contract/validation',dirs_exist_ok=True)
+                shutil.rmtree(dest/'results-launch-contract')
             shutil.rmtree(dest/'repo')
             shutil.rmtree(dest/'results',ignore_errors=True)
         elif args.action == 'cleanup':
             shell('sudo rm -rf ~/kiln-guest-build/work-a ~/kiln-guest-build/work-b ~/kiln-guest-build/.*.tmp-*; sudo du -sh ~/kiln-guest-build/cache; pgrep -af firecracker || true')
         elif args.action == 'command': shell(args.command)
         else:
-            prefix='task_bin=$(dirname "$(rustup which rustc)"); export PATH="$task_bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"; cd ~/kiln-guest-build/repo; '
-            env='sudo env PATH="$PATH" '
+            prefix='cd ~/kiln-guest-build/repo; '
+            env='sudo /usr/bin/python3 scripts/build_environment.py enter --cache ../cache -- '
+            if args.action == 'snapshot':
+                stage_source()
+                shell(prefix+'sudo /usr/bin/python3 scripts/build_environment.py snapshot --cache ../cache --rust "$(dirname "$(dirname "$(rustup which rustc)")")"')
+                return
             if args.action == 'prepare':
                 stage_source()
-                cmd=f'python3 scripts/build.py prepare --cache ../cache --kiln-repo {shlex.quote(str(KILN_REPO))}'
+                stage_kiln()
+                cmd='prepare --cache /build/cache --kiln-repo /build/kiln-source'
             elif args.action == 'configure':
                 stage_source()
-                cmd='python3 scripts/build.py configure --cache ../cache --work ../config-work'
+                cmd='configure --cache /build/cache --work /build/config-work'
             elif args.action.startswith('build-'):
                 name=args.action[-1]; digest=stage_source()
-                cmd=f'python3 scripts/build.py build --cache ../cache --work ../work-{name} --out ../bundle-{name} --source-digest {digest}'
-            else: cmd='python3 tests/firecracker.py --bundle ../bundle-a --cache ../cache --out ../results-hardening'
+                cmd=f'build --cache /build/cache --work /build/work-{name} --out /build/bundle-{name} --source-digest {digest}'
+            else:
+                env='sudo /usr/bin/env PATH=/usr/sbin:/usr/bin:/sbin:/bin '
+                cmd='python3 tests/firecracker.py --bundle ../bundle-a --cache ../cache --out ../results-launch-contract'
             shell(prefix+env+cmd)
     finally: release()
 

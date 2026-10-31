@@ -105,7 +105,7 @@ the Rust toolchain named in `config/build-lock.json`. The existing Lima VM is
 `kiln`. Keep build directories outside mounted checkouts. The wrapper stages
 the local repo into a new empty directory and atomically exchanges it with
 `~/kiln-guest-build/repo`, including on each build. It owns the shared `.vm-lock` for
-each session, waits three minutes between lock attempts, and releases it on
+each session, waits five seconds between lock attempts, and releases it on
 exit. It never replaces the installed kiln or kilnd.
 
 ```sh
@@ -125,9 +125,23 @@ the Firecracker release against the spike's verified release checksum. Alpine
 is SHA-256 pinned and verified against the pinned Alpine release signing key.
 It exports kiln from the exact commit, with Cargo.lock fixing crate checksums,
 and downloads exact Ubuntu .deb versions from authenticated apt metadata.
-It captures compiler/tool binary hashes and package versions in the build
-lock. A later prepare that would silently repin it is refused. Existing
-builds require an exact toolchain match. Each build starts with an empty
+The build executes inside a digest-verified squashfs toolchain rootfs,
+mounted read-only in a private mount namespace and chroot. Its fixed PATH is
+`/opt/rust/bin:/usr/sbin:/usr/bin`; inherited environment and user configuration
+are discarded. The snapshot includes the complete installed `/usr`, the selected
+Rust distribution, loader configuration and alternatives. Every file and symlink
+is inventoried in `config/toolchain-files.json`, including `dpkg-deb`, compiler
+helpers, linker scripts, headers and all runtime libraries. The rootfs digest and
+inventory digest are pinned in `config/build-environment.json` and recorded with
+the full inventory in each manifest. PATH drift and altered images fail closed;
+builds cannot write the tool directories. The cached image is root-owned and
+marked filesystem-immutable before mounting, and is mounted from the verified
+open descriptor. Build-root has no capability to remove that immutable flag.
+An intentional environment repin must first clear it with `sudo chattr -i`. Only CHOWN, FOWNER and DAC_OVERRIDE
+remain for rootfs ownership assembly; no mount or chroot capability remains.
+`python3 scripts/lima.py snapshot` creates a new environment only when no pin
+exists; replacing a pin requires explicit review. `pin-toolchain` checks all
+previously pinned binary hashes before recording their new rootfs paths. Each build starts with an empty
 CARGO_HOME and vendor tree, verifies each compressed crate against Cargo.lock,
 then extracts it afresh. Cargo uses that directory source with `--frozen` and
 file checksums; unpacked registry sources are never shared. Only verified
@@ -150,9 +164,10 @@ Each build unpacks clean sources into a different absolute directory and
 deletes them in `finally`. Rust and kernel paths, kernel build metadata and
 squashfs timestamps are normalized. Kernel objects and Rust target output
 are not shared between builds. The reusable compressed-download cache must remain
-under 2 GiB. `build-lock.json` is an environment lock, **not a hermetic build
-container**; a different compiler or package set needs an intentional repin
-and another two-build validation. Exact old Ubuntu package URLs can disappear;
+under 2 GiB. The pinned rootfs is a snapshot of this Lima VM, not a separately trusted
+compiler distribution. A/B are isolated clean builds under that same measured
+environment, not independent provenance authorities or diverse compilation.
+Any environment update requires an intentional repin and two full builds. Exact old Ubuntu package URLs can disappear;
 retain the verified cache for offline recovery. Kernel timestamp controls
 follow the [kernel reproducibility guidance](https://docs.kernel.org/kbuild/reproducible-builds.html).
 

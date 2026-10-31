@@ -1,0 +1,31 @@
+{"stage": "/home/estradafamily.guest/kiln-guest-build/repo", "digest": "15be9a8a7286e227f05719203ae63993eb9193faa25486bf11ebd2fc808b450e"}
+Parallel mksquashfs: Using 2 processors
+Creating 4.0 filesystem on /home/estradafamily.guest/kiln-guest-build/cache/toolchain.squashfs, block size 131072.
+
+Exportable Squashfs 4.0 filesystem, gzip compressed, data block size 131072
+	compressed data, compressed metadata, compressed fragments,
+	compressed xattrs, compressed ids
+	duplicates are removed
+Filesystem size 898695.50 Kbytes (877.63 Mbytes)
+	26.54% of uncompressed filesystem size (3386358.34 Kbytes)
+Inode table size 1540456 bytes (1504.35 Kbytes)
+	24.85% of uncompressed inode table size (6199105 bytes)
+Directory table size 1696111 bytes (1656.36 Kbytes)
+	35.74% of uncompressed directory table size (4745104 bytes)
+Xattr table size 52 bytes (0.05 Kbytes)
+	43.33% of uncompressed xattr table size (120 bytes)
+Number of duplicate files found 43521
+Number of inodes 188221
+Number of files 166758
+Number of fragments 8521
+Number of symbolic links 6943
+Number of device nodes 0
+Number of fifo nodes 0
+Number of socket nodes 0
+Number of directories 14520
+Number of hard-links 12
+Number of ids (unique uids + gids) 1
+Number of uids 1
+	root (0)
+Number of gids 1
+	root (0)

@@ -98,6 +98,14 @@
     "packages": "bc=1.07.1-3ubuntu4\nbinutils=2.42-4ubuntu2.10\nbison=2:3.8.2+dfsg-1ubuntu0.24.04.1\nflex=2.6.4-8.2build1\ngcc=4:13.2.0-7ubuntu1\ngcc-13=13.3.0-6ubuntu2~24.04.1\nlibc6=2.39-0ubuntu8.9\nlibc6-dev=2.39-0ubuntu8.9\nlibelf-dev=0.190-1.1ubuntu0.1\nlibssl-dev=3.0.13-0ubuntu3.16\nmake=4.3-4.1build2\nsquashfs-tools=1:4.6.1-1build1\nxfsprogs=6.6.0-1ubuntu2.1",
     "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1",
     "tools": {
+      "apt-cache": {
+        "path": "/usr/bin/apt-cache",
+        "sha256": "86961892a2a0f6d3b70234b334fcfaaccc2f0c015924d43101647553856f750d"
+      },
+      "apt-get": {
+        "path": "/usr/bin/apt-get",
+        "sha256": "72a25a79b0549eddd159182c427e9f65a60a2e393232524687b7cbe9b163232d"
+      },
       "ar": {
         "path": "/usr/bin/aarch64-linux-gnu-ar",
         "sha256": "f4583a612510e038dbc1ae8afb5eae5f0445c435bdd7c4c28e78acc7e757d2b1"
@@ -106,13 +114,41 @@
         "path": "/usr/bin/aarch64-linux-gnu-as",
         "sha256": "1ffda50efb6d91b6b05ef933aced099595c36577594c0296c91161f2d13db374"
       },
+      "bash": {
+        "path": "/usr/bin/bash",
+        "sha256": "af955ef55333c8fc9c5aa50df91ad1a629d9a79a9afa125cd5e9629585f78015"
+      },
       "cargo": {
-        "path": "/home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/cargo",
+        "path": "/opt/rust/bin/cargo",
         "sha256": "a7a2b55d440156ac2c83b4cda27a25a7d100b8e69c6ac62232ebeb643859ae8a"
+      },
+      "curl": {
+        "path": "/usr/bin/curl",
+        "sha256": "e54699c60c2fe0936dbfab15934d3b6a097385c505d0b5cb4c9c8aa36df8b5f3"
+      },
+      "dpkg-deb": {
+        "path": "/usr/bin/dpkg-deb",
+        "sha256": "3cf93403af757e938bda51322774697b8ff1e1d030b333008b2308e0b79a8dd6"
+      },
+      "dpkg-query": {
+        "path": "/usr/bin/dpkg-query",
+        "sha256": "eea6a1a5fc4fff653dfc733c9b4a551625d5fb7720a84952013076cacdb0927f"
       },
       "gcc": {
         "path": "/usr/bin/aarch64-linux-gnu-gcc-13",
         "sha256": "a20520ee21543f243d40636a9181a142c45ecd989de31ab86b99a8ea5ada870d"
+      },
+      "git": {
+        "path": "/usr/bin/git",
+        "sha256": "068c11a6747b848c3ed35599f714250864d2bd94b4165d27770ce5c36e83894f"
+      },
+      "gpg": {
+        "path": "/usr/bin/gpg",
+        "sha256": "e4fe2db2eee23a93a744a3453f5aff98fad4220ba7f2309f6a12680f5b8dcc51"
+      },
+      "gpgv": {
+        "path": "/usr/bin/gpgv",
+        "sha256": "e4d7e8ce2f59e4e3098981cfea5d6178411d5bbd3670b88914078b53a400c146"
       },
       "ld": {
         "path": "/usr/bin/aarch64-linux-gnu-ld.bfd",
@@ -139,12 +175,20 @@
         "sha256": "6bca2bbd23b072db9e9a19ae0e65cf7b7c15c08a3c2cf01dd56453e1ac9340b1"
       },
       "rustc": {
-        "path": "/home/estradafamily.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/rustc",
+        "path": "/opt/rust/bin/rustc",
         "sha256": "b3a6b57674bb153f842dbed5de751b35fe9464768cb986f469451b6480b1ba5f"
+      },
+      "sh": {
+        "path": "/usr/bin/dash",
+        "sha256": "c883d9c27228339580994a1d0ea960645368c7d1b960a712bd0c655860c2d0d7"
       },
       "strip": {
         "path": "/usr/bin/aarch64-linux-gnu-strip",
         "sha256": "3a69e3786ea2884baf4d9811e509ba6d16be03d5d6f541103b8de317a2465fca"
+      },
+      "tar": {
+        "path": "/usr/bin/tar",
+        "sha256": "241a4105e9efc361cbb54aa314b7449540f85bd1d97637b4db2dae6191033dc5"
       }
     }
   }
