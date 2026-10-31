@@ -1,0 +1,21 @@
+mount: bad usage
+Try 'mount --help' for more information.
+Traceback (most recent call last):
+  File "/home/estradafamily.guest/kiln-guest-build/repo/scripts/build_environment.py", line 116, in <module>
+    else: enter(a.cache.resolve(),extra[1:] if extra[:1]==['--'] else extra)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/estradafamily.guest/kiln-guest-build/repo/scripts/build_environment.py", line 105, in enter
+    sp.run(['/usr/bin/unshare','--mount','--pid','--fork','/bin/bash','-c',script,'build-root',
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/unshare', '--mount', '--pid', '--fork', '/bin/bash', '-c', 'set -eu\nmount --make-rprivate /\nmount --no-canonicalize -t squashfs -o loop,ro,nodev,nosuid "$1" "$2"\nmount --bind "$3" "$2/build"\nmount -t none --bind "$3/cache/toolchain.squashfs" "$2/build/cache/toolchain.squashfs"\nmount -o remount,bind,ro "$2/build/cache/toolchain.squashfs"\nmount -t tmpfs -o mode=1777 tmpfs "$2/tmp"\nmount -t tmpfs -o mode=0700 tmpfs "$2/root"\nmount -t proc proc "$2/proc"\nmount -t tmpfs -o mode=0755 tmpfs "$2/dev"\nfor name in null zero random urandom; do\n    touch "$2/dev/$name"\n    mount --bind "/dev/$name" "$2/dev/$name"\ndone\nln -s /proc/self/fd "$2/dev/fd"\nbuild_root="$2"\nimage_fd="$4"\neval "exec ${image_fd}<&-"\nshift 4\nexec chroot "$build_root" /usr/bin/setpriv --bounding-set=-all,+chown,+fowner,+dac_override --no-new-privs /usr/bin/env -i PATH=/opt/rust/bin:/usr/sbin:/usr/bin HOME=/root LC_ALL=C TZ=UTC KG_BUILD_ROOTFS=1 /usr/bin/python3 /build/repo/scripts/build.py "$@"\n', 'build-root', '/proc/self/fd/3', '/home/estradafamily.guest/kiln-guest-build/build-root-k2o7w7wu', '/home/estradafamily.guest/kiln-guest-build', '3', 'pin-toolchain', '--cache', '/build/cache']' returned non-zero exit status 1.
+Traceback (most recent call last):
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/scripts/lima.py", line 127, in <module>
+    if __name__ == '__main__': main()
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/scripts/lima.py", line 103, in main
+    elif args.action == 'command': shell(args.command)
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/scripts/lima.py", line 30, in shell
+    return sp.run(['limactl','shell','--workdir','/tmp','kiln','bash','-c',command],check=True,**kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 528, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['limactl', 'shell', '--workdir', '/tmp', 'kiln', 'bash', '-c', 'cd ~/kiln-guest-build/repo; sudo /usr/bin/python3 scripts/build_environment.py enter --cache ../cache -- pin-toolchain --cache /build/cache']' returned non-zero exit status 1.

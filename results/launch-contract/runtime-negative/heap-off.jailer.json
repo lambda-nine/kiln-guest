@@ -1,0 +1,20 @@
+[
+  "../cache/release/release-v1.17.0-aarch64/jailer-v1.17.0-aarch64",
+  "--id",
+  "heap-off",
+  "--exec-file",
+  "../cache/release/release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64",
+  "--uid",
+  "10000",
+  "--gid",
+  "10000",
+  "--cgroup-version",
+  "2",
+  "--chroot-base-dir",
+  "../test-jails",
+  "--",
+  "--api-sock",
+  "/api.sock",
+  "--config-file",
+  "/config.json"
+]

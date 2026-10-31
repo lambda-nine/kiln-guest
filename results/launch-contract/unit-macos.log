@@ -1,0 +1,30 @@
+......ss...................s.sssssssss.F{"stage": "/private/var/folders/ng/fh7_d2cj64q8yg9pjcx_s8880000gn/T/tmphm7pv59y/build/repo", "digest": "017f539f6acb93ea02a8487f65255c706bba775db5bbcb15f12b4b364721782a"}
+...
+======================================================================
+FAIL: test_each_build_stages_fresh_and_binds_the_digest (test_inputs.WrapperTests) [build-a]
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/tests/test_inputs.py", line 555, in test_each_build_stages_fresh_and_binds_the_digest
+    self.assertIn(f'--work ../work-{letter} --out ../bundle-{letter} --source-digest {"f"*64}',events[1])
+AssertionError: '--work ../work-a --out ../bundle-a --source-digest ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' not found in 'cd ~/kiln-guest-build/repo; sudo /usr/bin/python3 scripts/build_environment.py enter --cache ../cache -- build --cache /build/cache --work /build/work-a --out /build/bundle-a --source-digest ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+
+======================================================================
+FAIL: test_each_build_stages_fresh_and_binds_the_digest (test_inputs.WrapperTests) [build-b]
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/tests/test_inputs.py", line 555, in test_each_build_stages_fresh_and_binds_the_digest
+    self.assertIn(f'--work ../work-{letter} --out ../bundle-{letter} --source-digest {"f"*64}',events[1])
+AssertionError: '--work ../work-b --out ../bundle-b --source-digest ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' not found in 'cd ~/kiln-guest-build/repo; sudo /usr/bin/python3 scripts/build_environment.py enter --cache ../cache -- build --cache /build/cache --work /build/work-b --out /build/bundle-b --source-digest ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+
+======================================================================
+FAIL: test_prepare_names_kiln_from_the_common_dir_sibling (test_inputs.WrapperTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/tests/test_inputs.py", line 561, in test_prepare_names_kiln_from_the_common_dir_sibling
+    self.assertIn(f'--kiln-repo {shlex.quote(str(self.lima.COMMON.parent.parent/"kiln"))}',events[1])
+AssertionError: '--kiln-repo /Users/estradafamily/Projects/lambda-nine/kiln' not found in 'cd ~/kiln-guest-build/repo; sudo /usr/bin/python3 scripts/build_environment.py enter --cache ../cache -- prepare --cache /build/cache --kiln-repo /build/kiln-source'
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.833s
+
+FAILED (failures=3, skipped=12)

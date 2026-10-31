@@ -1,0 +1,167 @@
+{
+  "boot_conditions": {
+    "cache_drop": false,
+    "case": "fc-jailer-kiln-none-768",
+    "cgroup_version": 2,
+    "default_seccomp": true,
+    "gap_ms": 100,
+    "host_services": "installed kiln/kilnd/DNS/metrics left active; other host applications uncontrolled",
+    "host_thp": {
+      "defrag": "always defer defer+madvise [madvise] never",
+      "enabled": "always [madvise] never"
+    },
+    "huge_pages": "Transparent",
+    "l1_boot_id": "743ccce4-1351-4f8f-ba02-cdafcf807211",
+    "l1_sessions": 1,
+    "manifest_sha256": "e855fbee1914cc6ea5e57a1250610e128412c85a905c94a48fb54afdaa47f3d3",
+    "mem_size_mib": 768,
+    "new_pid_namespace": false,
+    "outer_cgroup_limits": false,
+    "rootfs": "squashfs, read-only",
+    "runs": 20,
+    "tier": "strong-isolation",
+    "timing": "before Popen(jailer) to serial KG_FIRST_COMMAND after first kiln true exits; staging and teardown excluded",
+    "uid_gid": 10000,
+    "uname": [
+      "Linux",
+      "lima-kiln",
+      "6.8.0-147-generic",
+      "#147-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep 24 11:39:52 UTC 2026",
+      "aarch64"
+    ],
+    "vcpu_count": 1,
+    "warmups": 2,
+    "work_disk": "private 512 MiB XFS, nosuid,nodev,noexec,prjquota",
+    "workload": [
+      "kiln",
+      "run",
+      "--",
+      "true"
+    ]
+  },
+  "cleanup": {
+    "cache_under_2_gib": true,
+    "installed_binaries_unchanged": true,
+    "kernel_build_trees_removed": true,
+    "vmm_tap_jails_nft_removed": true
+  },
+  "evidence_notes": [
+    "Raw failed initial trials and diagnostic boots retained separately; only validation/records.jsonl is the acceptance boot dataset.",
+    "The first validation attempt refused because build B was not published yet; validation.log records the completed successful sequence.",
+    "No remote, push, installed service replacement, or new Daybreak task."
+  ],
+  "findings": {
+    "KG-06/KG-07 documentation": {
+      "checks": [
+        "test_phase1b_requirements.py",
+        "phase1b-before.log",
+        "phase1b-after.log"
+      ],
+      "commit": "ad9d0e1"
+    },
+    "KR-01": {
+      "checks": [
+        "test_launch_contract.py",
+        "runtime-negative/kaslr-off.console.log",
+        "runtime-negative/heap-off.console.log",
+        "validation/integration-network.console.log"
+      ],
+      "commit": "9a93b04"
+    },
+    "KR-02": {
+      "checks": [
+        "test_build_environment.py",
+        "KR-02-before.log",
+        "KR-02-after.log",
+        "toolchain-write-denied.log"
+      ],
+      "commit": "da097b3"
+    },
+    "KR-03": {
+      "checks": [
+        "test_kstack.py",
+        "policy.json",
+        "validation/integration-offline.console.log"
+      ],
+      "commit": "b03b6ec"
+    },
+    "KR-04": {
+      "checks": [
+        "test_dns_egress.py",
+        "validation/integration-network.console.log"
+      ],
+      "commit": "0f120a7"
+    }
+  },
+  "reproducibility": {
+    "artifacts": {
+      "Image": {
+        "bytes": 17807872,
+        "sha256": "0015f87e136b314a164b30f5255a1589144a3937db0dce00d5eef6c0fdbf2e6a"
+      },
+      "kernel.config": {
+        "bytes": 95549,
+        "sha256": "f07a7ffd291f4ad821e3f4f0f2e0ab1928d3024103f3c74d71e541765cc2d4e9"
+      },
+      "kiln": {
+        "bytes": 2376016,
+        "sha256": "54442ccc0ce12b9a9236c927b9073019d7d4774c2e2d82f4d55d0db491925c64"
+      },
+      "rootfs.squashfs": {
+        "bytes": 7380992,
+        "sha256": "d73081a2029b502d21627a63762c407791eae18a6646aa955b133a15984e39a0"
+      }
+    },
+    "build_source_commit": "ad9d0e1",
+    "byte_equal": {
+      "Image": true,
+      "kernel.config": true,
+      "kiln": true,
+      "manifest.json": true,
+      "rootfs.squashfs": true
+    },
+    "manifest_sha256": "e855fbee1914cc6ea5e57a1250610e128412c85a905c94a48fb54afdaa47f3d3",
+    "reproducible": true,
+    "source_inventory_digest": "8081d050c1dc1ecd6efdf1c4126ae064a59561419a2f8ecb5800c6b621f5f920"
+  },
+  "residual_risks": [
+    "No Phase 1b admission authenticity backend exists; approved manifest digest and exact effective launch must be authenticated before resources.",
+    "Snapshots disabled: restores require entropy/identity/credential/disk binding. Clones of one seed share the captured KASLR layout; cold boot per tenant remains recommended.",
+    "Both clean builds use one measured toolchain snapshot from the same Lima host, not independent provenance authorities or diverse compilation.",
+    "PID 1 verifies stack-offset activation through the pinned kernel policy and exact on argument; no independent static-key introspection ABI exists.",
+    "Production backend still needs dedicated identities, outer cgroup/PID limits, and mandatory host TAP egress filtering."
+  ],
+  "results": {
+    "egress": "passed: test-only TAP/NAT, DNS 1.1.1.1 and public TCP/80",
+    "installed_binaries_sha256": {
+      "/usr/local/bin/kiln": "a6a22d00713625dbd7e5aed050f8979a9000790ca53082e090c832c670d85c9c",
+      "/usr/local/bin/kilnd": "c39c3f3b5a750aef9a519d3afd139d2b7d1fc6b443b67e2cf25577a810eaf621"
+    },
+    "installed_binaries_unchanged": true,
+    "integration": {
+      "network": "passed",
+      "offline": "passed"
+    },
+    "latency_ms": {
+      "failures": 0,
+      "max": 445.198314,
+      "min": 416.817686,
+      "n": 20,
+      "p50": 426.503555,
+      "p95_nearest_rank": 439.288639
+    }
+  },
+  "unit_tests": {
+    "combined": "all tests covered; platform/context-specific skips covered on the other host",
+    "linux": {
+      "passed": 58,
+      "run": 65,
+      "skipped": 7
+    },
+    "macos": {
+      "passed": 53,
+      "run": 65,
+      "skipped": 12
+    }
+  }
+}

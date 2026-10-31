@@ -1,0 +1,13 @@
+2026-10-31T02:20:26.540736470 [kaslr-off:main] Running Firecracker v1.17.0
+2026-10-31T02:20:26.540858179 [kaslr-off:main] Listening on API socket ("/api.sock").
+2026-10-31T02:20:26.541464555 [kaslr-off:fc_api] API server started.
+2026-10-31T02:20:26.546229813 [kaslr-off:main] Could not read the coherency line size, size, number of sets for cache level 1.
+2026-10-31T02:20:26.546427563 [kaslr-off:main] Artificially kick devices
+2026-10-31T02:20:26.546530980 [kaslr-off:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding
+2026-10-31T02:20:26.546549980 [kaslr-off:main] Successfully started microvm that was configured from one single json
+2026-10-31T02:20:26.820696386 [kaslr-off:fc_vcpu 0] [Block:rootfs] notifying queues
+2026-10-31T02:20:26.822656222 [kaslr-off:fc_vcpu 0] [Block:work] notifying queues
+KG_PHASE init-proc 0.040903666
+KG_CMDLINE <console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 nokaslr pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000>
+KG_RUNTIME cmdline FAIL
+KG_FATAL runtime launch contract:

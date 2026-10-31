@@ -1,0 +1,13 @@
+2026-10-31T02:20:26.992592666 [heap-off:main] Running Firecracker v1.17.0
+2026-10-31T02:20:26.992699875 [heap-off:main] Listening on API socket ("/api.sock").
+2026-10-31T02:20:26.993066834 [heap-off:fc_api] API server started.
+2026-10-31T02:20:26.996399839 [heap-off:main] Could not read the coherency line size, size, number of sets for cache level 1.
+2026-10-31T02:20:26.996630465 [heap-off:main] Artificially kick devices
+2026-10-31T02:20:26.996736881 [heap-off:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding
+2026-10-31T02:20:26.996767006 [heap-off:main] Successfully started microvm that was configured from one single json
+2026-10-31T02:20:27.057807939 [heap-off:fc_vcpu 0] [Block:rootfs] notifying queues
+2026-10-31T02:20:27.059837943 [heap-off:fc_vcpu 0] [Block:work] notifying queues
+KG_PHASE init-proc 0.053754207
+KG_CMDLINE <console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 init_on_alloc=0 init_on_free=0 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000>
+KG_RUNTIME cmdline FAIL
+KG_FATAL runtime launch contract:
