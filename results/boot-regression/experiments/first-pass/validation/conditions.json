@@ -1,0 +1,40 @@
+{
+  "cache_drop": false,
+  "case": "fc-jailer-kiln-none-768",
+  "cgroup_version": 2,
+  "default_seccomp": true,
+  "gap_ms": 100,
+  "host_services": "installed kiln/kilnd/DNS/metrics left active; other host applications uncontrolled",
+  "host_thp": {
+    "defrag": "always defer defer+madvise [madvise] never",
+    "enabled": "always [madvise] never"
+  },
+  "huge_pages": "Transparent",
+  "l1_boot_id": "6bf12a50-cfc0-4431-9589-2d385a59dd27",
+  "l1_sessions": 1,
+  "manifest_sha256": "3ccfae32ce9c09999814cec53e8495ad3fae1c1108db112be1f5ee02f393ea1d",
+  "mem_size_mib": 768,
+  "new_pid_namespace": false,
+  "outer_cgroup_limits": false,
+  "rootfs": "squashfs, read-only",
+  "runs": 20,
+  "tier": "strong-isolation",
+  "timing": "before Popen(jailer) to serial KG_FIRST_COMMAND after first kiln true exits; staging and teardown excluded",
+  "uid_gid": 10000,
+  "uname": [
+    "Linux",
+    "lima-kiln",
+    "6.8.0-147-generic",
+    "#147-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep 24 11:39:52 UTC 2026",
+    "aarch64"
+  ],
+  "vcpu_count": 1,
+  "warmups": 2,
+  "work_disk": "private 512 MiB XFS, nosuid,nodev,noexec,prjquota",
+  "workload": [
+    "kiln",
+    "run",
+    "--",
+    "true"
+  ]
+}

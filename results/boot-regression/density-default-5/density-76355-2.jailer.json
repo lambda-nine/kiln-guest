@@ -1,0 +1,22 @@
+[
+  "/home/estradafamily.guest/kiln-guest-build/cache/release/release-v1.17.0-aarch64/jailer-v1.17.0-aarch64",
+  "--id",
+  "density-76355-2",
+  "--exec-file",
+  "/home/estradafamily.guest/kiln-guest-build/cache/release/release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64",
+  "--uid",
+  "10000",
+  "--gid",
+  "10000",
+  "--cgroup-version",
+  "2",
+  "--chroot-base-dir",
+  "/home/estradafamily.guest/kiln-guest-build/test-jails",
+  "--parent-cgroup",
+  "kg-density-76355",
+  "--",
+  "--api-sock",
+  "/api.sock",
+  "--config-file",
+  "/config.json"
+]

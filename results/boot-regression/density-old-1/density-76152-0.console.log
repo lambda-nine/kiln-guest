@@ -1,0 +1,15 @@
+2026-10-30T23:54:26.027746311 [density-76152-0:main] Running Firecracker v1.17.0
+2026-10-30T23:54:26.027912937 [density-76152-0:main] Listening on API socket ("/api.sock").
+2026-10-30T23:54:26.028170522 [density-76152-0:fc_api] API server started.
+2026-10-30T23:54:26.033242047 [density-76152-0:main] Could not read the coherency line size, size, number of sets for cache level 1.
+2026-10-30T23:54:26.033411673 [density-76152-0:main] Artificially kick devices
+2026-10-30T23:54:26.033480757 [density-76152-0:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding
+2026-10-30T23:54:26.033543299 [density-76152-0:main] Successfully started microvm that was configured from one single json
+2026-10-30T23:54:26.654907853 [density-76152-0:fc_vcpu 0] [Block:rootfs] notifying queues
+2026-10-30T23:54:26.666331410 [density-76152-0:fc_vcpu 0] [Block:work] notifying queues
+KG_TEST first-true PASS
+KG_FIRST_COMMAND
+kiln dns: listening on 10.88.0.1:53, forwarding to 1.1.1.1
+KG_TEST dns-ready PASS
+KG_READY
+kiln: serving metrics on http://127.0.0.1:9841/metrics

@@ -1,0 +1,25 @@
+{
+  "variant": "hardened",
+  "bundle_verified": true,
+  "manifest_sha256": "a62d227c56d95151a4ef0868a40cceb401d4670fd92d8c0f08f4313c0f14ae86",
+  "diagnostic_bundle": false,
+  "l1_boot_id": "6bf12a50-cfc0-4431-9589-2d385a59dd27",
+  "initcall_debug": false,
+  "zero_probe": false,
+  "memory_backing": "None",
+  "loglevel": 7,
+  "host_stats": {
+    "vmm_minor_faults": 196357,
+    "vmm_major_faults": 0,
+    "vmm_user_ticks": 1738,
+    "vmm_system_ticks": 477,
+    "vmm_anon_huge_kib": 0
+  },
+  "host_thp": {
+    "enabled": "always [madvise] never",
+    "defrag": "always defer defer+madvise [madvise] never"
+  },
+  "first_ns": 21827317744,
+  "ready_ns": 22173685371,
+  "conditions": "diagnostic, 1 boot, 0 warmups, 100 ms idle, 1 L1 session, no cache flush; 1 vCPU, 768 MiB, private 512 MiB XFS, jailer; before Popen to serial marker; kiln.test=1, loglevel=7, printk.time=1"
+}

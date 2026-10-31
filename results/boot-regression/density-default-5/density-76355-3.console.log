@@ -1,0 +1,7 @@
+2026-10-30T23:54:51.638133928 [density-76355-3:main] Running Firecracker v1.17.0
+2026-10-30T23:54:51.638258928 [density-76355-3:main] Listening on API socket ("/api.sock").
+2026-10-30T23:54:51.638521305 [density-76355-3:fc_api] API server started.
+2026-10-30T23:54:51.643261078 [density-76355-3:main] Could not read the coherency line size, size, number of sets for cache level 1.
+2026-10-30T23:54:51.643468996 [density-76355-3:main] Artificially kick devices
+2026-10-30T23:54:51.643493579 [density-76355-3:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding
+2026-10-30T23:54:51.643502829 [density-76355-3:main] Successfully started microvm that was configured from one single json

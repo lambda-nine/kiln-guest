@@ -1,0 +1,21 @@
+{
+  "reproducible": true,
+  "artifacts": {
+    "Image": {
+      "bytes": 17807872,
+      "sha256": "62d02303bad5272946cdb37d76a501c6a38209e7d2c3378f9fe8fd9015d8e032"
+    },
+    "kernel.config": {
+      "bytes": 95560,
+      "sha256": "f4cc5f557c66c86acd75276d5053db6bd56992cff40471f3044ab5570d2dea2d"
+    },
+    "kiln": {
+      "bytes": 2376016,
+      "sha256": "54442ccc0ce12b9a9236c927b9073019d7d4774c2e2d82f4d55d0db491925c64"
+    },
+    "rootfs.squashfs": {
+      "bytes": 7380992,
+      "sha256": "8bfa9d71c676ed6e4b1c7cb7ebcb47d84c9a755d6913fd6784c224df15ce5e13"
+    }
+  }
+}

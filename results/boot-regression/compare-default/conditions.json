@@ -1,0 +1,24 @@
+{
+  "boot_overrides": "",
+  "cache_drop": false,
+  "case": "fc-jailer-kiln-none-768",
+  "diagnostic": true,
+  "gap_ms": 100,
+  "host_thp": {
+    "defrag": "always defer defer+madvise [madvise] never",
+    "enabled": "always [madvise] never"
+  },
+  "huge_pages": "None",
+  "kiln.test": 1,
+  "l1_boot_id": "6bf12a50-cfc0-4431-9589-2d385a59dd27",
+  "l1_sessions": 1,
+  "loglevel": 3,
+  "manifest_sha256": "dfc3494e84f81848536fb6efd8aeaf61350e59a1c5dfc859064a3d06f284e59e",
+  "mem_size_mib": 768,
+  "option": "default",
+  "runs": 20,
+  "timing": "before Popen(jailer) to serial KG_FIRST_COMMAND after first kiln true exits; staging and teardown excluded",
+  "vcpu_count": 1,
+  "warmups": 2,
+  "work_disk": "private 512 MiB XFS"
+}

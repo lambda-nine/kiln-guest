@@ -1,0 +1,24 @@
+{
+  "closed_findings": [
+    "pre-exec cgroup placement and full RAM charging",
+    "failed comparison attempts remain in ledger",
+    "acceptance identity/configuration/round/serial-observation binding",
+    "diagnostic artifact/provenance binding",
+    "KASLR entropy wording and causal caveats"
+  ],
+  "limits": "VM cleanup reviewed from retained records; host lock absent. Reviewer used no VM access, helpers or source edits.",
+  "manifest_sha256": "a62d227c56d95151a4ef0868a40cceb401d4670fd92d8c0f08f4313c0f14ae86",
+  "portable_negative_tests_passed": 9,
+  "reviewer": "Codex gpt-6-astra",
+  "source_commit": "8803e81",
+  "source_inventory_sha256": "a3f840cd500939f333cb7195eec1775224b27ebf100dda5ee352fc598a2bfa68",
+  "verdict": "ready to close; no remaining concrete findings",
+  "verified": [
+    "host bundles byte-identical",
+    "frozen source inventory matches",
+    "timing summaries recomputed",
+    "production configs have no diagnostic overrides",
+    "integration and paired phase evidence support report",
+    "all six corrected density records support conclusions; no stable-five snapshot claimed for failures"
+  ]
+}

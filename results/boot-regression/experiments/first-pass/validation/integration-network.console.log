@@ -1,0 +1,175 @@
+2026-10-30T23:47:52.323682744 [integration-network:main] Running Firecracker v1.17.0
+2026-10-30T23:47:52.323788453 [integration-network:main] Listening on API socket ("/api.sock").
+2026-10-30T23:47:52.324265164 [integration-network:fc_api] API server started.
+2026-10-30T23:47:52.329136439 [integration-network:main] Could not read the coherency line size, size, number of sets for cache level 1.
+2026-10-30T23:47:52.329325024 [integration-network:main] Artificially kick devices
+2026-10-30T23:47:52.329435274 [integration-network:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding
+2026-10-30T23:47:52.329452774 [integration-network:main] Successfully started microvm that was configured from one single json
+2026-10-30T23:47:52.596310550 [integration-network:fc_vcpu 0] [Block:rootfs] notifying queues
+2026-10-30T23:47:52.598372602 [integration-network:fc_vcpu 0] [Block:work] notifying queues
+2026-10-30T23:47:52.601163492 [integration-network:fc_vcpu 0] [Net:eth0] notifying queues
+KG_PHASE init-proc 0.056055625
+KG_PHASE mount-work-start 0.074606458
+KG_PHASE mount-work-done 0.088371541
+KG_PHASE first-command-start 0.092921291
+KG_TEST first-true PASS
+KG_PHASE first-command-done 0.211237791
+KG_FIRST_COMMAND
+KG_TEST network-setup PASS
+KG_PHASE network-setup-done 0.273172208
+KG_TEST dns-root-denied PASS
+KG_TEST dns-namespace-denied PASS
+KG_TEST dns-netlink-denied PASS
+KG_TEST dns-policy-readonly PASS
+KG_TEST dns-tenant-storage-hidden PASS
+kiln dns: listening on 10.88.0.1:53, forwarding to 1.1.1.1
+KG_TEST dns-ready PASS
+KG_PHASE dns-ready 0.309663750
+kiln: serving metrics on http://127.0.0.1:9841/metrics
+KG_READY
+KG_TEST kernel-log-bounded PASS
+KG_TEST kernel-log-readable PASS
+KG_TEST kaslr-enabled PASS
+KG_TEST memory-initialization PASS
+KG_TEST dns-status-readable PASS
+KG_TEST dns-nonroot PASS
+KG_TEST dns-only-bind-capability PASS
+KG_TEST dns-no-new-privileges PASS
+KG_TEST dns-seccomp PASS
+KG_TEST work-disk-flags PASS
+KG_TEST work-direct-exec-denied PASS
+overlay / overlay rw,relatime,lowerdir=/var/lib/kiln/images/alpine,upperdir=/var/lib/kiln/runs/18e373809ba7017b-139/upper,workdir=/var/lib/kiln/runs/18e373809ba7017b-139/work,uuid=on 0 0
+KG_TEST overlay-workspace-exec PASS
+KG_TEST kexec-load-absent PASS
+KG_TEST kexec-file-absent PASS
+KG_TEST kexec-sysctl-compiled-out PASS
+KG_TEST bpf-syscall-absent PASS
+KG_TEST io-uring-absent PASS
+KG_TEST userfaultfd-absent PASS
+KG_TEST perf-events-absent PASS
+KG_TEST modules-absent PASS
+KG_TEST proc-kcore-absent PASS
+KG_TEST devmem-absent PASS
+KG_TEST devkmem-absent PASS
+KG_TEST debugfs-absent PASS
+KG_TEST lockdown-readable PASS
+KG_TEST lockdown-confidentiality PASS
+touch: /etc/should-fail: Permission denied
+KG_TEST readonly PASS
+dd: error writing '/workspace/big': No space left on device
+17+0 records in
+16+0 records out
+16777216 bytes (16.0MB) copied, 0.035517 seconds, 450.5MB/s
+KG_TEST limits PASS
+kiln: sandbox ran out of memory and was killed (memory.max)
+KG_TEST memory-oom PASS
+xargs: true: Resource temporarily unavailable
+KG_TEST pids-enforced PASS
+KG_TEST create PASS
+KG_TEST exec-write PASS
+KG_TEST exec-persist PASS
+KG_TEST rm PASS
+Error: connect to sandbox 18e37380a6c7f74d-161
+
+Caused by:
+    No such file or directory (os error 2)
+KG_TEST exec-removed PASS
+KG_TEST net-full-rules PASS
+KG_TEST allow-rules PASS
+Error: --allow "169.254.169.254:80" overlaps non-public IPv4 ranges (including private, metadata and special-use destinations)
+KG_TEST private-denied PASS
+10.88.0.2 A example.com allowed
+10.88.0.2 AAAA example.com allowed
+Server:		10.88.0.1
+Address:	10.88.0.1:53
+
+Non-authoritative answer:
+Name:	example.com
+Address: 104.20.23.154
+Name:	example.com
+Address: 172.66.147.243
+
+Non-authoritative answer:
+Name:	example.com
+Address: 2606:4700:10::6814:179a
+Name:	example.com
+Address: 2606:4700:10::ac42:93f3
+
+KG_TEST full-dns PASS
+10.88.0.2 A example.com allowed
+10.88.0.2 AAAA example.com allowed
+KG_TEST full-egress PASS
+10.88.0.2 A example.com allowed
+10.88.0.2 AAAA example.com allowed
+KG_TEST allow-egress PASS
+10.88.0.2 A example.net refused
+10.88.0.2 AAAA example.net refused
+Server:		10.88.0.1
+Address:	10.88.0.1:53
+
+** server can't find example.net: REFUSED
+
+** server can't find example.net: REFUSED
+
+KG_TEST allow-dns-denied PASS
+table inet kiln {
+	counter egress_rejected {
+		packets 0 bytes 0
+	}
+
+	counter conntrack_rejected {
+		packets 0 bytes 0
+	}
+
+	set private {
+		type ipv4_addr
+		flags interval
+		elements = { 0.0.0.0/8, 10.0.0.0/8,
+			     100.64.0.0/10, 127.0.0.0/8,
+			     169.254.0.0/16, 172.16.0.0/12,
+			     192.0.0.0/24, 192.0.2.0/24,
+			     192.88.99.0/24, 192.168.0.0/16,
+			     198.18.0.0/15, 198.51.100.0/24,
+			     203.0.113.0/24, 224.0.0.0/4,
+			     240.0.0.0/4 }
+	}
+
+	map egress {
+		type ipv4_addr : verdict
+	}
+
+	set connlimit {
+		type ipv4_addr
+		size 65535
+		flags dynamic
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+		iifname "kiln0" ct state new add @connlimit { ip saddr ct count over 256 } counter name "conntrack_rejected" counter packets 0 bytes 0 reject with icmpx admin-prohibited
+		iifname "kiln0" ip saddr vmap @egress
+		iifname "kiln0" counter packets 0 bytes 0 reject with icmpx admin-prohibited
+		oifname "kiln0" ct state established,related accept
+		oifname "kiln0" counter packets 0 bytes 0 drop
+	}
+
+	chain postrouting {
+		type nat hook postrouting priority srcnat; policy accept;
+		ip saddr 10.88.0.0/16 oifname != "kiln0" masquerade
+	}
+
+	chain input {
+		type filter hook input priority filter; policy accept;
+		iifname "kiln0" ct state established,related accept
+		iifname "kiln0" ip daddr 10.88.0.1 meta l4proto { 6, 17 } th dport 53 accept
+		iifname "kiln0" counter packets 0 bytes 0 reject with icmpx admin-prohibited
+	}
+}
+KG_TEST nft-ruleset PASS
+KG_TESTS_COMPLETE
+KG_SHUTDOWN status=0
+[    2.465787] reboot: Power down
+2026-10-30T23:47:55.032382915 [integration-network:fc_vcpu 0] Received KVM_SYSTEM_EVENT: type: 1, event: [0]
+2026-10-30T23:47:55.032433124 [integration-network:main] Vmm is stopping.
+2026-10-30T23:47:55.032598208 [integration-network:main] Killing vCPU threads
+2026-10-30T23:47:55.037422817 [integration-network:main] Firecracker exiting successfully. exit_code=0

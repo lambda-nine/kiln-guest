@@ -1,0 +1,645 @@
+commit 7b568935b1be86f3c2f71d04f7a0023523dc0005
+Author: Stephen Estrada <stcrestrada@gmail.com>
+Date:   Fri Oct 30 16:06:36 2026 -0400
+
+    Build from independent verified crate sources and atomic stages
+
+diff --git a/scripts/build.py b/scripts/build.py
+index 7decff6..862ac02 100644
+--- a/scripts/build.py
++++ b/scripts/build.py
+@@ -1,27 +1,23 @@
+ #!/usr/bin/env python3
+ """Linux/aarch64 builder. Run prepare once, then build in two clean directories."""
+ import argparse
+-import hashlib
+ import json
+ import os
+ from pathlib import Path
+ import re
+ import shutil
++import signal
+ import subprocess as sp
++import sys
+ import tarfile
+ import urllib.request
++from inputs import cargo_arguments, cargo_environment, publish_new_directory, sha, vendor_crates, verify_source
+ from kernel_policy import validate as validate_kernel_policy
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ PINS = json.loads((ROOT / 'config/pins.json').read_text())
+ EPOCH = str(PINS['source_date_epoch'])
+ 
+-def sha(path):
+-    h = hashlib.sha256()
+-    with open(path, 'rb') as f:
+-        for data in iter(lambda: f.read(1024*1024), b''): h.update(data)
+-    return h.hexdigest()
+-
+ def run(argv, **kwargs):
+     print('+', ' '.join(map(str, argv)), flush=True)
+     return sp.run(list(map(str, argv)), check=True, **kwargs)
+@@ -48,6 +44,16 @@ def toolchain():
+                 'gcc','gcc-13','binutils','libc6','libc6-dev','make','flex','bison',
+                 'libssl-dev','libelf-dev','bc','squashfs-tools','xfsprogs'])}
+ 
++def reconcile_lock(existing, current, pinned_source):
++    """An existing lock follows a reviewed kiln pin; the toolchain and debs never move here.
++    To repin those, delete config/build-lock.json locally and review the regenerated diff."""
++    if existing is None: return current
++    if {**existing,'kiln_source_sha256':current['kiln_source_sha256']} != current:
++        raise ValueError('prepare would change build-lock.json; review an intentional repin separately')
++    if current['kiln_source_sha256'] not in (existing['kiln_source_sha256'],pinned_source):
++        raise ValueError('kiln source differs from build-lock.json and pins.json')
++    return current
++
+ def prepare(cache, kiln_repo):
+     cache.mkdir(parents=True, exist_ok=True)
+     (cache/'gnupg').mkdir(mode=0o700,exist_ok=True)
+@@ -88,9 +94,8 @@ def prepare(cache, kiln_repo):
+     lock = {'schema':1, 'toolchain':toolchain(), 'debs':debs,
+             'kiln_source_sha256':sha(source)}
+     existing = ROOT/'config/build-lock.json'
+-    if existing.exists() and json.loads(existing.read_text()) != lock:
+-        raise ValueError('prepare would change build-lock.json; review an intentional repin separately')
+-    writejson(existing, lock)
++    writejson(existing, reconcile_lock(json.loads(existing.read_text()) if existing.exists() else None,
++                                       lock, PINS.get('kiln_source_sha256')))
+ 
+ def unpack(archive, dest):
+     dest.mkdir(parents=True, exist_ok=False)
+@@ -158,12 +163,14 @@ def copy_elf(source, tree, pool):
+         copy_elf(sorted(candidates)[0],tree,pool)
+ 
+ def rootfs(work, cache, out, lock):
++    if sha(cache/'kiln.tar') != lock['kiln_source_sha256']: raise ValueError('kiln source mismatch')
+     kiln = work/'kiln'; unpack(cache/'kiln.tar',kiln)
+-    env = os.environ.copy()
++    cargo = vendor_crates(kiln,cache,work)
++    env = cargo_environment(os.environ,work)
+     env.update({'KILN_BUILD_COMMIT':PINS['kiln_commit'], 'CARGO_INCREMENTAL':'0',
+         'CARGO_TARGET_DIR':str(kiln/'target'),
+         'RUSTFLAGS':f'--remap-path-prefix={work}=/build -C target-feature=+crt-static -C strip=symbols -C link-arg=-Wl,--build-id=none'})
+-    run(['cargo','build','--locked','--release','--target','aarch64-unknown-linux-gnu'],cwd=kiln,env=env)
++    run(['cargo','build',*cargo_arguments(work/'vendor'),'--release','--target','aarch64-unknown-linux-gnu'],cwd=kiln,env=env)
+     binary = kiln/'target/aarch64-unknown-linux-gnu/release/kiln'
+     if 'INTERP' in output(['readelf','-l',binary]): raise ValueError('kiln static link failed')
+     shutil.copyfile(binary,out/'kiln')
+@@ -222,11 +229,46 @@ def rootfs(work, cache, out, lock):
+     run(['mksquashfs',tree,out/'rootfs.squashfs','-noappend','-comp','gzip',
+          '-processors','1','-no-xattrs','-no-exports','-no-fragments',
+          '-all-time',EPOCH,'-mkfs-time',EPOCH,'-no-progress'],env=squash_env)
++    return cargo
+ 
+-def build(cache, work, out, jobs, reuse_kernel=False):
++def input_provenance(cache, lock, source, cargo):
++    """Everything here is independent of the build's work and output paths."""
++    return {'pins_sha256':sha(ROOT/'config/pins.json'),
++        'build_lock_sha256':sha(ROOT/'config/build-lock.json'),
++        'init_source_sha256':sha(ROOT/'src/init.c'),
++        'kiln':{'commit':PINS['kiln_commit'],'archive_sha256':sha(cache/'kiln.tar')},
++        'kernel_archive_sha256':sha(cache/'linux.tar.xz'),
++        'alpine_archive_sha256':sha(cache/'alpine.tar.gz'),
++        'build_lock':lock,'cargo':cargo,'source':source}
++
++def assemble(cache, work, out, jobs, lock, source):
++    unpack(cache/'linux.tar.xz',work/'linux-source')
++    src = work/'linux-source'/f"linux-{PINS['kernel']['version']}"
++    obj = work/'linux-obj'; obj.mkdir()
++    kernel_config(src,obj)
++    run(['make','-C',src,f'O={obj}','ARCH=arm64',f'-j{jobs}',
++         f'KCFLAGS=-ffile-prefix-map={work}=/build','Image'])
++    shutil.copyfile(obj/'arch/arm64/boot/Image',out/'Image')
++    shutil.copyfile(obj/'.config',out/'kernel.config')
++    cargo = rootfs(work,cache,out,lock)
++    manifest = {'schema':1,'bundle_version':'0.1.0','architecture':'aarch64',
++        'kernel_version':PINS['kernel']['version']+'-kiln-guest1',
++        'kiln_commit':PINS['kiln_commit'],'firecracker_version':PINS['firecracker']['version'],
++        'source_date_epoch':int(EPOCH),'broker':{'enabled':False,'protocol':None},
++        'work_disk':{'filesystem':'xfs','mount_options':['prjquota'],'minimum_mib':512},
++        'artifacts':{name:{'sha256':sha(out/name),'bytes':(out/name).stat().st_size}
++            for name in ['Image','kernel.config','kiln','rootfs.squashfs']},
++        'inputs':input_provenance(cache,lock,source,cargo)}
++    writejson(out/'manifest.json',manifest)
++    if verify_source(ROOT)['digest'] != source['digest']: raise ValueError('source changed during build')
++
++def build(cache, work, out, jobs, source_digest=None):
+     if os.uname().machine != 'aarch64' or os.geteuid() != 0:
+         raise ValueError('build requires root on Linux aarch64')
+     os.umask(0o022)
++    source = verify_source(ROOT)
++    if source_digest and source['digest'] != source_digest:
++        raise ValueError('staged source differs from the local inventory')
+     for name in ['CC','CXX','LD','AR','AS','CFLAGS','CPPFLAGS','LDFLAGS',
+                  'KBUILD_OUTPUT','KBUILD_EXTMOD','KCONFIG_CONFIG','MAKEFLAGS']:
+         os.environ.pop(name,None)
+@@ -235,36 +277,13 @@ def build(cache, work, out, jobs, reuse_kernel=False):
+     for key, name in [('kernel','linux.tar.xz'),('firecracker','firecracker.tgz')]:
+         fetch(PINS[key]['url'],cache/name,PINS[key]['sha256'])
+     if sha(cache/'kiln.tar') != lock['kiln_source_sha256']: raise ValueError('kiln source mismatch')
+-    work.mkdir(parents=True,exist_ok=False); out.mkdir(parents=True,exist_ok=reuse_kernel)
++    if os.path.lexists(out): raise ValueError(f'refusing to overwrite {out}')
++    work.mkdir(parents=True,exist_ok=False)
+     os.environ.update({'SOURCE_DATE_EPOCH':EPOCH,'KBUILD_BUILD_TIMESTAMP':'2026-10-30 00:00:00 UTC',
+         'KBUILD_BUILD_USER':'builder','KBUILD_BUILD_HOST':'kiln-guest','KBUILD_BUILD_VERSION':'1',
+         'LC_ALL':'C','TZ':'UTC'})
+     try:
+-        if reuse_kernel:
+-            if (out/'kernel.config').read_bytes() != (ROOT/'config/kernel.config').read_bytes():
+-                raise ValueError('resumed kernel configuration differs')
+-            if not (out/'Image').is_file(): raise ValueError('no compiled kernel to resume')
+-        else:
+-            unpack(cache/'linux.tar.xz',work/'linux-source')
+-            src = work/'linux-source'/f"linux-{PINS['kernel']['version']}"
+-            obj = work/'linux-obj'; obj.mkdir()
+-            kernel_config(src,obj)
+-            run(['make','-C',src,f'O={obj}','ARCH=arm64',f'-j{jobs}',
+-                 f'KCFLAGS=-ffile-prefix-map={work}=/build','Image'])
+-            shutil.copyfile(obj/'arch/arm64/boot/Image',out/'Image')
+-            shutil.copyfile(obj/'.config',out/'kernel.config')
+-        rootfs(work,cache,out,lock)
+-        manifest = {'schema':1,'bundle_version':'0.1.0','architecture':'aarch64',
+-            'kernel_version':PINS['kernel']['version']+'-kiln-guest1',
+-            'kiln_commit':PINS['kiln_commit'],'firecracker_version':PINS['firecracker']['version'],
+-            'source_date_epoch':int(EPOCH),'broker':{'enabled':False,'protocol':None},
+-            'work_disk':{'filesystem':'xfs','mount_options':['prjquota'],'minimum_mib':512},
+-            'artifacts':{name:{'sha256':sha(out/name),'bytes':(out/name).stat().st_size}
+-                for name in ['Image','kernel.config','kiln','rootfs.squashfs']},
+-            'inputs':{'pins_sha256':sha(ROOT/'config/pins.json'),
+-                'build_lock_sha256':sha(ROOT/'config/build-lock.json'),
+-                'init_source_sha256':sha(ROOT/'src/init.c')}}
+-        writejson(out/'manifest.json',manifest)
++        publish_new_directory(out,lambda output:assemble(cache,work,output,jobs,lock,source))
+     finally:
+         shutil.rmtree(work)
+ 
+@@ -276,8 +295,9 @@ if __name__ == '__main__':
+     parser.add_argument('--out',type=Path)
+     parser.add_argument('--kiln-repo',type=Path)
+     parser.add_argument('--jobs',type=int,default=3)
+-    parser.add_argument('--reuse-kernel',action='store_true',help='development: resume only this output directory after a rootfs failure; never share it between independent builds')
++    parser.add_argument('--source-digest',help='stable inventory digest the staged source must match')
+     args = parser.parse_args()
++    for number in [signal.SIGTERM,signal.SIGHUP]: signal.signal(number,lambda *_:sys.exit(143))
+     if args.action == 'prepare': prepare(args.cache.resolve(),args.kiln_repo.resolve())
+     elif args.action == 'configure': configure(args.cache.resolve(),args.work.resolve())
+-    else: build(args.cache.resolve(),args.work.resolve(),args.out.resolve(),args.jobs,args.reuse_kernel)
++    else: build(args.cache.resolve(),args.work.resolve(),args.out.resolve(),args.jobs,args.source_digest)
+diff --git a/scripts/inputs.py b/scripts/inputs.py
+new file mode 100644
+index 0000000..2335735
+--- /dev/null
++++ b/scripts/inputs.py
+@@ -0,0 +1,349 @@
++#!/usr/bin/env python3
++"""Exact guest source stages and fresh, verified Cargo sources.
++
++Standard library only. The wrapper sends this file to the VM as `python3 -I -c`,
++so it cannot depend on its own path or sibling modules. The wrapper also imports
++it under the host's python3, so tomllib loads only where Cargo.lock is parsed.
++"""
++import ctypes
++import errno
++import hashlib
++import io
++import json
++import os
++from pathlib import Path
++import re
++import shutil
++import signal
++import stat
++import subprocess as sp
++import sys
++import tarfile
++import tempfile
++
++MANIFEST = '.source-manifest.json'
++EXCLUDED = {'.git', '__pycache__', 'dist', 'results'}
++SCHEMA = 1
++MAX_MANIFEST_BYTES = 16*1024*1024
++SHA256 = re.compile(r'[0-9a-f]{64}')
++REGISTRY = 'registry+https://github.com/rust-lang/crates.io-index'
++CRATE_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]*')
++CRATE_VERSION = re.compile(r'[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.+-]+)?')
++AT_FDCWD = -100
++RENAME_NOREPLACE = 1
++RENAME_EXCHANGE = 2
++
++def sha(path):
++    h = hashlib.sha256()
++    with open(path, 'rb') as f:
++        for data in iter(lambda: f.read(1024*1024), b''): h.update(data)
++    return h.hexdigest()
++
++def _open_regular(path):
++    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++    f = os.fdopen(fd, 'rb')
++    if not stat.S_ISREG(os.fstat(fd).st_mode):
++        f.close()
++        raise ValueError(f'not a regular file: {path}')
++    return f
++
++def _scan(root):
++    """Walk source paths without following links; exclusions apply at any level."""
++    files, directories = [], []
++    def visit(relative):
++        with os.scandir(Path(root)/relative) as entries: found = list(entries)
++        for entry in found:
++            path = f'{relative}/{entry.name}' if relative else entry.name
++            if entry.name in EXCLUDED or path == MANIFEST: continue
++            path.encode('utf-8')
++            if entry.is_symlink(): raise ValueError(f'symlink in source: {path}')
++            if entry.is_dir(follow_symlinks=False):
++                directories.append(path); visit(path)
++            elif entry.is_file(follow_symlinks=False): files.append(path)
++            else: raise ValueError(f'special file in source: {path}')
++    visit('')
++    return sorted(files), sorted(directories)
++
++def _record(root, path):
++    h = hashlib.sha256(); size = 0
++    with _open_regular(Path(root)/path) as f:
++        mode = stat.S_IMODE(os.fstat(f.fileno()).st_mode)
++        for data in iter(lambda: f.read(1024*1024), b''):
++            h.update(data); size += len(data)
++    if mode & ~0o777: raise ValueError(f'setuid, setgid or sticky source file: {path}')
++    return {'path': path, 'mode': mode, 'size': size, 'sha256': h.hexdigest()}
++
++def source_inventory(root):
++    return {'schema': SCHEMA, 'files': [_record(root, path) for path in _scan(root)[0]]}
++
++def inventory_digest(inventory):
++    text = json.dumps(inventory, sort_keys=True, separators=(',', ':'))
++    return hashlib.sha256(text.encode()).hexdigest()
++
++def _check_path(path):
++    parts = path.split('/') if isinstance(path, str) else []
++    if not parts or any(part in ('', '.', '..') for part in parts) or '\0' in path:
++        raise ValueError(f'unsafe source path: {path!r}')
++    if path == MANIFEST or EXCLUDED.intersection(parts):
++        raise ValueError(f'excluded source path: {path!r}')
++
++def _check_inventory(inventory):
++    if not isinstance(inventory, dict) or set(inventory) != {'schema', 'files'} \
++            or inventory['schema'] != SCHEMA or not isinstance(inventory['files'], list):
++        raise ValueError('malformed source manifest')
++    paths = []
++    for record in inventory['files']:
++        if not isinstance(record, dict) or set(record) != {'path', 'mode', 'size', 'sha256'}:
++            raise ValueError('malformed source manifest record')
++        _check_path(record['path'])
++        mode, size, digest = record['mode'], record['size'], record['sha256']
++        if type(mode) is not int or not 0 <= mode <= 0o777 or type(size) is not int or size < 0 \
++                or not isinstance(digest, str) or not SHA256.fullmatch(digest):
++            raise ValueError(f'malformed source manifest record: {record["path"]}')
++        paths.append(record['path'])
++    if paths != sorted(set(paths)): raise ValueError('source manifest paths not sorted and unique')
++
++def verify_source(root):
++    """Prove a stage holds exactly its inventory; return the inventory and digest."""
++    with _open_regular(Path(root)/MANIFEST) as f: expected = json.loads(f.read())
++    _check_inventory(expected)
++    files, directories = _scan(root)
++    want = {record['path']: record for record in expected['files']}
++    have = {record['path']: record for record in (_record(root, path) for path in files)}
++    needed = {'/'.join(path.split('/')[:i]) for path in want for i in range(1, path.count('/')+1)}
++    errors = [f'missing {path}' for path in sorted(set(want)-set(have))]
++    errors += [f'extra {path}' for path in sorted(set(have)-set(want))]
++    errors += [f'extra directory {path}' for path in sorted(set(directories)-needed)]
++    errors += [f'altered {path}' for path in sorted(set(want) & set(have)) if want[path] != have[path]]
++    if errors: raise ValueError('source inventory: ' + '; '.join(errors))
++    return {'digest': inventory_digest(expected), 'files': expected['files']}
++
++def _tarinfo(path, size, mode):
++    info = tarfile.TarInfo(path)
++    info.size, info.mode = size, mode
++    return info
++
++def write_archive(root, stream, inventory=None):
++    """Stream the inventory, then its files, with no host ownership or times."""
++    inventory = inventory or source_inventory(root)
++    data = (json.dumps(inventory, sort_keys=True, indent=1) + '\n').encode()
++    with tarfile.open(fileobj=stream, mode='w|', format=tarfile.PAX_FORMAT) as tar:
++        tar.addfile(_tarinfo(MANIFEST, len(data), 0o644), io.BytesIO(data))
++        for record in inventory['files']:
++            with _open_regular(Path(root)/record['path']) as f:
++                tar.addfile(_tarinfo(record['path'], record['size'], record['mode']), f)
++    return inventory_digest(inventory)
++
++def _make_directories(base, parts):
++    current = Path(base)
++    for part in parts:
++        current = current/part
++        try:
++            os.mkdir(current); os.chmod(current, 0o755)
++        except FileExistsError:
++            if not stat.S_ISDIR(os.lstat(current).st_mode):
++                raise ValueError(f'path conflict: {current}') from None
++
++def _write_new(base, relative, source, size, mode):
++    """Create one file that cannot already exist and return its SHA-256."""
++    parts = relative.split('/')
++    _make_directories(base, parts[:-1])
++    try: fd = os.open(Path(base)/relative, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
++    except FileExistsError: raise ValueError(f'duplicate path: {relative}') from None
++    h = hashlib.sha256(); left = size
++    with os.fdopen(fd, 'wb') as f:
++        while left:
++            data = source.read(min(left, 1024*1024))
++            if not data: raise ValueError(f'truncated file: {relative}')
++            f.write(data); h.update(data); left -= len(data)
++        os.fchmod(f.fileno(), mode)
++    return h.hexdigest()
++
++def _extract_source(stream, directory, expected_digest):
++    expected = None
++    try:
++        with tarfile.open(fileobj=stream, mode='r|') as tar:
++            for member in tar:
++                if member.type not in (tarfile.REGTYPE, tarfile.AREGTYPE):
++                    raise ValueError(f'non-regular archive member: {member.name}')
++                if expected is None:
++                    if member.name != MANIFEST or member.size > MAX_MANIFEST_BYTES:
++                        raise ValueError(f'archive must begin with {MANIFEST}')
++                    data = tar.extractfile(member).read()
++                    inventory = json.loads(data)
++                    _check_inventory(inventory)
++                    if expected_digest and inventory_digest(inventory) != expected_digest:
++                        raise ValueError('source manifest differs from the expected digest')
++                    expected = {record['path']: record for record in inventory['files']}
++                    _write_new(directory, MANIFEST, io.BytesIO(data), len(data), 0o644)
++                    continue
++                # Only paths the validated inventory names, and each only once, get past here.
++                record = expected.pop(member.name, None)
++                if record is None: raise ValueError(f'unexpected archive member: {member.name}')
++                if member.size != record['size'] or stat.S_IMODE(member.mode) != record['mode']:
++                    raise ValueError(f'archive member differs from inventory: {member.name}')
++                digest = _write_new(directory, member.name, tar.extractfile(member), member.size, record['mode'])
++                if digest != record['sha256']:
++                    raise ValueError(f'archive member digest mismatch: {member.name}')
++    except tarfile.TarError as error:
++        raise ValueError(f'malformed source archive: {error}') from error
++    if expected is None: raise ValueError(f'archive has no {MANIFEST}')
++    if expected: raise ValueError('archive omits: ' + ', '.join(sorted(expected)))
++    while stream.read(1024*1024): pass
++    return verify_source(directory)
++
++def _renameat2(source, destination, flags):
++    if not sys.platform.startswith('linux'):
++        raise OSError(errno.ENOSYS, 'renameat2 requires Linux', str(destination))
++    libc = ctypes.CDLL(None, use_errno=True)
++    libc.renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
++    if libc.renameat2(AT_FDCWD, os.fsencode(source), AT_FDCWD, os.fsencode(destination), flags):
++        code = ctypes.get_errno()
++        raise OSError(code, os.strerror(code), str(destination))
++
++def rename_exchange(source, destination): _renameat2(source, destination, RENAME_EXCHANGE)
++
++def rename_noreplace(source, destination):
++    if sys.platform.startswith('linux'): _renameat2(source, destination, RENAME_NOREPLACE)
++    elif os.path.lexists(destination): raise FileExistsError(errno.EEXIST, 'exists', str(destination))
++    else: os.rename(source, destination)
++
++def _in_sibling(destination, populate, publish):
++    """Fill an empty sibling and publish it. Whatever remains there is then deleted:
++    a failed output, or the old tree after an exchange."""
++    destination.parent.mkdir(parents=True, exist_ok=True)
++    temporary = Path(tempfile.mkdtemp(prefix=f'.{destination.name}.tmp-', dir=destination.parent))
++    try:
++        os.chmod(temporary, 0o755)
++        result = populate(temporary)
++        publish(temporary, destination)
++        return result
++    finally:
++        if os.path.lexists(temporary): shutil.rmtree(temporary)
++
++def stage_archive(stream, destination, expected_digest=None, exchange=rename_exchange):
++    """Replace destination with exactly the archive's inventory, or leave it untouched."""
++    destination = Path(os.path.abspath(destination))
++    def publish(temporary, final):
++        if os.path.lexists(final): exchange(temporary, final)
++        else: os.replace(temporary, final)
++    if os.path.lexists(destination) and not stat.S_ISDIR(os.lstat(destination).st_mode):
++        raise ValueError(f'stage destination is not a directory: {destination}')
++    return _in_sibling(destination, lambda d: _extract_source(stream, d, expected_digest), publish)
++
++def publish_new_directory(final, populate, publish=rename_noreplace):
++    """Publish a directory only on success; refuse before populate if final exists."""
++    final = Path(os.path.abspath(final))
++    if os.path.lexists(final): raise ValueError(f'refusing to overwrite {final}')
++    return _in_sibling(final, populate, publish)
++
++def parse_cargo_lock(text):
++    """Return registry and local packages; anything else in the lock is refused."""
++    import tomllib
++    lock = tomllib.loads(text)
++    if set(lock) != {'version', 'package'} or lock['version'] not in (3, 4):
++        raise ValueError('unsupported Cargo.lock format')
++    registry, local, seen = [], [], set()
++    for package in lock['package']:
++        if not set(package) <= {'name', 'version', 'source', 'checksum', 'dependencies'}:
++            raise ValueError(f'unsupported Cargo.lock package: {package}')
++        name, version = package.get('name'), package.get('version')
++        if not isinstance(name, str) or not CRATE_NAME.fullmatch(name) \
++                or not isinstance(version, str) or not CRATE_VERSION.fullmatch(version):
++            raise ValueError(f'unsafe Cargo.lock package: {package}')
++        if (name, version) in seen: raise ValueError(f'duplicate Cargo.lock package: {name} {version}')
++        seen.add((name, version))
++        if 'source' not in package:
++            if 'checksum' in package: raise ValueError(f'local package has a checksum: {name}')
++            local.append({'name': name, 'version': version})
++            continue
++        if package['source'] != REGISTRY:
++            raise ValueError(f'unsupported Cargo source for {name}: {package["source"]}')
++        checksum = package.get('checksum')
++        if not isinstance(checksum, str) or not SHA256.fullmatch(checksum):
++            raise ValueError(f'registry package lacks a SHA-256 checksum: {name} {version}')
++        registry.append({'name': name, 'version': version, 'source': REGISTRY, 'sha256': checksum})
++    key = lambda package: (package['name'], package['version'])
++    return sorted(registry, key=key), sorted(local, key=key)
++
++def download_crate(url, path):
++    sp.run(['curl', '-q', '--proto', '=https', '--proto-redir', '=https', '--tlsv1.2',
++            '-fLsS', '--retry', '2', url, '-o', str(path)], check=True)
++
++def _crate_bytes(package, directory, fetcher):
++    """Read the compressed crate into memory, so what is hashed is what is extracted."""
++    name, version, digest = package['name'], package['version'], package['sha256']
++    path = directory/f'{name}-{version}.crate'
++    if not os.path.lexists(path):
++        fd, partial = tempfile.mkstemp(prefix=path.name+'.', suffix='.partial', dir=directory)
++        os.close(fd)
++        try:
++            fetcher(f'https://static.crates.io/crates/{name}/{name}-{version}.crate', partial)
++            if sha(partial) != digest: raise ValueError(f'download checksum mismatch: {name} {version}')
++            os.chmod(partial, 0o644); os.replace(partial, path)
++        finally:
++            if os.path.lexists(partial): os.unlink(partial)
++    with _open_regular(path) as f: data = f.read()
++    if hashlib.sha256(data).hexdigest() != digest:
++        raise ValueError(f'crate checksum mismatch, refusing to extract: {path}')
++    return data
++
++def _extract_crate(data, package, vendor):
++    top = f"{package['name']}-{package['version']}"
++    destination = vendor/top
++    destination.mkdir()
++    hashes = {}
++    with tarfile.open(fileobj=io.BytesIO(data), mode='r:gz') as tar:
++        for member in tar:
++            parts = member.name.split('/')
++            if parts[0] != top or any(part in ('', '.', '..') or '\\' in part for part in parts):
++                raise ValueError(f'unsafe path in {top}: {member.name}')
++            member.name.encode('utf-8')
++            relative = '/'.join(parts[1:])
++            if member.isdir(): _make_directories(destination, parts[1:])
++            elif member.type not in (tarfile.REGTYPE, tarfile.AREGTYPE) or not relative:
++                raise ValueError(f'non-regular member in {top}: {member.name}')
++            else:
++                mode = 0o755 if member.mode & 0o100 else 0o644
++                hashes[relative] = _write_new(destination, relative, tar.extractfile(member), member.size, mode)
++    if 'Cargo.toml' not in hashes: raise ValueError(f'{top} has no Cargo.toml')
++    checksum = json.dumps({'files': hashes, 'package': package['sha256']}, sort_keys=True).encode()
++    _write_new(destination, '.cargo-checksum.json', io.BytesIO(checksum), len(checksum), 0o644)
++
++def _refuse_cargo_config(start):
++    """Cargo merges config from every ancestor of its working directory, CARGO_HOME or not."""
++    for directory in [start, *start.parents]:
++        for name in ['config', 'config.toml']:
++            if os.path.lexists(directory/'.cargo'/name):
++                raise ValueError(f'Cargo config would influence the build: {directory/".cargo"/name}')
++
++def vendor_crates(kiln_source, cache, work, fetcher=download_crate):
++    """Extract Cargo.lock's crates into new work/vendor and work/cargo-home trees.
++    Only compressed crates are cached, and each is rehashed before each extraction."""
++    kiln_source, cache, work = Path(kiln_source), Path(cache), Path(work)
++    _refuse_cargo_config(kiln_source.resolve())
++    with _open_regular(kiln_source/'Cargo.lock') as f: lock = f.read()
++    registry, local = parse_cargo_lock(lock.decode())
++    crates = cache/'crates'; crates.mkdir(parents=True, exist_ok=True)
++    (work/'cargo-home').mkdir(parents=True)
++    vendor = work/'vendor'; vendor.mkdir()
++    for package in registry:
++        _extract_crate(_crate_bytes(package, crates, fetcher), package, vendor)
++    return {'cargo_lock_sha256': hashlib.sha256(lock).hexdigest(),
++            'registry_packages': registry, 'local_packages': local}
++
++def cargo_arguments(vendor):
++    """Offline, lock-exact Cargo against the verified vendor tree only."""
++    return ['--frozen', '--config', 'source.crates-io.replace-with="verified-vendor"',
++            '--config', f'source.verified-vendor.directory={json.dumps(str(vendor))}']
++
++def cargo_environment(environ, work):
++    """Drop inherited wrappers, flags and homes; the toolchain comes from the pinned PATH."""
++    env = {key: value for key, value in environ.items() if not key.startswith(('CARGO', 'RUST'))}
++    env['CARGO_HOME'] = str(Path(work)/'cargo-home')
++    return env
++
++if __name__ == '__main__':
++    for number in [signal.SIGTERM, signal.SIGHUP]: signal.signal(number, lambda *_: sys.exit(143))
++    if len(sys.argv) != 4 or sys.argv[1] != 'stage': sys.exit('usage: inputs.py stage DESTINATION DIGEST')
++    print(json.dumps({'stage': sys.argv[2], 'digest': stage_archive(sys.stdin.buffer, sys.argv[2], sys.argv[3])['digest']}))
+diff --git a/scripts/lima.py b/scripts/lima.py
+index 81291fd..e11a89b 100644
+--- a/scripts/lima.py
++++ b/scripts/lima.py
+@@ -4,15 +4,20 @@ import argparse
+ import atexit
+ from pathlib import Path
+ import os
++import shlex
+ import shutil
+ import signal
+ import subprocess as sp
+ import sys
+ import tarfile
+ import time
++from inputs import inventory_digest, source_inventory, write_archive
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+-LOCK = ROOT.parent/'.vm-lock'
++COMMON = Path(sp.check_output(['git','-C',str(ROOT),'rev-parse','--path-format=absolute','--git-common-dir'],text=True).strip())
++LOCK = COMMON.parent.parent/'.vm-lock'
++KILN_REPO = COMMON.parent.parent/'kiln'
++BUILD_ROOT = '/home/estradafamily.guest/kiln-guest-build'
+ 
+ def release():
+     if (LOCK/'owner').exists() and (LOCK/'owner').read_text() == f'Guest image {os.getpid()}\n':
+@@ -21,9 +26,24 @@ def release():
+ def shell(command, **kwargs):
+     return sp.run(['limactl','shell','--workdir','/tmp','kiln','bash','-c',command],check=True,**kwargs)
+ 
++def stage_source():
++    """Publish a new stage from this checkout; the VM checks it against the local digest."""
++    shell('mkdir -p ~/kiln-guest-build/cache')
++    inventory = source_inventory(ROOT); digest = inventory_digest(inventory)
++    p = sp.Popen(['limactl','shell','--workdir','/tmp','kiln','sudo','python3','-I','-c',
++                  (ROOT/'scripts/inputs.py').read_text(),'stage',f'{BUILD_ROOT}/repo',digest],stdin=sp.PIPE)
++    try:
++        write_archive(ROOT,p.stdin,inventory)
++    except BrokenPipeError: pass
++    finally:
++        try: p.stdin.close()
++        except BrokenPipeError: pass
++    if p.wait(): raise RuntimeError('staging failed')
++    return digest
++
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+-    parser.add_argument('action',choices=['stage','prepare','build-a','build-b','test','collect','cleanup','command'])
++    parser.add_argument('action',choices=['stage','prepare','configure','build-a','build-b','test','collect','cleanup','command'])
+     parser.add_argument('command',nargs='?')
+     args = parser.parse_args()
+     while True:
+@@ -36,22 +56,15 @@ def main():
+     signal.signal(signal.SIGTERM,lambda *_:sys.exit(143))
+     try:
+         if args.action == 'stage':
+-            shell('mkdir -p ~/kiln-guest-build/repo ~/kiln-guest-build/cache')
+-            p = sp.Popen(['limactl','shell','--workdir','/tmp','kiln','sudo','tar','-xf','-','-C','/home/estradafamily.guest/kiln-guest-build/repo'],stdin=sp.PIPE)
+-            with tarfile.open(fileobj=p.stdin,mode='w|') as tar:
+-                for f in sorted(ROOT.rglob('*')):
+-                    rel=f.relative_to(ROOT)
+-                    if not f.is_file() or any(s in ['.git','__pycache__','dist'] for s in rel.parts): continue
+-                    tar.add(f,arcname=str(rel),recursive=False)
+-            p.stdin.close()
+-            if p.wait(): raise RuntimeError('staging failed')
++            stage_source()
+             source = Path('/tmp/kiln-guest-linux-6.18.56.tar.xz')
+             if source.exists():
+                 with source.open('rb') as f: shell('cat > ~/kiln-guest-build/cache/linux.tar.xz',stdin=f)
+         elif args.action == 'collect':
+             dest=ROOT/'dist'; dest.mkdir(exist_ok=True)
+             with (dest/'collected.tar').open('wb') as f:
+-                shell('sudo tar -C ~/kiln-guest-build -cf - bundle-a bundle-b repo/config results',stdout=f)
++                # prepare and configure results must reach the checkout before any bundle exists.
++                shell('cd ~/kiln-guest-build; sudo tar -cf - $(ls -d bundle-a bundle-b repo/config results 2>/dev/null)',stdout=f)
+             with tarfile.open(dest/'collected.tar') as t:
+                 for member in t.getmembers():
+                     path=Path(member.name)
+@@ -66,15 +79,20 @@ def main():
+             shutil.rmtree(dest/'repo')
+             shutil.rmtree(dest/'results',ignore_errors=True)
+         elif args.action == 'cleanup':
+-            shell('sudo rm -rf ~/kiln-guest-build/work-a ~/kiln-guest-build/work-b; sudo du -sh ~/kiln-guest-build/cache; pgrep -af firecracker || true')
++            shell('sudo rm -rf ~/kiln-guest-build/work-a ~/kiln-guest-build/work-b ~/kiln-guest-build/.*.tmp-*; sudo du -sh ~/kiln-guest-build/cache; pgrep -af firecracker || true')
+         elif args.action == 'command': shell(args.command)
+         else:
+             prefix='task_bin=$(dirname "$(rustup which rustc)"); export PATH="$task_bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"; cd ~/kiln-guest-build/repo; '
+-            env='sudo env PATH="$PATH" CARGO_HOME="$HOME/kiln-guest-build/cache/cargo" '
++            env='sudo env PATH="$PATH" '
+             if args.action == 'prepare':
+-                cmd='python3 scripts/build.py prepare --cache ../cache --kiln-repo /Users/estradafamily/Projects/lambda-nine/kiln'
++                stage_source()
++                cmd=f'python3 scripts/build.py prepare --cache ../cache --kiln-repo {shlex.quote(str(KILN_REPO))}'
++            elif args.action == 'configure':
++                stage_source()
++                cmd='python3 scripts/build.py configure --cache ../cache --work ../config-work'
+             elif args.action.startswith('build-'):
+-                name=args.action[-1]; cmd=f'python3 scripts/build.py build --cache ../cache --work ../work-{name} --out ../bundle-{name}'
++                name=args.action[-1]; digest=stage_source()
++                cmd=f'python3 scripts/build.py build --cache ../cache --work ../work-{name} --out ../bundle-{name} --source-digest {digest}'
+             else: cmd='python3 tests/firecracker.py --bundle ../bundle-a --cache ../cache --out ../results'
+             shell(prefix+env+cmd)
+     finally: release()
