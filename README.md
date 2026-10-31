@@ -43,7 +43,7 @@ mkfs.xfs -q -f work.xfs
 Boot arguments:
 
 ```text
-console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3
+console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on
 ```
 
 The manifest's canonical `launch_contract` binds the exact command line, vCPU,
@@ -82,7 +82,12 @@ of the initial `kiln run -- true`; `KG_READY` follows a live DNS listener.
 The root-owned `kiln network-setup` command creates the bridge and reconciles
 the ruleset, then exits. Init starts DNS as UID/GID 65532 with only
 CAP_NET_BIND_SERVICE in its effective/permitted/inheritable/bounding/ambient
-sets. It applies no-new-privileges and a syscall allowlist, allows only thread
+sets. A separate `kg_dns` nft output chain confines UID 65532 to TCP/UDP
+`1.1.1.1:53` and tracked DNS replies from `10.88.0.1:53` to existing client
+flows in `10.88.0.0/16`; all other output is rejected, including new connections
+to tenants, other resolvers and host/private addresses. This table survives
+kiln sandbox ruleset reconciliation. The upstream matches the immutable resolver
+configuration. It applies no-new-privileges and a syscall allowlist, allows only thread
 clones and AF_INET/AF_UNIX sockets, hides tenant storage and leases, exposes
 read-only policies and proc/sys/run, provides private tmp/devices, and caps
 file descriptors, processes and core dumps. The test mode verifies the live
@@ -243,6 +248,10 @@ Landlock are not a hostile multi-tenant boundary on their own. A compromised
 guest must still face host-owned per-session TAP/egress controls and resource
 limits. Do not put provider credentials in this image or tool sandboxes.
 
+The [2026-10-30 re-attack](../reviews/2026-10-30-guest-reattack.md)
+(KR-01/KG-06 and KG-07) confirms both requirements below remain deployment
+blockers; fixing the local launch checker does not implement backend admission.
+
 KG-06 is a hard Phase 1b admission requirement: the host must pin an independently approved manifest digest
 (or an authenticated release identity that resolves to that digest). Before
 creating any host resource, it must validate the entire manifest schema,
@@ -261,7 +270,12 @@ version. A test with two restores from one seed must demonstrate distinct
 identity and random output, and refusal on disk-version mismatch or an
 incomplete handshake. Never reuse a tenant-used seed across tenants. Snapshot
 restore cannot undo external side effects. This repository only cold-boots;
-it implements no restore/reseed path.
+it implements no restore/reseed path. Every clone of one ready snapshot
+shares one KASLR layout: restore-time entropy cannot relocate the captured
+kernel. Phase 1b must cold-boot per tenant, or use tenant-specific snapshots
+never cloned across trust domains, with the mandatory restore handshake.
+Cross-tenant cloning needs an explicit security review accepting lost KASLR
+diversity; reseeding alone does not satisfy it.
 
 Phase 1b's `FirecrackerRuntime` must also journal per-session ownership and manifests;
 reserve total guest memory plus VMM overhead and disk; launch dedicated
