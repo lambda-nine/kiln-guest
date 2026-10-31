@@ -241,7 +241,7 @@ def main():
                                  'dns-ready']:
                         if f'KG_TEST {name} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing security assertion: {name}')
-                    for assertion in ['cmdline','kaslr-enabled','memory-initialization','lockdown-confidentiality','kexec-load-absent','kexec-file-absent']:
+                    for assertion in ['cmdline','kstack-offset-enabled','kaslr-enabled','memory-initialization','lockdown-confidentiality','kexec-load-absent','kexec-file-absent']:
                         if f'KG_RUNTIME {assertion} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing runtime assertion: {assertion}')
                     v.until(b'Firecracker exiting successfully',timeout=20)

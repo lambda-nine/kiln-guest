@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_policy_requires_default_and_rejects_disabled (test_kstack.KstackTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/tests/test_kstack.py", line 10, in test_policy_requires_default_and_rejects_disabled
+    self.assertEqual(json.loads((ROOT/'config/security-policy.json').read_text())['required'].get('RANDOMIZE_KSTACK_OFFSET_DEFAULT'),'y')
+AssertionError: None != 'y'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)

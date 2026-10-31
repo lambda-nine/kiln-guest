@@ -195,6 +195,7 @@ static void runtime_contract(void) {
     require_runtime("memory-initialization", strstr(log,
           "mem auto-init: stack:all(zero), heap alloc:on, heap free:on") != NULL);
     free(log);
+    require_runtime("kstack-offset-enabled", option("randomize_kstack_offset=on"));
     char lockdown[128]={0}; f=fopen("/sys/kernel/security/lockdown","r");
     bool locked=f && fgets(lockdown,sizeof(lockdown),f);
     if (f) fclose(f);

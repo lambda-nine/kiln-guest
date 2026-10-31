@@ -7,7 +7,7 @@ import copy
 import json
 import re
 
-CMDLINE='console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3'
+CMDLINE='console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on'
 
 FC_SUFFIX=' pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000'
 
