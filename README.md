@@ -195,6 +195,26 @@ and release checksums, launches the matching Firecracker 1.17.0 jailer with
 UID/GID 10000 and default seccomp, and removes its private jails, work disks,
 TAP and firewall table in `finally`. It records installed-binary hashes.
 
+KR-05: the launcher atomically copies the pinned jailer and Firecracker into
+`/var/lib/kiln-guest-launch/vmm-<archive-sha256>/`, then hashes each installed regular file
+through an `O_NOFOLLOW` descriptor. It retains the jailer descriptor through
+`Popen(executable=/proc/self/fd/<fd>, pass_fds=...)`; `--exec-file` names the
+verified Firecracker in that same protected tree. Every path component from `/`
+must be root-owned, without group/world write permission or symlinks; unsafe
+paths are rejected. Fresh private session roots also live under this tree.
+Kernel and rootfs are copied from opened source descriptors and their private
+copies checked against the manifest before use; config and work disks are
+created only in that session. Source cache paths are never executed.
+
+Phase 1b's `kilnd-helper` must follow this same rule: authenticate the approved
+manifest and VMM archive, atomically install and rehash executables and artifacts
+in a root-owned tree whose **every ancestor is root-owned and not group- or
+world-writable**, reject symlinks and unsafe ownership/modes, retain and execute
+the verified jailer inode by descriptor, bind `--exec-file` to the verified
+Firecracker inside that tree, and bind `--chroot-base-dir` to a fresh protected
+session root. A root-owned child below a user-writable parent is insufficient.
+The regression is `tests/test_vmm_path_race.py` (run as Linux root).
+
 The fixed guest suite exercises the kernel policy and guest-root attack-surface probes,
 DNS service credentials/capabilities/confinement, direct work-disk execution
 denial, executable sandbox overlays, one-shot true, Landlock write denial, memory

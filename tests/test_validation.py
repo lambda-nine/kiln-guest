@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 from types import SimpleNamespace
@@ -58,6 +59,7 @@ class ValidationTests(unittest.TestCase):
             ready=vm.until(b'KG_READY',timeout=.05)
             self.assertEqual(first,ready)
 
+    @unittest.skipUnless(sys.platform == 'linux' and os.geteuid() == 0, 'requires Linux root trust tree')
     def test_modified_vmm_and_adjacent_checksum_are_rejected(self):
         with tempfile.TemporaryDirectory() as d:
             cache=Path(d); archive=cache/'firecracker.tgz'
@@ -69,8 +71,10 @@ class ValidationTests(unittest.TestCase):
                     info.size=len(data); info.mode=0o755
                     tar.addfile(info,io.BytesIO(data))
             expected=hashlib.sha256(archive.read_bytes()).hexdigest()
-            fc.verify_release(cache,expected)
-            executable=cache/'release'/folder/'firecracker-v1.17.0-aarch64'
+            release=fc.verify_release(cache,expected)
+            self.addCleanup(shutil.rmtree,release)
+            executable=release/folder/'firecracker-v1.17.0-aarch64'
+            executable.chmod(0o755)
             executable.write_bytes(b'attacker executable')
             (executable.parent/'SHA256SUMS').write_text(hashlib.sha256(executable.read_bytes()).hexdigest()+'  '+executable.name+'\n')
             with self.assertRaisesRegex(ValueError,'VMM executable'):

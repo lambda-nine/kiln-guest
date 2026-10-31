@@ -1,0 +1,20 @@
+{
+  "integration": {
+    "offline": "passed",
+    "network": "passed"
+  },
+  "egress": "passed: test-only TAP/NAT, DNS 1.1.1.1 and public TCP/80",
+  "latency_ms": {
+    "n": 5,
+    "p50": 434.069956,
+    "p95_nearest_rank": 449.741513,
+    "min": 426.837438,
+    "max": 449.741513,
+    "failures": 0
+  },
+  "installed_binaries_unchanged": true,
+  "installed_binaries_sha256": {
+    "/usr/local/bin/kiln": "a6a22d00713625dbd7e5aed050f8979a9000790ca53082e090c832c670d85c9c",
+    "/usr/local/bin/kilnd": "c39c3f3b5a750aef9a519d3afd139d2b7d1fc6b443b67e2cf25577a810eaf621"
+  }
+}

@@ -44,7 +44,7 @@ def profile(manifest, name):
     verify_launch(manifest,entry['firecracker'],entry['jailer'],name)
     return entry
 
-def verify_jailer_argv(manifest, config, argv, profile_name):
+def verify_jailer_argv(manifest, config, argv, profile_name, *, expected_jailer, expected_exec, expected_base):
     """Check the actual planned argument vector, not just a parallel settings map."""
     args=list(map(str,argv))[1:]
     try:
@@ -58,6 +58,9 @@ def verify_jailer_argv(manifest, config, argv, profile_name):
         raise ValueError('unsafe jailer id')
     if tail!=['--api-sock','/api.sock','--config-file','/config.json']:
         raise ValueError('unapproved Firecracker flags (seccomp must remain default)')
+    if (str(argv[0])!=str(expected_jailer) or flags['--exec-file']!=str(expected_exec)
+            or flags['--chroot-base-dir']!=str(expected_base)):
+        raise ValueError('jailer executable or private root differs from verified launch')
     settings=copy.deepcopy(contract()['profiles'][profile_name]['jailer'])
     settings.update(uid=int(flags['--uid']),gid=int(flags['--gid']),cgroup_version=int(flags['--cgroup-version']))
     verify_launch(manifest,config,settings,profile_name)

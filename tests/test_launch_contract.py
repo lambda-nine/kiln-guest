@@ -40,9 +40,11 @@ class LaunchContractTests(unittest.TestCase):
         manifest={'launch_contract':contract()}; config=contract()['profiles']['production']['firecracker']
         argv=['jailer','--id','boot','--exec-file','/verified/firecracker','--uid','10000','--gid','10000',
               '--cgroup-version','2','--chroot-base-dir','/private/jails','--','--api-sock','/api.sock','--config-file','/config.json']
-        verify_jailer_argv(manifest,config,argv,'production')
-        for changed in [argv+['--no-seccomp'],argv[:13]+['--daemonize']+argv[13:],
+        verify_jailer_argv(manifest,config,argv,'production',expected_jailer='jailer',expected_exec='/verified/firecracker',expected_base='/private/jails')
+        for changed in [[s if i!=4 else '/untrusted/fc' for i,s in enumerate(argv)],
+                        [s if i!=12 else '/untrusted/jails' for i,s in enumerate(argv)],
+                        argv+['--no-seccomp'],argv[:13]+['--daemonize']+argv[13:],
                         [s if i!=6 else '0' for i,s in enumerate(argv)]]:
-            with self.assertRaises(ValueError): verify_jailer_argv(manifest,config,changed,'production')
+            with self.assertRaises(ValueError): verify_jailer_argv(manifest,config,changed,'production',expected_jailer='jailer',expected_exec='/verified/firecracker',expected_base='/private/jails')
         bad=copy.deepcopy(config); bad['machine-config']['vcpu_count']=True
         with self.assertRaises(ValueError): verify_launch(manifest,bad,contract()['profiles']['production']['jailer'])

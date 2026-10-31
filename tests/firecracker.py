@@ -17,12 +17,13 @@ import time
 import sys
 import stat
 import re
+import tempfile
 
 ROOT=Path(__file__).resolve().parents[1]
 PINS=json.loads((ROOT/'config/pins.json').read_text())
 sys.path.insert(0,str(ROOT/'scripts'))
 from kernel_policy import validate as validate_kernel_policy
-from inputs import publish_new_directory
+from privileged_launch import TRUST_ROOT, trusted_directory, verified_open, atomic_copy, copy_artifact
 from verify import verify as verify_bundle
 from launch_contract import profile, verify_launch, verify_jailer_argv
 
@@ -34,7 +35,7 @@ def sha(path):
     return h.hexdigest()
 def write(path,data): path.write_text(json.dumps(data,sort_keys=True,indent=2)+'\n')
 
-def verify_release(cache, expected_digest=None):
+def verify_release(cache, expected_digest=None, opened=None):
     """Bind each executed VMM byte to the pinned archive, including cache hits."""
     archive=(cache/'firecracker.tgz').read_bytes()
     expected_digest=expected_digest or PINS['firecracker']['sha256']
@@ -50,19 +51,14 @@ def verify_release(cache, expected_digest=None):
             if not member.isfile() or name in binaries: raise ValueError('invalid VMM archive executable')
             binaries[name]=tar.extractfile(member).read()
     if set(binaries) != names: raise ValueError('missing VMM archive executable')
-    release=cache/'release'
-    if not os.path.lexists(release):
-        def populate(destination):
-            (destination/folder).mkdir()
-            for name,data in binaries.items():
-                (destination/name).write_bytes(data); (destination/name).chmod(0o755)
-        publish_new_directory(release,populate)
-    for directory in [release,release/folder]:
-        if not stat.S_ISDIR(directory.lstat().st_mode): raise ValueError('VMM executable directory is not regular')
+    release=TRUST_ROOT/('vmm-'+expected_digest)
+    fd=trusted_directory(release/folder,create=True); os.close(fd)
     for name,data in binaries.items():
-        path=release/name
-        if not stat.S_ISREG(path.lstat().st_mode) or path.stat().st_size != len(data) or sha(path) != hashlib.sha256(data).hexdigest():
-            raise ValueError(f'VMM executable differs from pinned archive: {name}')
+        path=release/name; digest=hashlib.sha256(data).hexdigest()
+        if not os.path.lexists(path): atomic_copy(io.BytesIO(data),path,digest,executable=True)
+        fd=verified_open(path,digest)
+        if opened is None: os.close(fd)
+        else: opened[path.name.split("-v1.")[0]]=(path,fd)
     return release
 
 class Tap:
@@ -132,30 +128,41 @@ class VM:
         settings['parent_cgroup']=parent_cgroup
         # Validate BEFORE jails, work disks, sockets or VMM processes exist.
         verify_launch(manifest,cfg,settings,profile_name)
-        release=cache/'release'
-        self.fc=release/'release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64'
-        jailer=release/'release-v1.17.0-aarch64/jailer-v1.17.0-aarch64'
-        self.base=cache.parent/'test-jails'
-        self.jail=self.base/self.fc.name/name
-        if self.jail.exists(): raise RuntimeError('existing jail')
-        argv=[jailer,'--id',name,'--exec-file',self.fc,'--uid','10000','--gid','10000',
-              '--cgroup-version','2','--chroot-base-dir',self.base]
-        if parent_cgroup is not None: argv+=['--parent-cgroup',parent_cgroup]
-        argv+=['--','--api-sock','/api.sock','--config-file','/config.json']
-        verify_jailer_argv(manifest,cfg,argv,profile_name)
-        self.root=self.jail/'root'; self.root.mkdir(parents=True)
+        self.vmm_fds={}
         try:
+            verify_release(cache,opened=self.vmm_fds)
+            self.fc,_=self.vmm_fds['firecracker']
+            jailer,jailer_fd=self.vmm_fds['jailer']
+            fd=trusted_directory(TRUST_ROOT,create=True); os.close(fd)
+            self.base=Path(tempfile.mkdtemp(prefix='session-',dir=TRUST_ROOT))
+        except BaseException:
+            for _,fd in self.vmm_fds.values(): os.close(fd)
+            raise
+        self.jail=self.base/self.fc.name/name
+        try:
+            if self.jail.exists(): raise RuntimeError('existing jail')
+            argv=[jailer,'--id',name,'--exec-file',self.fc,'--uid','10000','--gid','10000',
+                  '--cgroup-version','2','--chroot-base-dir',self.base]
+            if parent_cgroup is not None: argv+=['--parent-cgroup',parent_cgroup]
+            argv+=['--','--api-sock','/api.sock','--config-file','/config.json']
+            verify_jailer_argv(manifest,cfg,argv,profile_name,expected_jailer=jailer,expected_exec=self.fc,expected_base=self.base)
+            self.root=self.jail/'root'
+            fd=trusted_directory(self.root,create=True); os.close(fd)
             for source,dest in [('Image','kernel'),('rootfs.squashfs','rootfs')]:
-                os.link(bundle/source,self.root/dest)
+                copy_artifact(bundle/source,self.root/dest,manifest['artifacts'][source])
             work=self.root/'work'
             with work.open('wb') as f: f.truncate(512*1024*1024)
             run(['mkfs.xfs','-q','-f',work]); os.chown(work,10000,10000)
             write(self.root/'config.json',cfg)
+            (self.root/'config.json').chmod(0o444)
             write(out/(name+'.config.json'),cfg)
             write(out/(name+'.jailer.json'),list(map(str,argv)))
             self.start=time.monotonic_ns()
-            self.p=sp.Popen(list(map(str,argv)),stdout=sp.PIPE,stderr=sp.STDOUT,stdin=sp.DEVNULL)
+            self.p=sp.Popen(list(map(str,argv)),executable=f'/proc/self/fd/{jailer_fd}',
+                            pass_fds=(jailer_fd,),stdout=sp.PIPE,stderr=sp.STDOUT,stdin=sp.DEVNULL)
         except BaseException: self.stop(); raise
+        finally:
+            for _,fd in self.vmm_fds.values(): os.close(fd)
     def until(self,marker,timeout=60):
         deadline=time.monotonic()+timeout
         while time.monotonic()<deadline:
@@ -178,7 +185,7 @@ class VM:
             self.buf+=self.p.stdout.read(); self.p.stdout.close()
         (self.out/(self.name+'.console.log')).write_bytes(self.buf)
         write(self.out/(self.name+'.observations.json'),self.observations)
-        shutil.rmtree(self.jail,ignore_errors=True)
+        shutil.rmtree(self.base,ignore_errors=True)
         # Jailer creates only this per-VM cgroup, never remove a parent's group.
         for path in Path('/sys/fs/cgroup').glob(f'**/{self.fc.name}/{self.name}'):
             try: path.rmdir()
