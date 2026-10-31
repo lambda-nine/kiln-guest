@@ -4,7 +4,7 @@
     "B5-broker-image-and-two-clean-builds",
     "B7-capacity-128MiB-overhead-measurement-and-operator-manifest-approval"
   ],
-  "contract_sha256": "035f4328aa03054bd454434f177275f43538e9d875bf220a701c1c79e658c105",
+  "contract_sha256": "ae4b5c5eda30dc2798ca5c2e8958aa1023429023a2bc8d41f5530b68ae5f45ed",
   "handoff_recipe_sha256": "4e92a1a623f42765dd25833d91ef8f112e675720042500328f22b29d6bc630b0",
   "launch_contract_schema": 2,
   "manifest_schema": 2,

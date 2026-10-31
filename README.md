@@ -315,15 +315,17 @@ plus exhaustive typed substitutions: separate VMM UID and GID records (an unequa
 pair is the golden fixture), relay leases, CID, IDs, nonce, work UUID, validated
 inner spec and the verified executable identity vector. The recipe is
 `config/phase1b-contract.json`, pinned by digest in `config/phase1b-inputs.json`,
-and `scripts/phase1b_contract.py` validates manifests, plans, the `KID1` identity
+and `scripts/phase1b_contract.py` validates strict JSON, spec bindings, the `KID1` identity
 block, VMM argv and `/proc/<vmm>/status`. Schema 1 and its benchmarks are unchanged.
 
 **Production stays disabled.** `build.py --profile offline-768-v1` refuses, and
-`verify.py` refuses schema 2 without `--phase1b-fixture`, because the reviewed
-jailer patch, broker and approved three-drive/vsock bundle do not exist. Fixture
-mode accepts only `fixture_only: true` test artifacts and approves nothing. This
-is the contract, not B3's privileged preflight: root ownership and protected
-ancestry of a real installation are exercised only by the Linux fixtures here.
+`verify.py` refuses schema 2 and fixture material unconditionally. There is no
+fixture switch. `tests/phase1b_fixture.py` alone constructs `FixturePlan` with
+schema `kiln-test-plan-v1` and profile `test-only-b1`, from a
+`kiln-test-manifest-v1` manifest; these cannot become a deployable plan or
+PreparedCreate. Independently approving or relabeling the stand-ins cannot open
+production. The reviewed jailer patch, broker and approved bundle do not exist.
+Root ownership and protected ancestry are exercised only by the Linux fixtures.
 Schema 2 `inputs` carry digests rather than inventories, because the 4 MiB
 manifest cap cannot hold schema 1's 33 MB record.
 
@@ -331,7 +333,17 @@ manifest cap cannot hold schema 1's 33 MB record.
 byte for byte; kilnd carries an identical copy in
 `crates/kilnd/tests/fixtures/firecracker/`. `tests/test_launch_contract.py` mutates
 every manifest and plan leaf, including with a recomputed approval, and every
-identity byte. `tests/exec_identity_fixture.py` runs each executable role through
+identity byte. `conformance.json` is the same corpus used by Rust's production
+strict parser/canonicalizer, spec validator and launch recipe derivation. Its
+Unicode, number, duplicate-key, schema and leaf-mutation cases require identical
+verdicts, canonical ASCII bytes and SHA-256. Canonical JSON sorts Unicode scalar
+keys, escapes all non-ASCII using lowercase UTF-16 escapes, permits only integers
+in [-2**63, 2**64-1] (no negative zero), rejects floats/duplicates, and caps depth
+at 32 (root zero, keys/values add one). Raw manifest approval hashes original bytes.
+The complete effective host spec, including labels, binds `host_spec_sha256` in
+the plan/journal contract; the label-free projection binds
+`guest_exec_spec_sha256` in vdc/Hello/Initialize. Label-only changes alter the host
+and plan digests, not the guest digest. B2 still owns the durable journal migration. `tests/exec_identity_fixture.py` runs each executable role through
 real `execveat` races after verification and before exec. It compares the running
 process's `/proc/<pid>/exe` device, inode, size and FD-computed digest with the
 journal tuple; a pathname-exec control with matching argv and digest is refused.

@@ -17,6 +17,7 @@ from generate_phase1b_fixtures import apply_mutation, generate
 from exec_identity_fixture import CASES
 from launch_contract import CMDLINE, FC_SUFFIX, PHASE1B_PROFILE, contract, profile, verify_launch, verify_jailer_argv
 import phase1b_contract as p1
+import phase1b_fixture as f1
 from privileged_launch import TRUST_ROOT, install_executable, open_executable, protected_directory, trusted_directory
 
 class LaunchContractTests(unittest.TestCase):
@@ -106,7 +107,7 @@ class Phase1bFixtureCase(unittest.TestCase):
         self.plan=load('plan.json')
 
     def prepared(self,subs=None):
-        return p1.plan(self.raw,self.approved,subs or self.subs,fixture_only=True)
+        return f1.plan(self.raw,self.approved,subs or self.subs).document
 
     def bundle_dir(self,directory):
         bundle=Path(directory)/'bundle'; executables=Path(directory)/'executables'
@@ -127,8 +128,8 @@ class Phase1bManifestTests(Phase1bFixtureCase):
             self.assertEqual(names,sorted(str(p.relative_to(FIXTURES)) for p in FIXTURES.rglob('*') if p.is_file()))
             for name in names: self.assertEqual((dest/name).read_bytes(),(FIXTURES/name).read_bytes(),name)
 
-    def test_golden_bundle_passes_only_in_fixture_mode(self):
-        p1.verify_bundle(FIXTURES/'bundle',self.approved,FIXTURES/'executables',fixture_only=True)
+    def test_fixture_bundle_rejected_by_production(self):
+        f1.verify_bundle(FIXTURES/'bundle',self.approved,FIXTURES/'executables')
         for call in [lambda:p1.verify_manifest(self.raw,self.approved),
                      lambda:p1.verify_bundle(FIXTURES/'bundle',self.approved,FIXTURES/'executables')]:
             with self.assertRaisesRegex(ValueError,'production disabled'): call()
@@ -147,7 +148,7 @@ class Phase1bManifestTests(Phase1bFixtureCase):
         for raw,approved in [(self.raw,'00'*32),(self.raw,self.approved.upper()),(reformatted,self.approved),
                              (self.raw+b'\n',self.approved),(self.raw,'x')]:
             with self.assertRaisesRegex(ValueError,'approval mismatch|invalid identity'):
-                p1.verify_manifest(raw,approved,fixture_only=True)
+                f1.verify_manifest(raw,approved)
 
     def test_coordinated_image_and_manifest_substitution(self):
         with tempfile.TemporaryDirectory() as d:
@@ -156,7 +157,7 @@ class Phase1bManifestTests(Phase1bFixtureCase):
             forged=mutated(self.manifest,('artifacts','Image'),{'bytes':len(image),'sha256':p1.digest(image)})
             self.rewrite(bundle,forged)
             with self.assertRaisesRegex(ValueError,'approval mismatch'):
-                p1.verify_bundle(bundle,self.approved,executables,fixture_only=True)
+                f1.verify_bundle(bundle,self.approved,executables)
 
     def test_strict_json(self):
         good=b'{"a":1}'
@@ -175,7 +176,7 @@ class Phase1bManifestTests(Phase1bFixtureCase):
                 for replacement in [changed(value),MISSING]:
                     approved=self.rewrite(bundle,mutated(self.manifest,path,replacement))
                     with self.assertRaises(ValueError,msg=(path,replacement)):
-                        p1.verify_bundle(bundle,approved,executables,fixture_only=True)
+                        f1.verify_bundle(bundle,approved,executables)
                     count+=1
             self.assertGreater(count,400)
             self.assertEqual(self.rewrite(bundle,self.manifest),p1.digest((bundle/'manifest.json').read_bytes()))
@@ -189,7 +190,7 @@ class Phase1bManifestTests(Phase1bFixtureCase):
                 self.assertNotEqual(document,self.manifest,case['name'])
                 approved=self.rewrite(bundle,document)
                 with self.assertRaises(ValueError,msg=case['name']):
-                    p1.verify_bundle(bundle,approved,executables,fixture_only=True)
+                    f1.verify_bundle(bundle,approved,executables)
 
     def test_contract_pins_and_recipe_drift(self):
         pins=p1.inputs_pin()
@@ -243,17 +244,17 @@ class Phase1bLegacyRefusalTests(Phase1bFixtureCase):
         self.assertIs(document['broker']['enabled'],False)
         self.assertEqual(document['launch_contract'],contract())
         self.assertNotIn('vsock',document['launch_contract']['profiles']['production']['firecracker'])
-        for fixture_only in [True,False]:
+        for validate in [p1.verify_manifest,f1.verify_manifest]:
             with self.assertRaisesRegex(ValueError,'legacy no-vsock is refused'):
-                p1.verify_manifest(legacy,p1.digest(legacy),fixture_only=fixture_only)
+                validate(legacy,p1.digest(legacy))
         # A schema number or a grafted device cannot launder the legacy contract.
         for forged in [{**document,'schema':2},{**document,'schema':True}]:
             raw=json.dumps(forged).encode()
-            with self.assertRaises(ValueError): p1.verify_manifest(raw,p1.digest(raw),fixture_only=True)
+            with self.assertRaises(ValueError): f1.verify_manifest(raw,p1.digest(raw))
         graft=copy.deepcopy(document); graft['schema']=2
         graft['launch_contract']['profiles']['production']['firecracker']['vsock']={'guest_cid':3,'uds_path':'/run/vsock.sock'}
         raw=json.dumps(graft).encode()
-        with self.assertRaises(ValueError): p1.verify_manifest(raw,p1.digest(raw),fixture_only=True)
+        with self.assertRaises(ValueError): f1.verify_manifest(raw,p1.digest(raw))
 
     def test_real_legacy_manifest_refused_when_present(self):
         candidates=[ROOT.parent/'kiln-guest/dist/bundle-a/manifest.json',Path.home()/'kiln-guest-build/bundle-a/manifest.json',ROOT.parent/'bundle-a/manifest.json']
@@ -263,7 +264,7 @@ class Phase1bLegacyRefusalTests(Phase1bFixtureCase):
         self.assertEqual(p1.digest(raw),'e855fbee1914cc6ea5e57a1250610e128412c85a905c94a48fb54afdaa47f3d3')
         self.assertGreater(len(raw),p1.MAX_MANIFEST)
         with self.assertRaisesRegex(ValueError,'exceeds 4 MiB'):
-            p1.verify_manifest(raw,p1.digest(raw),fixture_only=True)
+            f1.verify_manifest(raw,p1.digest(raw))
 
     def test_schema1_entry_points_refuse_phase1b_selection(self):
         manifest={'launch_contract':contract()}; entry=contract()['profiles']['production']
@@ -283,11 +284,8 @@ class Phase1bLegacyRefusalTests(Phase1bFixtureCase):
         verify=ROOT/'scripts/verify.py'
         plain=sp.run([sys.executable,str(verify),str(FIXTURES/'bundle')],capture_output=True,text=True)
         self.assertNotEqual(plain.returncode,0); self.assertIn('production is disabled',plain.stderr)
-        ok=sp.run([sys.executable,str(verify),'--phase1b-fixture',self.approved,str(FIXTURES/'bundle'),str(FIXTURES/'executables')],capture_output=True,text=True)
-        self.assertEqual(ok.returncode,0,ok.stderr)
-        self.assertIs(json.loads(ok.stdout)['deployment_approved'],False)
-        wrong=sp.run([sys.executable,str(verify),'--phase1b-fixture','00'*32,str(FIXTURES/'bundle'),str(FIXTURES/'executables')],capture_output=True,text=True)
-        self.assertNotEqual(wrong.returncode,0)
+        switched=sp.run([sys.executable,str(verify),'--phase1b-fixture',self.approved,str(FIXTURES/'bundle'),str(FIXTURES/'executables')],capture_output=True,text=True)
+        self.assertNotEqual(switched.returncode,0)
 
     def test_init_keeps_broker_disabled_and_markers_diagnostic(self):
         source=(ROOT/'src/init.c').read_text()
@@ -301,12 +299,12 @@ class Phase1bLegacyRefusalTests(Phase1bFixtureCase):
 class Phase1bBundleFileTests(Phase1bFixtureCase):
     def refused(self,bundle,executables,approved=None):
         with self.assertRaises((ValueError,OSError)):
-            p1.verify_bundle(bundle,approved or self.approved,executables,fixture_only=True)
+            f1.verify_bundle(bundle,approved or self.approved,executables)
 
     def tree(self,edit):
         with tempfile.TemporaryDirectory() as d:
             bundle,executables=self.bundle_dir(d)
-            p1.verify_bundle(bundle,self.approved,executables,fixture_only=True)
+            f1.verify_bundle(bundle,self.approved,executables)
             edit(bundle,executables)
             self.refused(bundle,executables)
 
@@ -348,7 +346,7 @@ class Phase1bBundleFileTests(Phase1bFixtureCase):
             bundle,executables=self.bundle_dir(d)
             with (bundle/'manifest.json').open('wb') as f: f.truncate(p1.MAX_MANIFEST+1)
             with self.assertRaisesRegex(ValueError,'exceeds size limit'):
-                p1.verify_bundle(bundle,self.approved,executables,fixture_only=True)
+                f1.verify_bundle(bundle,self.approved,executables)
 
     def test_static_elf_closure(self):
         for role in p1.ROLES: p1.verify_static_elf((FIXTURES/'executables'/role).read_bytes())
@@ -367,8 +365,8 @@ class Phase1bBundleFileTests(Phase1bFixtureCase):
 
 class Phase1bPlanTests(Phase1bFixtureCase):
     def test_golden_plans(self):
-        p1.verify_plan(self.raw,self.approved,self.subs,self.plan,fixture_only=True)
-        p1.verify_plan(self.raw,self.approved,load('substitutions-equal-ids.json'),load('plan-equal-ids.json'),fixture_only=True)
+        f1.verify_plan(self.raw,self.approved,self.subs,self.plan)
+        f1.verify_plan(self.raw,self.approved,load('substitutions-equal-ids.json'),load('plan-equal-ids.json'))
         digests=load('digests.json')
         self.assertEqual(p1.launch_digest(self.plan),digests['launch_sha256'])
         self.assertEqual(p1.plan_digest(self.plan),digests['plan_sha256'])
@@ -380,7 +378,7 @@ class Phase1bPlanTests(Phase1bFixtureCase):
             if not path: continue
             for replacement in [changed(value),MISSING]:
                 with self.assertRaises(ValueError,msg=(path,replacement)):
-                    p1.verify_plan(self.raw,self.approved,self.subs,mutated(self.plan,path,replacement),fixture_only=True)
+                    f1.verify_plan(self.raw,self.approved,self.subs,mutated(self.plan,path,replacement))
                 count+=1
         self.assertGreater(count,500)
 
@@ -428,7 +426,7 @@ class Phase1bPlanTests(Phase1bFixtureCase):
         swapped=mutated(mutated(self.subs,('uid',),self.subs['gid']),('gid',),self.subs['uid'])
         with self.assertRaises(ValueError): self.prepared(swapped)
         collapsed=copy.deepcopy(self.plan); collapsed['launch']['jailer_argv'][8]=collapsed['launch']['jailer_argv'][6]
-        with self.assertRaises(ValueError): p1.verify_plan(self.raw,self.approved,self.subs,collapsed,fixture_only=True)
+        with self.assertRaises(ValueError): f1.verify_plan(self.raw,self.approved,self.subs,collapsed)
 
     def test_every_substitution_rejects_bad_values(self):
         H16='ab'*8
@@ -573,7 +571,7 @@ class Phase1bIdentityTests(Phase1bFixtureCase):
         self.assertEqual(self.block()[:4],b'KID1')
         self.assertEqual(record['manifest_sha256'],self.approved)
         self.assertEqual(record['launch_sha256'],p1.launch_digest(self.plan))
-        self.assertEqual(record['inner_spec_sha256'],p1.digest(p1.canonical(self.subs['inner_spec'])))
+        self.assertEqual(record['guest_exec_spec_sha256'],p1.digest(p1.canonical(self.subs['inner_spec'])))
         for name in ['instance_id','allocation_id','sandbox_id','boot_nonce','work_uuid']:
             self.assertEqual(record[name],self.subs[name])
         self.assertEqual(sorted(record),sorted(p1.contract()['identity']['fields']))
@@ -601,7 +599,7 @@ class Phase1bIdentityTests(Phase1bFixtureCase):
         tail=bytearray(framed(canonical)); tail[-1]=1
         with self.assertRaisesRegex(ValueError,'padding'): p1.read_identity(bytes(tail))
         for name,value in [('instance_id','x'),('allocation_id',1),('sandbox_id','ab'),('boot_nonce','AB'*32),('manifest_sha256','0'),
-                           ('launch_sha256',None),('inner_spec_sha256','0'*63),('work_uuid','x')]:
+                           ('launch_sha256',None),('guest_exec_spec_sha256','0'*63),('work_uuid','x')]:
             with self.assertRaises(ValueError,msg=name): p1.read_identity(framed(p1.canonical({**record,name:value})))
 
     def test_launch_digest_excludes_block_but_covers_identity_drive(self):

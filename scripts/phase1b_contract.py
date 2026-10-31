@@ -1,5 +1,11 @@
 """Schema 2 manifest, launch plan and identity contract for offline-768-v1 (B1).
 
+Canonical JSON: ASCII bytes, Unicode-scalar key order, compact separators, Python
+ensure_ascii escapes (lowercase hex, surrogate pairs), no normalization, root depth
+0 and key/value depth +1 capped at 32; strict UTF-8 input at most 4 MiB, no BOM or
+duplicate decoded keys. Integers only in [-2**63, 2**64-1], no negative zero,
+leading zeros, plus signs, floats, exponents or non-finite constants.
+
 This freezes the wire and fixture contract only: no allocation, installer,
 broker or VM launcher. Schema 1 remains the legacy benchmark contract in
 launch_contract.py. Passing here is never deployment approval: production is
@@ -32,13 +38,9 @@ SANDBOX_ID = re.compile(r'sb-[0-9a-f]{16}')
 PLACEHOLDER = re.compile(r'\$([a-z_.]+)')
 TIMING = {'--start-time-us', '--start-time-cpu-us', '--parent-cpu-time-us'}
 
-# Fixture manifests name these exactly. B4 and B5 supply the real patch and broker.
-FIXTURE_PROVENANCE = 'b1-fixture-static-aarch64-elf-v1'
-FIXTURE_JAILER_PATCH = b'B1 fixture: stands in for the reviewed jailer patch B4 supplies. Not a patch.\n'
-FIXTURE_BROKER_COMMIT = 'd94996c9f1d9795b3a47d9ffc71d40c452a2e6ee'
-
 
 def canonical(value):
+    _bounded(value)
     return json.dumps(value, sort_keys=True, separators=(',', ':'),
                       ensure_ascii=True, allow_nan=False).encode('ascii')
 
@@ -50,15 +52,23 @@ def digest(data):
 def _bounded(value, depth=0):
     if depth > 32:
         raise ValueError('JSON depth')
-    if isinstance(value, str):
+    if value is None or type(value) is bool:
+        return
+    if type(value) is int:
+        integer(value, -(2**63), U64)
+    elif isinstance(value, str):
         value.encode('utf-8')  # A lone surrogate escape is not strict UTF-8.
     elif isinstance(value, dict):
         for key, item in value.items():
+            if not isinstance(key, str):
+                raise ValueError('JSON key must be a string')
             _bounded(key, depth + 1)
             _bounded(item, depth + 1)
     elif isinstance(value, list):
         for item in value:
             _bounded(item, depth + 1)
+    else:
+        raise ValueError('only JSON integers, never floats')
 
 
 def strict_json(raw):
@@ -74,9 +84,13 @@ def strict_json(raw):
         return result
     def no_number(_):
         raise ValueError('floats/constants forbidden')
+    def parse_integer(text):
+        if text == '-0':
+            raise ValueError('negative zero forbidden')
+        return integer(int(text), -(2**63), U64)
     try:
         value = json.loads(bytes(raw).decode('utf-8'), object_pairs_hook=pairs,
-                           parse_float=no_number, parse_constant=no_number)
+                           parse_int=parse_integer, parse_float=no_number, parse_constant=no_number)
         _bounded(value)
         return value
     except (RecursionError, UnicodeError, json.JSONDecodeError) as error:
@@ -171,51 +185,18 @@ def manifest_inputs(policy):
             'handoff_recipe_sha256': digest(canonical(policy['handoff']))}
 
 
-def fixture_inputs(artifacts):
-    return {'provenance': FIXTURE_PROVENANCE, 'broker_source_commit': FIXTURE_BROKER_COMMIT,
-            'jailer_patch_sha256': digest(FIXTURE_JAILER_PATCH),
-            # A fixture's only source inputs are its own artifact bytes.
-            'source_inventory_sha256': digest(canonical(artifacts))}
-
-
-def verify_manifest(raw, approved_sha256, *, fixture_only=False):
-    """Authenticate exact bytes, then the complete schema. Returns the parsed manifest."""
+def verify_manifest(raw, approved_sha256):
+    """Production entry point. No fixture override or test schema is accepted."""
     matching(approved_sha256, DIGEST)
     if digest(raw) != approved_sha256:
         raise ValueError('independent manifest approval mismatch')
     manifest = strict_json(raw)
-    policy = contract()
-    fixed = manifest_fields(policy)
-    if not isinstance(manifest, dict) or type(manifest.get('schema')) is not int or manifest['schema'] != fixed['schema']:
-        raise ValueError('unsupported Phase 1b manifest (legacy no-vsock is refused)')
-    keys(manifest, [*fixed, 'fixture_only', 'artifacts', 'executables', 'inputs'])
-    for name, expected in fixed.items():
-        if canonical(manifest[name]) != canonical(expected):
-            raise ValueError(f'unsupported Phase 1b manifest field: {name}')
-    if type(manifest['fixture_only']) is not bool:
-        raise ValueError('invalid fixture flag')
-    keys(manifest['artifacts'], ARTIFACTS)
-    for record in manifest['artifacts'].values():
-        keys(record, ['bytes', 'sha256'])
-        integer(record['bytes'], 1, MAX_ARTIFACT)
-        matching(record['sha256'], DIGEST)
-    keys(manifest['executables'], ROLES)
-    seen = set()
-    for pin in manifest['executables'].values():
-        keys(pin, ['bytes', 'sha256', 'format', 'dependencies'])
-        integer(pin['bytes'], 1, MAX_ARTIFACT)
-        seen.add(matching(pin['sha256'], DIGEST))
-        if pin['format'] != policy['executable']['format'] or pin['dependencies'] != []:
-            raise ValueError('initial profile requires static ELF; unbound loader refused')
-    if len(seen) != len(ROLES):
-        raise ValueError('one executable image cannot serve two roles')
-    # B1 supplies fixture manifests only, never a substitute production manifest.
-    if not fixture_only or manifest['fixture_only'] is not True:
-        raise ValueError('production disabled: broker/patched-jailer/bundle approval absent')
-    expected = {**manifest_inputs(policy), **fixture_inputs(manifest['artifacts'])}
-    if canonical(manifest['inputs']) != canonical(expected):
-        raise ValueError('input recipe mismatch')
-    return manifest
+    if not isinstance(manifest, dict):
+        raise ValueError('manifest object required')
+    if manifest.get('fixture_only') is not False or type(manifest.get('schema')) is not int or manifest['schema'] != 2:
+        raise ValueError('production disabled: fixture/legacy no-vsock is refused')
+    # No production manifest exists at B1. B4/B5/B7 must revise this gate.
+    raise ValueError('production disabled: broker/patched-jailer/bundle approval absent')
 
 
 def _open_regular(directory_fd, name, limit):
@@ -251,7 +232,7 @@ def _verify_record(directory_fd, name, record):
     return data
 
 
-def verify_bundle(directory, approved_sha256, executables, *, fixture_only=False):
+def verify_bundle(directory, approved_sha256, executables):
     """Verify the approval, schema and every declared byte. Creates nothing."""
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
     root = os.open(directory, flags)
@@ -261,7 +242,7 @@ def verify_bundle(directory, approved_sha256, executables, *, fixture_only=False
             raw = _read_fd(fd)
         finally:
             os.close(fd)
-        manifest = verify_manifest(raw, approved_sha256, fixture_only=fixture_only)
+        manifest = verify_manifest(raw, approved_sha256, )
         if set(os.listdir(root)) != {'manifest.json', *manifest['artifacts']}:
             raise ValueError('bundle artifact set differs from manifest')
         for name, record in manifest['artifacts'].items():
@@ -342,6 +323,23 @@ def _inner_spec(spec, policy):
         raise ValueError('duplicate writable path')
 
 
+def spec_binding(host_spec):
+    keys(host_spec, [*contract()['guest_exec_spec_fields'], 'labels'])
+    guest = {key: value for key, value in host_spec.items() if key != 'labels'}
+    _inner_spec(guest, contract())
+    labels = host_spec['labels']
+    if not isinstance(labels, dict) or len(labels) > 32:
+        raise ValueError('invalid labels')
+    for key, value in labels.items():
+        if (not isinstance(key, str) or not re.fullmatch(r'[A-Za-z0-9_./-]{1,63}', key)
+                or not isinstance(value, str) or len(value.encode('utf-8')) > 256
+                or any(ord(c) < 32 or 127 <= ord(c) < 160 for c in value)):
+            raise ValueError('invalid label')
+    return {'host_spec': copy.deepcopy(host_spec),
+            'host_spec_sha256': digest(canonical(host_spec)),
+            'guest_exec_spec_sha256': digest(canonical(guest))}
+
+
 def _identity_vector(vector, manifest):
     """Node-local inode values come only from verified installed descriptors."""
     keys(vector, ROLES)
@@ -408,65 +406,14 @@ def work_bytes(disk_bytes, work):
     return max(work['minimum_bytes'], rounded)
 
 
-def plan(raw_manifest, approved_sha256, substitutions, *, fixture_only=False):
-    """Expand the approved template into the complete plan. Allocates nothing."""
-    manifest = verify_manifest(raw_manifest, approved_sha256, fixture_only=fixture_only)
-    policy = manifest['launch_contract']
-    values = copy.deepcopy(substitutions)
-    verify_substitutions(values, manifest)
-    backend = 'fc-' + values['allocation_id']
-    cgroup = 'kilnd-firecracker/' + values['instance_id'] + '/' + backend
-    jail_root = '/var/lib/kilnd-helper/jails/firecracker/' + backend + '/root'
-    vsock = jail_root + policy['firecracker']['vsock']['uds_path']
-    if len(vsock.encode()) >= 108:
-        raise ValueError('vsock path exceeds sockaddr_un')
-    spec = values['inner_spec']
-    work = work_bytes(spec['disk_bytes'], policy['work'])
-    disk = work + policy['work']['host_allowance_bytes']
-    if disk > U64:
-        raise ValueError('reservation exceeds u64')
-    backing = '/var/lib/kilnd-helper/work/' + values['instance_id'] + '/' + backend + '/work.xfs'
-    paths = {role: policy['executable']['store'].format(sha256=values['executables'][role]['sha256'], role=role)
-             for role in ROLES}
-    typed = {**paths, 'backend_id': backend, 'vmm_cgroup': cgroup + '/vm/vmm', 'cid': values['cid'],
-             'uid': values['uid']['value'], 'gid': values['gid']['value'],
-             'relay_uid': values['relay_uid']['value'], 'relay_gid': values['relay_gid']['value'],
-             'work_uuid': values['work_uuid'], 'work_backing_path': backing, 'work_bytes': work}
-    recipe = {name: _expand(policy[name], typed) for name in
-              ['jail', 'work', 'cgroups', 'workers', 'shared', 'vmm_credentials', 'relay_credentials',
-               'process', 'identity', 'handoff', 'timing_exception']}
-    semantic, template = [], iter(policy['vmm_argv'])
-    for item in template:
-        if item in TIMING:
-            next(template)
-        else:
-            semantic.append(item)
-    admission = policy['admission']
-    launch = {'firecracker': _expand(policy['firecracker'], typed),
-              'jailer_argv': [str(item) for item in _expand(policy['jailer_argv'], typed)],
-              'vmm_argv_semantic': _expand(semantic, typed),
-              'formatter_argv': recipe['work']['formatter_argv'],
-              'executable_paths': paths,
-              'jail_root': jail_root,
-              'vsock_host_path': vsock,
-              'cgroup': cgroup,
-              'work_backing_path': backing,
-              'work_bytes': work,
-              'reservation': {'memory_bytes': admission['guest_memory_bytes'] + admission['host_overhead_bytes'],
-                              'disk_bytes': disk,
-                              'pids': spec['pids'] + admission['guest_service_pids'] + admission['host_pids'],
-                              'host_pids': admission['host_pids'],
-                              'host_cpu_millis': admission['cpu_millis'],
-                              'virtual_cpu_slots': admission['vcpu_slots']},
-              'resource_recipe': recipe}
-    return {'schema': policy['schema'], 'profile': policy['profile'],
-            'manifest_sha256': approved_sha256, 'substitutions': values, 'launch': launch}
+def plan(raw_manifest, approved_sha256, substitutions):
+    """Production has no constructible plan until the reviewed B4/B5/B7 gates."""
+    verify_manifest(raw_manifest, approved_sha256)
+    raise ValueError('production disabled')
 
 
-def verify_plan(raw_manifest, approved_sha256, substitutions, actual, *, fixture_only=False):
-    """Compare the object about to be used with an independent expansion."""
-    if canonical(plan(raw_manifest, approved_sha256, substitutions, fixture_only=fixture_only)) != canonical(actual):
-        raise ValueError('effective configuration/argv/resource recipe mismatch')
+def verify_plan(raw_manifest, approved_sha256, substitutions, actual):
+    plan(raw_manifest, approved_sha256, substitutions)
 
 
 def verify_config_bytes(prepared, raw):
@@ -566,7 +513,7 @@ def identity_block(prepared):
               ['instance_id', 'allocation_id', 'sandbox_id', 'boot_nonce', 'work_uuid']}
     record.update(manifest_sha256=matching(prepared['manifest_sha256'], DIGEST),
                   launch_sha256=launch_digest(prepared),
-                  inner_spec_sha256=digest(canonical(values['inner_spec'])))
+                  guest_exec_spec_sha256=digest(canonical(values['inner_spec'])))
     payload = canonical(record)
     if not 1 <= len(payload) <= 4088:
         raise ValueError('identity record length')
@@ -586,7 +533,7 @@ def read_identity(block):
     matching(record['instance_id'], ID128)
     matching(record['allocation_id'], ID128)
     matching(record['sandbox_id'], SANDBOX_ID)
-    for name in ['boot_nonce', 'manifest_sha256', 'launch_sha256', 'inner_spec_sha256']:
+    for name in ['boot_nonce', 'manifest_sha256', 'launch_sha256', 'guest_exec_spec_sha256']:
         matching(record[name], DIGEST)
     _work_uuid(record['work_uuid'])
     if canonical(record) != raw:
