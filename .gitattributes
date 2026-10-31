@@ -1,3 +1,7 @@
 # Preserve original serial CRLFs and tool whitespace in raw evidence.
 results/*.log -text -diff
 results/kiln-elf.txt -text -diff
+# Golden fixtures are compared byte for byte with kilnd's copies.
+tests/fixtures/firecracker/** -text
+# Groups: is empty in /proc/<pid>/status, so this golden line ends in a tab.
+tests/fixtures/firecracker/vmm-status.txt -whitespace

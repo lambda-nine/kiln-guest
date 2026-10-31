@@ -1,8 +1,8 @@
 # kiln-guest
 
 A local, versioned Firecracker guest bundle for **VM outside, kiln inside**.
-Phase 1a only: no kilnd changes and no broker protocol. No remote repository
-or published image is created.
+Phase 1a's bundle has no kilnd changes and no broker protocol. Phase 1b's contract
+is frozen below, not yet built. No published image is created.
 
 The bundle contains Linux 6.18.56 for aarch64 (4 KiB pages), kiln at
 `00d61c546db7aa67ad283d10c2ca6165ca5f8166`, a read-only squashfs root, and
@@ -304,9 +304,40 @@ disk and host-filtered TAP; and configure per-session addressing. The future
 broker should replace only the disabled init hook, stay outside tool
 sandboxes, use bounded/versioned vsock frames and an image/protocol readiness
 handshake, and supervise cancellation/output drainage. Report ready only
-after `KG_READY` plus the broker handshake, not merely a live VMM or the
-benchmark marker. Guest image version and inner `SandboxSpec.image` are
+after the broker handshake, not merely a live VMM or a marker: `KG_READY` and
+`KG_FIRST_COMMAND` are schema 1 diagnostics. Guest image version and inner `SandboxSpec.image` are
 separate concepts. Phase 1b follows kilnd Phase 0 and is outside this repo.
+
+## Phase 1b contract (B1)
+
+`offline-768-v1` is manifest and launch contract schema 2. It freezes a template
+plus exhaustive typed substitutions: separate VMM UID and GID records (an unequal
+pair is the golden fixture), relay leases, CID, IDs, nonce, work UUID, validated
+inner spec and the verified executable identity vector. The recipe is
+`config/phase1b-contract.json`, pinned by digest in `config/phase1b-inputs.json`,
+and `scripts/phase1b_contract.py` validates manifests, plans, the `KID1` identity
+block, VMM argv and `/proc/<vmm>/status`. Schema 1 and its benchmarks are unchanged.
+
+**Production stays disabled.** `build.py --profile offline-768-v1` refuses, and
+`verify.py` refuses schema 2 without `--phase1b-fixture`, because the reviewed
+jailer patch, broker and approved three-drive/vsock bundle do not exist. Fixture
+mode accepts only `fixture_only: true` test artifacts and approves nothing. This
+is the contract, not B3's privileged preflight: root ownership and protected
+ancestry of a real installation are exercised only by the Linux fixtures here.
+Schema 2 `inputs` carry digests rather than inventories, because the 4 MiB
+manifest cap cannot hold schema 1's 33 MB record.
+
+`tests/generate_phase1b_fixtures.py` regenerates `tests/fixtures/firecracker/`
+byte for byte; kilnd carries an identical copy in
+`crates/kilnd/tests/fixtures/firecracker/`. `tests/test_launch_contract.py` mutates
+every manifest and plan leaf, including with a recomputed approval, and every
+identity byte. `tests/exec_identity_fixture.py` runs each executable role through
+real `execveat` races after verification and before exec. It compares the running
+process's `/proc/<pid>/exe` device, inode, size and FD-computed digest with the
+journal tuple; a pathname-exec control with matching argv and digest is refused.
+These are real static test ELFs, not the jailer or VMM. B4 proves the real J/V
+chain, its capability masks and the handoff. Raw evidence, including the measured
+Firecracker suffix for this topology, is in `results/phase1b-b1/`.
 
 Source basis: [Firecracker custom image documentation](https://github.com/firecracker-microvm/firecracker/blob/v1.17.0/docs/rootfs-and-kernel-setup.md),
 the sibling spike report `research/2026-10-30-firecracker-spike.md`, and kiln's

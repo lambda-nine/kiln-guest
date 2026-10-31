@@ -13,7 +13,8 @@ import tarfile
 import urllib.request
 from inputs import cargo_arguments, cargo_environment, publish_new_directory, sha, vendor_crates, verify_source
 from kernel_policy import validate as validate_kernel_policy
-from launch_contract import contract, CMDLINE, FC_SUFFIX
+from launch_contract import contract, CMDLINE, FC_SUFFIX, PHASE1B_PROFILE
+from phase1b_contract import refuse_build
 from build_environment import FIXED_PATH
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -322,7 +323,10 @@ if __name__ == '__main__':
     parser.add_argument('--kiln-repo',type=Path)
     parser.add_argument('--jobs',type=int,default=3)
     parser.add_argument('--source-digest',help='stable inventory digest the staged source must match')
+    parser.add_argument('--profile',choices=['legacy-benchmark',PHASE1B_PROFILE],default='legacy-benchmark',
+                        help='manifest schema: 1 for the benchmark bundle; 2 is refused until its artifacts exist')
     args = parser.parse_args()
+    if args.profile == PHASE1B_PROFILE: refuse_build()
     for number in [signal.SIGTERM,signal.SIGHUP]: signal.signal(number,lambda *_:sys.exit(143))
     if args.action == 'pin-toolchain':
         path=ROOT/'config/build-lock.json';lock=json.loads(path.read_text());current=toolchain()

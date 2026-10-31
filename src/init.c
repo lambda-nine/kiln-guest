@@ -299,6 +299,9 @@ int main(void) {
     trace("first-command-start");
     check("first-true", RUN("run", "--", "true") == 0);
     trace("first-command-done");
+    /* Schema 1 benchmark label: the initial one-shot kiln run has exited. No
+       marker grants readiness; schema 2 reports host-validated create_ready and
+       first_tool_result, from a broker flow this boot does not have. */
     puts("KG_FIRST_COMMAND");
     const char *dirs[] = {"/run/kiln", "/run/kiln/net", "/run/kiln/net/dns", "/run/kiln/net/leases"};
     for (size_t i=0; i<sizeof(dirs)/sizeof(dirs[0]); i++) {
@@ -328,8 +331,12 @@ int main(void) {
     }
     check("dns-ready", ready);
     trace("dns-ready");
+    /* Schema 1 diagnostic: DNS answers. It is not offline-768-v1 readiness, which
+       the host establishes only through the validated broker handshake. */
     puts("KG_READY");
-    /* Phase 1b broker hook: disabled. No vsock or serial command listener. */
+    /* Phase 1b broker hook: disabled. No vsock or serial command listener. B5 alone
+       adds the vdc identity reader and supervised broker; until then schema 2 is
+       refused, and no build of this init satisfies offline-768-v1. */
     if (option("kiln.test=1")) tests(option("kiln.net=1"));
     sigset_t signals; sigemptyset(&signals);
     sigaddset(&signals, SIGTERM); sigaddset(&signals, SIGINT);

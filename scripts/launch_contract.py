@@ -1,11 +1,18 @@
 """Canonical cold-boot contract. No unlisted device, flag or override is accepted.
 
-Phase 1b must authenticate the manifest identity before using this contract.
+Schema 1 here is the legacy benchmark contract and stays unchanged. Phase 1b's
+offline-768-v1 is schema 2 in phase1b_contract.py; selecting it through a schema 1
+entry point is refused, never translated. Phase 1b must authenticate the manifest
+identity before using either contract.
 Paths below are fixed names inside a fresh per-session jail, not shared disks.
 """
 import copy
 import json
 import re
+from phase1b_contract import (PROFILE as PHASE1B_PROFILE, plan as phase1b_plan,  # noqa: F401
+                              verify_bundle as verify_phase1b_bundle,
+                              verify_manifest as verify_phase1b_manifest,
+                              verify_plan as verify_phase1b_plan)
 
 CMDLINE='console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on'
 
@@ -30,7 +37,13 @@ def contract():
 def exact(a,b):
     return json.dumps(a,sort_keys=True,separators=(',',':'),allow_nan=False)==json.dumps(b,sort_keys=True,separators=(',',':'),allow_nan=False)
 
+def legacy_profile(name):
+    if name==PHASE1B_PROFILE:
+        raise ValueError('offline-768-v1 requires an approved schema 2 manifest, not the schema 1 contract')
+    return name
+
 def verify_launch(manifest, config, jailer, profile='production'):
+    legacy_profile(profile)
     expected=contract()
     if not exact(manifest.get('launch_contract'),expected):
         raise ValueError('manifest launch contract is missing or unsupported')
@@ -40,12 +53,13 @@ def verify_launch(manifest, config, jailer, profile='production'):
         raise ValueError('launch deviates from approved contract')
 
 def profile(manifest, name):
-    entry=copy.deepcopy(contract()['profiles'][name])
+    entry=copy.deepcopy(contract()['profiles'][legacy_profile(name)])
     verify_launch(manifest,entry['firecracker'],entry['jailer'],name)
     return entry
 
 def verify_jailer_argv(manifest, config, argv, profile_name, *, expected_jailer, expected_exec, expected_base):
     """Check the actual planned argument vector, not just a parallel settings map."""
+    legacy_profile(profile_name)
     args=list(map(str,argv))[1:]
     try:
         boundary=args.index('--'); options=args[:boundary]; tail=args[boundary+1:]

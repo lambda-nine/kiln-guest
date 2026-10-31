@@ -1,0 +1,1162 @@
+{
+  "boot_id": "459ffc26-187e-4e1b-89ee-4e5fb39172f4",
+  "fixture": "real static aarch64 ELF test images; not the jailer or VMM; B4 proves the actual J/V chain",
+  "kernel": "6.8.0-147-generic",
+  "machine": "aarch64",
+  "records": [
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "attacker_source_parent_exit": 0,
+      "boundary": "before-S-exec-J",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 140,
+        "role": "jailer",
+        "sha256": "67c0cc70811d41807bdc80370db220fd7ede690ae634d144a6cc2653de064908",
+        "st_dev": 64769,
+        "st_ino": 788271
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 131,
+        "installation_generation": 1,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 131,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": null,
+      "race": "source-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "jailer",
+      "surviving_fds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "boundary": "before-S-exec-J",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 143,
+        "role": "jailer",
+        "sha256": "e291859464ce16c68f20d467702f2fa84dc2fa984d330b3348c2f965bd9a0f0a",
+        "st_dev": 64769,
+        "st_ino": 788270
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 131,
+        "installation_generation": 1,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 131,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "installed executable size mismatch",
+      "race": "installed-name",
+      "retained_fd_ran_expected_inode": true,
+      "role": "jailer",
+      "surviving_fds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "boundary": "before-S-exec-J",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 131,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788270
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 131,
+        "installation_generation": 1,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 131,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-identical-bytes",
+      "retained_fd_ran_expected_inode": true,
+      "role": "jailer",
+      "surviving_fds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "boundary": "before-S-exec-J",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 131,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788271
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 131,
+        "installation_generation": 1,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 131,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "jailer",
+      "surviving_fds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "argv": [
+        "/opt/kilnd/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--exec-file",
+        "/opt/kilnd/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker",
+        "--uid",
+        "300001",
+        "--gid",
+        "300002",
+        "--chroot-base-dir",
+        "/var/lib/kilnd-helper/jails",
+        "--cgroup-version",
+        "2",
+        "--parent-cgroup",
+        "kilnd-firecracker/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/vm/vmm",
+        "--new-pid-ns",
+        "--resource-limit",
+        "no-file=256",
+        "--",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "digest_matches_prior_hash": true,
+      "expected": {
+        "bytes": 131,
+        "installation_generation": 1,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "race": "closed-fd-reused",
+      "reused_fd_observation_refusal": "actual executable identity disagrees with retained FD",
+      "reused_fd_observed": {
+        "bytes": 131,
+        "role": "jailer",
+        "sha256": "608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "reused_fd_preexec_refusal": "actual executable identity disagrees with retained FD",
+      "role": "jailer",
+      "verdict": "refused"
+    },
+    {
+      "actual_argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "attacker_source_parent_exit": 0,
+      "boundary": "before-J-exec-V",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 145,
+        "role": "firecracker",
+        "sha256": "6b18408e024c6bd86f8bbd053a840d5808988a232c5c5e03db22f8b8cfe81edd",
+        "st_dev": 64769,
+        "st_ino": 788268
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 136,
+        "installation_generation": 1,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 136,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": null,
+      "race": "source-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "firecracker",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "boundary": "before-J-exec-V",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 148,
+        "role": "firecracker",
+        "sha256": "c91e259e3b76323a7e6872fe5f9accddf2abfc3dcc2f767370d0f84772853bad",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 136,
+        "installation_generation": 1,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 136,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "installed executable size mismatch",
+      "race": "installed-name",
+      "retained_fd_ran_expected_inode": true,
+      "role": "firecracker",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "boundary": "before-J-exec-V",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 136,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 136,
+        "installation_generation": 1,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 136,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-identical-bytes",
+      "retained_fd_ran_expected_inode": true,
+      "role": "firecracker",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "boundary": "before-J-exec-V",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 136,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788268
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 136,
+        "installation_generation": 1,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 136,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "firecracker",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "argv": [
+        "/firecracker",
+        "--id",
+        "fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "--no-api",
+        "--config-file",
+        "/config.json"
+      ],
+      "digest_matches_prior_hash": true,
+      "expected": {
+        "bytes": 136,
+        "installation_generation": 1,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "race": "closed-fd-reused",
+      "reused_fd_observation_refusal": "actual executable identity disagrees with retained FD",
+      "reused_fd_observed": {
+        "bytes": 136,
+        "role": "firecracker",
+        "sha256": "80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "reused_fd_preexec_refusal": "actual executable identity disagrees with retained FD",
+      "role": "firecracker",
+      "verdict": "refused"
+    },
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "attacker_source_parent_exit": 0,
+      "boundary": "before-formatter-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 142,
+        "role": "mkfs.xfs",
+        "sha256": "8bcd9b514199c20c926ccd3e05f8e8b6a4aaaf9af2ac7ad5a16fbfc9a368d449",
+        "st_dev": 64769,
+        "st_ino": 788268
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 133,
+        "installation_generation": 1,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 133,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": null,
+      "race": "source-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "mkfs.xfs",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "boundary": "before-formatter-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 145,
+        "role": "mkfs.xfs",
+        "sha256": "c4856c4b6e64a797671245bc9ae10d690fa02c4881c3d3089def375a28fa8ac4",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 133,
+        "installation_generation": 1,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 133,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "installed executable size mismatch",
+      "race": "installed-name",
+      "retained_fd_ran_expected_inode": true,
+      "role": "mkfs.xfs",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "boundary": "before-formatter-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 133,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 133,
+        "installation_generation": 1,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 133,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-identical-bytes",
+      "retained_fd_ran_expected_inode": true,
+      "role": "mkfs.xfs",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "boundary": "before-formatter-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 133,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788268
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 133,
+        "installation_generation": 1,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 133,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "mkfs.xfs",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "argv": [
+        "/opt/kilnd/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs",
+        "-q",
+        "-f",
+        "-K",
+        "-m",
+        "uuid=51b8e65e-23b9-4eba-a21c-7c1cce2c5f94",
+        "/var/lib/kilnd-helper/work/1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a/fc-2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b/work.xfs"
+      ],
+      "digest_matches_prior_hash": true,
+      "expected": {
+        "bytes": 133,
+        "installation_generation": 1,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "race": "closed-fd-reused",
+      "reused_fd_observation_refusal": "actual executable identity disagrees with retained FD",
+      "reused_fd_observed": {
+        "bytes": 133,
+        "role": "mkfs.xfs",
+        "sha256": "efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "reused_fd_preexec_refusal": "actual executable identity disagrees with retained FD",
+      "role": "mkfs.xfs",
+      "verdict": "refused"
+    },
+    {
+      "actual_argv": [
+        "kilnd-helper"
+      ],
+      "argv": [
+        "kilnd-helper"
+      ],
+      "attacker_source_parent_exit": 0,
+      "boundary": "before-worker-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 146,
+        "role": "kilnd-helper",
+        "sha256": "93bda4696febd93a71fbd45bd404271d276177901e1da9e9e23f2295a5aff0e0",
+        "st_dev": 64769,
+        "st_ino": 788268
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 137,
+        "installation_generation": 1,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 137,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": null,
+      "race": "source-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "kilnd-helper",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "kilnd-helper"
+      ],
+      "argv": [
+        "kilnd-helper"
+      ],
+      "boundary": "before-worker-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": false,
+      "control_observed": {
+        "bytes": 149,
+        "role": "kilnd-helper",
+        "sha256": "8c73246ce2b89ddcd0a9ebe0b7a7026fcef2f432c743866428589dddb5668476",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 137,
+        "installation_generation": 1,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 137,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "installed executable size mismatch",
+      "race": "installed-name",
+      "retained_fd_ran_expected_inode": true,
+      "role": "kilnd-helper",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "kilnd-helper"
+      ],
+      "argv": [
+        "kilnd-helper"
+      ],
+      "boundary": "before-worker-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 137,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 137,
+        "installation_generation": 1,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 137,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-identical-bytes",
+      "retained_fd_ran_expected_inode": true,
+      "role": "kilnd-helper",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "actual_argv": [
+        "kilnd-helper"
+      ],
+      "argv": [
+        "kilnd-helper"
+      ],
+      "boundary": "before-worker-exec",
+      "control_argv_matches": true,
+      "control_digest_matches_prior_hash": true,
+      "control_observed": {
+        "bytes": 137,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788268
+      },
+      "control_refusal": "actual executable identity disagrees with retained FD",
+      "expected": {
+        "bytes": 137,
+        "installation_generation": 1,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "handoff_fds_exact": true,
+      "observed": {
+        "bytes": 137,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "protected_reopen_refusal": "reopened executable differs from journaled identity",
+      "race": "installed-parent",
+      "retained_fd_ran_expected_inode": true,
+      "role": "kilnd-helper",
+      "surviving_fds": [
+        0,
+        1,
+        2
+      ],
+      "verdict": "retained-inode-ran"
+    },
+    {
+      "argv": [
+        "kilnd-helper"
+      ],
+      "digest_matches_prior_hash": true,
+      "expected": {
+        "bytes": 137,
+        "installation_generation": 1,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788266
+      },
+      "race": "closed-fd-reused",
+      "reused_fd_observation_refusal": "actual executable identity disagrees with retained FD",
+      "reused_fd_observed": {
+        "bytes": 137,
+        "role": "kilnd-helper",
+        "sha256": "513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94",
+        "st_dev": 64769,
+        "st_ino": 788267
+      },
+      "reused_fd_preexec_refusal": "actual executable identity disagrees with retained FD",
+      "role": "kilnd-helper",
+      "verdict": "refused"
+    }
+  ],
+  "unprivileged_rename_exit_codes": {
+    "firecracker": {
+      "kiln-guest-launch": 1,
+      "kiln-guest-launch/b1-exec-17njd38j": 1,
+      "kiln-guest-launch/b1-exec-17njd38j/exec": 1,
+      "kiln-guest-launch/b1-exec-17njd38j/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4": 1,
+      "kiln-guest-launch/b1-exec-17njd38j/exec/sha256/80984d2f0064925cb0a9c0e4de902c90148316a6ac488ef5cf3a2ad521d6f1d4/firecracker": 1
+    },
+    "jailer": {
+      "kiln-guest-launch": 1,
+      "kiln-guest-launch/b1-exec-auphjsch": 1,
+      "kiln-guest-launch/b1-exec-auphjsch/exec": 1,
+      "kiln-guest-launch/b1-exec-auphjsch/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157": 1,
+      "kiln-guest-launch/b1-exec-auphjsch/exec/sha256/608d22c44f3790de7320a3f2cf36d85c80abf7b3757d205c4b541d7e0c49a157/jailer": 1
+    },
+    "kilnd-helper": {
+      "kiln-guest-launch": 1,
+      "kiln-guest-launch/b1-exec-7e60jyn6": 1,
+      "kiln-guest-launch/b1-exec-7e60jyn6/exec": 1,
+      "kiln-guest-launch/b1-exec-7e60jyn6/exec/sha256/513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94": 1,
+      "kiln-guest-launch/b1-exec-7e60jyn6/exec/sha256/513f2aebe515777e7f875121e4742cf732bb16b0195618b52cce06eb1e978c94/kilnd-helper": 1
+    },
+    "mkfs.xfs": {
+      "kiln-guest-launch": 1,
+      "kiln-guest-launch/b1-exec-drwylzs7": 1,
+      "kiln-guest-launch/b1-exec-drwylzs7/exec": 1,
+      "kiln-guest-launch/b1-exec-drwylzs7/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e": 1,
+      "kiln-guest-launch/b1-exec-drwylzs7/exec/sha256/efb71d7dca9a6d38e1ab5c625ea754cd5318b3968d8b52b926b1ceb7db6fea9e/mkfs.xfs": 1
+    }
+  }
+}

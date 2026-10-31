@@ -1,0 +1,4 @@
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+25b8a36bea059dea9651c8ed2967859fd8c5af516543a7168f025d197fcd5d03  init-before
+25b8a36bea059dea9651c8ed2967859fd8c5af516543a7168f025d197fcd5d03  init-after
+flags: build.py's init flags without -ffile-prefix-map

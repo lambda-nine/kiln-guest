@@ -1,0 +1,23 @@
+{
+  "approval_gates": [
+    "B4-actual-J-V-chain-and-capability-masks",
+    "B5-broker-image-and-two-clean-builds",
+    "B7-capacity-128MiB-overhead-measurement-and-operator-manifest-approval"
+  ],
+  "contract_sha256": "035f4328aa03054bd454434f177275f43538e9d875bf220a701c1c79e658c105",
+  "handoff_recipe_sha256": "4e92a1a623f42765dd25833d91ef8f112e675720042500328f22b29d6bc630b0",
+  "launch_contract_schema": 2,
+  "manifest_schema": 2,
+  "missing_artifacts": [
+    "reviewed-patched-jailer",
+    "reviewed-broker",
+    "approved-three-drive-vsock-bundle"
+  ],
+  "production_enabled": false,
+  "profile": "offline-768-v1",
+  "schema": 1,
+  "suffix_evidence": {
+    "path": "results/phase1b-b1/suffix-probe.json",
+    "sha256": "0611862431524a082198190b235f35d4cb2016e848866bf444ea7158eeffb707"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "boot_id": "459ffc26-187e-4e1b-89ee-4e5fb39172f4",
+  "bundle_rootfs_sha256": "d73081a2029b502d21627a63762c407791eae18a6646aa955b133a15984e39a0",
+  "firecracker_archive_sha256": "e351ebe4f7a16b5873bbd51005d2e6767103cff4d5ebc829df2d3f95a93e2256",
+  "kernel": "6.8.0-147-generic",
+  "launch_args": "firecracker --no-api --config-file; no jailer; root; nested KVM",
+  "topologies": {
+    "legacy-two-drives": {
+      "console_tail": "2026-10-31T02:27:13.934881198 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:13.937954172 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:13.938151756 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:13.938230173 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:13.938263840 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:14.194586689 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:14.196526824 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\nKG_PHASE init-proc 0.041085041\r\nKG_CMDLINE <console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000>\r\nKG_RUNTIME cmdline PASS\r\n",
+      "drives": [
+        "rootfs",
+        "work"
+      ],
+      "legacy_init_verdict_production_args": "PASS",
+      "legacy_init_verdict_test_mode": "PASS",
+      "observed_suffix": " pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "production_console_tail": "2026-10-31T02:27:14.246246828 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:14.248899466 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:14.249107217 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:14.249183634 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:14.249209093 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:14.506200654 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:14.508145580 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\nKG_RUNTIME cmdline PASS\r\n",
+      "test_mode_observed_cmdline": "console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "vsock": false
+    },
+    "offline-768-v1-three-drives-vsock": {
+      "console_tail": "2026-10-31T02:27:15.768700345 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:15.771924028 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:15.772129654 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:15.772204654 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:15.772237446 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:16.029260174 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:16.031232643 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\n2026-10-31T02:27:16.033164778 [anonymous-instance:fc_vcpu 0] [Block:identity] notifying queues\n2026-10-31T02:27:16.036721171 [anonymous-instance:fc_vcpu 0] [Vsock:vsock] notifying queues\nKG_PHASE init-proc 0.045995374\r\nKG_CMDLINE <console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000>\r\nKG_RUNTIME cmdline PASS\r\n",
+      "drives": [
+        "rootfs",
+        "work",
+        "identity"
+      ],
+      "legacy_init_verdict_production_args": "PASS",
+      "legacy_init_verdict_test_mode": "PASS",
+      "observed_suffix": " pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "production_console_tail": "2026-10-31T02:27:16.085914839 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:16.088609769 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:16.088783728 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:16.088853395 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:16.088877270 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:16.345882040 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:16.347811717 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\n2026-10-31T02:27:16.349723226 [anonymous-instance:fc_vcpu 0] [Block:identity] notifying queues\n2026-10-31T02:27:16.353269786 [anonymous-instance:fc_vcpu 0] [Vsock:vsock] notifying queues\nKG_RUNTIME cmdline PASS\r\n",
+      "test_mode_observed_cmdline": "console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "vsock": true
+    },
+    "three-drives": {
+      "console_tail": "2026-10-31T02:27:15.149949271 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:15.152100365 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:15.152268158 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:15.152347742 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:15.152398117 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:15.407633461 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:15.409591179 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\n2026-10-31T02:27:15.411522564 [anonymous-instance:fc_vcpu 0] [Block:identity] notifying queues\nKG_PHASE init-proc 0.043066124\r\nKG_CMDLINE <console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000>\r\nKG_RUNTIME cmdline PASS\r\n",
+      "drives": [
+        "rootfs",
+        "work",
+        "identity"
+      ],
+      "legacy_init_verdict_production_args": "PASS",
+      "legacy_init_verdict_test_mode": "PASS",
+      "observed_suffix": " pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "production_console_tail": "2026-10-31T02:27:15.466415136 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:15.468475021 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:15.468631731 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:15.468705231 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:15.468749023 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:15.725856085 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:15.727886303 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\n2026-10-31T02:27:15.729935814 [anonymous-instance:fc_vcpu 0] [Block:identity] notifying queues\nKG_RUNTIME cmdline PASS\r\n",
+      "test_mode_observed_cmdline": "console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "vsock": false
+    },
+    "two-drives-vsock": {
+      "console_tail": "2026-10-31T02:27:14.541959419 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:14.544251181 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:14.544471557 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:14.544543558 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:14.544583391 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:14.799592317 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:14.801522910 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\n2026-10-31T02:27:14.804991136 [anonymous-instance:fc_vcpu 0] [Vsock:vsock] notifying queues\nKG_PHASE init-proc 0.043299957\r\nKG_CMDLINE <console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000>\r\nKG_RUNTIME cmdline PASS\r\n",
+      "drives": [
+        "rootfs",
+        "work"
+      ],
+      "legacy_init_verdict_production_args": "PASS",
+      "legacy_init_verdict_test_mode": "PASS",
+      "observed_suffix": " pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "production_console_tail": "2026-10-31T02:27:14.855056725 [anonymous-instance:main] Running Firecracker v1.17.0\n2026-10-31T02:27:14.858461576 [anonymous-instance:main] Could not read the coherency line size, size, number of sets for cache level 1.\n2026-10-31T02:27:14.858655577 [anonymous-instance:main] Artificially kick devices\n2026-10-31T02:27:14.858728452 [anonymous-instance:fc_vcpu 0] Received a VcpuEvent::Resume message with immediate_exit enabled. immediate_exit was disabled before proceeding\n2026-10-31T02:27:14.858760244 [anonymous-instance:main] Successfully started microvm that was configured from one single json\n2026-10-31T02:27:15.110828988 [anonymous-instance:fc_vcpu 0] [Block:rootfs] notifying queues\n2026-10-31T02:27:15.112740290 [anonymous-instance:fc_vcpu 0] [Block:work] notifying queues\n2026-10-31T02:27:15.116266099 [anonymous-instance:fc_vcpu 0] [Vsock:vsock] notifying queues\nKG_RUNTIME cmdline PASS\r\n",
+      "test_mode_observed_cmdline": "console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3 randomize_kstack_offset=on kiln.test=1 pci=off root=/dev/vda ro earlycon=uart,mmio,0x40002000",
+      "vsock": true
+    }
+  }
+}

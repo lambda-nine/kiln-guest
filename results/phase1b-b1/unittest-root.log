@@ -1,0 +1,121 @@
+test_comparison_launch_failure_is_retained_and_cannot_be_retried_away (test_boot_trace.TraceTests.test_comparison_launch_failure_is_retained_and_cannot_be_retried_away) ... ok
+test_failed_launch_keeps_manifest_and_error (test_boot_trace.TraceTests.test_failed_launch_keeps_manifest_and_error) ... ok
+test_tampered_artifact_prevents_vm_launch (test_boot_trace.TraceTests.test_tampered_artifact_prevents_vm_launch) ... ok
+test_attacker_selected_dpkg_deb_path_is_rejected (test_build_environment.BuildEnvironmentTests.test_attacker_selected_dpkg_deb_path_is_rejected) ... ok
+test_image_change_rejected (test_build_environment.BuildEnvironmentTests.test_image_change_rejected) ... ok
+test_readonly_root_required (test_build_environment.BuildEnvironmentTests.test_readonly_root_required) ... ok
+test_filter_precedes_daemon (test_dns_egress.DNSEgressTests.test_filter_precedes_daemon) ... ok
+test_lock_follows_only_a_reviewed_kiln_pin (test_inputs.BuildScriptTests.test_lock_follows_only_a_reviewed_kiln_pin) ... ok
+test_lock_refuses_toolchain_or_deb_repin (test_inputs.BuildScriptTests.test_lock_refuses_toolchain_or_deb_repin) ... ok
+test_provenance_is_complete_and_path_free (test_inputs.BuildScriptTests.test_provenance_is_complete_and_path_free) ... ok
+test_reuse_kernel_is_gone (test_inputs.BuildScriptTests.test_reuse_kernel_is_gone) ... ok
+test_arguments_force_the_verified_vendor_offline (test_inputs.CargoInvocationTests.test_arguments_force_the_verified_vendor_offline) ... ok
+test_inherited_influences_are_cleared (test_inputs.CargoInvocationTests.test_inherited_influences_are_cleared) ... ok
+test_accepts_registry_and_local_in_stable_order (test_inputs.CargoLockTests.test_accepts_registry_and_local_in_stable_order) ... ok
+test_rejects_every_other_source_and_shape (test_inputs.CargoLockTests.test_rejects_every_other_source_and_shape) ... ok
+test_digest_is_stable_and_covers_content_and_mode (test_inputs.InventoryTests.test_digest_is_stable_and_covers_content_and_mode) ... ok
+test_inventory_is_complete_sorted_and_excludes_non_source (test_inputs.InventoryTests.test_inventory_is_complete_sorted_and_excludes_non_source) ... ok
+test_setuid_source_is_rejected (test_inputs.InventoryTests.test_setuid_source_is_rejected) ... ok
+test_symlink_and_special_are_rejected (test_inputs.InventoryTests.test_symlink_and_special_are_rejected) ... ok
+test_verify_accepts_exact_stage_and_ignores_non_source (test_inputs.InventoryTests.test_verify_accepts_exact_stage_and_ignores_non_source) ... ok
+test_verify_rejects_each_drift (test_inputs.InventoryTests.test_verify_rejects_each_drift) ... ok
+test_verify_requires_a_regular_well_formed_manifest (test_inputs.InventoryTests.test_verify_requires_a_regular_well_formed_manifest) ... ok
+test_existing_output_is_refused_before_any_work (test_inputs.OutputTests.test_existing_output_is_refused_before_any_work) ... ok
+test_failed_build_publishes_nothing_and_removes_partial_output (test_inputs.OutputTests.test_failed_build_publishes_nothing_and_removes_partial_output) ... ok
+test_output_created_during_build_is_not_replaced (test_inputs.OutputTests.test_output_created_during_build_is_not_replaced) ... ok
+test_success_publishes_only_new_files_into_an_empty_directory (test_inputs.OutputTests.test_success_publishes_only_new_files_into_an_empty_directory) ... ok
+test_deleted_file_is_gone_after_restage (test_inputs.StageTests.test_deleted_file_is_gone_after_restage)
+Baseline: stale-stage.py kept config/kernel.config by extracting over the tree. ... ok
+test_destination_must_be_a_directory (test_inputs.StageTests.test_destination_must_be_a_directory) ... ok
+test_every_malformed_archive_leaves_old_stage_untouched (test_inputs.StageTests.test_every_malformed_archive_leaves_old_stage_untouched) ... ok
+test_exchange_refuses_outside_linux (test_inputs.StageTests.test_exchange_refuses_outside_linux) ... skipped 'covers the non-Linux refusal'
+test_failed_publish_keeps_old_stage_and_removes_new (test_inputs.StageTests.test_failed_publish_keeps_old_stage_and_removes_new) ... ok
+test_first_stage_is_exact_and_verifiable (test_inputs.StageTests.test_first_stage_is_exact_and_verifiable) ... ok
+test_program_fits_one_remote_shell_argument (test_inputs.StageTests.test_program_fits_one_remote_shell_argument) ... ok
+test_program_runs_as_isolated_argument (test_inputs.StageTests.test_program_runs_as_isolated_argument)
+The VM gets this file as python3 -I -c with argv and tar on stdin. ... ok
+test_real_exchange (test_inputs.StageTests.test_real_exchange) ... ok
+test_self_consistent_archive_must_match_expected_digest (test_inputs.StageTests.test_self_consistent_archive_must_match_expected_digest) ... ok
+test_bad_download_is_not_cached (test_inputs.VendorTests.test_bad_download_is_not_cached) ... ok
+test_crate_modes_are_normalized (test_inputs.VendorTests.test_crate_modes_are_normalized) ... ok
+test_crate_symlinked_in_cache_is_rejected (test_inputs.VendorTests.test_crate_symlinked_in_cache_is_rejected) ... ok
+test_existing_vendor_or_cargo_home_is_refused (test_inputs.VendorTests.test_existing_vendor_or_cargo_home_is_refused) ... ok
+test_extraction_produces_checksums_cargo_can_verify (test_inputs.VendorTests.test_extraction_produces_checksums_cargo_can_verify) ... ok
+test_inherited_cargo_config_is_refused (test_inputs.VendorTests.test_inherited_cargo_config_is_refused) ... ok
+test_previous_vendor_mutation_cannot_reach_next_build (test_inputs.VendorTests.test_previous_vendor_mutation_cannot_reach_next_build)
+Baseline: cargo-cache-run.sh compiled an edited shared registry/src tree. ... ok
+test_tampered_cached_crate_is_rejected_without_extraction_or_repair (test_inputs.VendorTests.test_tampered_cached_crate_is_rejected_without_extraction_or_repair) ... ok
+test_unsafe_crate_contents_are_rejected (test_inputs.VendorTests.test_unsafe_crate_contents_are_rejected) ... ok
+test_collect_returns_config_before_any_bundle_exists (test_inputs.WrapperTests.test_collect_returns_config_before_any_bundle_exists) ... skipped 'the wrapper runs only from a git checkout'
+test_each_build_stages_fresh_and_binds_the_digest (test_inputs.WrapperTests.test_each_build_stages_fresh_and_binds_the_digest) ... skipped 'the wrapper runs only from a git checkout'
+test_prepare_names_kiln_from_the_common_dir_sibling (test_inputs.WrapperTests.test_prepare_names_kiln_from_the_common_dir_sibling) ... skipped 'the wrapper runs only from a git checkout'
+test_stage_source_end_to_end_with_a_local_receiver (test_inputs.WrapperTests.test_stage_source_end_to_end_with_a_local_receiver) ... skipped 'the wrapper runs only from a git checkout'
+test_stage_source_reports_receiver_rejection_without_a_broken_pipe (test_inputs.WrapperTests.test_stage_source_reports_receiver_rejection_without_a_broken_pipe) ... skipped 'the wrapper runs only from a git checkout'
+test_test_action_does_not_restage (test_inputs.WrapperTests.test_test_action_does_not_restage) ... skipped 'the wrapper runs only from a git checkout'
+test_policy_requires_default_and_rejects_disabled (test_kstack.KstackTests.test_policy_requires_default_and_rejects_disabled) ... ok
+test_actual_jailer_argv_rejects_extra_and_weak_flags (test_launch_contract.LaunchContractTests.test_actual_jailer_argv_rejects_extra_and_weak_flags) ... ok
+test_all_profiles_and_deviations (test_launch_contract.LaunchContractTests.test_all_profiles_and_deviations) ... ok
+test_manifest_contract_cannot_silently_change (test_launch_contract.LaunchContractTests.test_manifest_contract_cannot_silently_change) ... ok
+test_each_artifact_corruption_and_size (test_launch_contract.Phase1bBundleFileTests.test_each_artifact_corruption_and_size) ... ok
+test_extra_missing_renamed (test_launch_contract.Phase1bBundleFileTests.test_extra_missing_renamed) ... ok
+test_links_and_non_regular_entries (test_launch_contract.Phase1bBundleFileTests.test_links_and_non_regular_entries) ... ok
+test_oversized_manifest_refused_before_read (test_launch_contract.Phase1bBundleFileTests.test_oversized_manifest_refused_before_read) ... ok
+test_static_elf_closure (test_launch_contract.Phase1bBundleFileTests.test_static_elf_closure) ... ok
+test_measured_suffix (test_launch_contract.Phase1bEvidenceTests.test_measured_suffix) ... skipped 'results are not staged into the VM'
+test_recorded_retained_fd_races (test_launch_contract.Phase1bEvidenceTests.test_recorded_retained_fd_races) ... skipped 'results are not staged into the VM'
+test_every_byte_matters (test_launch_contract.Phase1bIdentityTests.test_every_byte_matters) ... ok
+test_framing (test_launch_contract.Phase1bIdentityTests.test_framing) ... ok
+test_golden_binds_every_field (test_launch_contract.Phase1bIdentityTests.test_golden_binds_every_field) ... ok
+test_launch_digest_excludes_block_but_covers_identity_drive (test_launch_contract.Phase1bIdentityTests.test_launch_digest_excludes_block_but_covers_identity_drive) ... ok
+test_builder_refuses_profile_without_artifacts (test_launch_contract.Phase1bLegacyRefusalTests.test_builder_refuses_profile_without_artifacts) ... ok
+test_current_no_vsock_manifest_refused (test_launch_contract.Phase1bLegacyRefusalTests.test_current_no_vsock_manifest_refused) ... ok
+test_init_keeps_broker_disabled_and_markers_diagnostic (test_launch_contract.Phase1bLegacyRefusalTests.test_init_keeps_broker_disabled_and_markers_diagnostic) ... ok
+test_real_legacy_manifest_refused_when_present (test_launch_contract.Phase1bLegacyRefusalTests.test_real_legacy_manifest_refused_when_present) ... ok
+test_schema1_entry_points_refuse_phase1b_selection (test_launch_contract.Phase1bLegacyRefusalTests.test_schema1_entry_points_refuse_phase1b_selection) ... ok
+test_verify_cli_selection (test_launch_contract.Phase1bLegacyRefusalTests.test_verify_cli_selection) ... ok
+test_contract_pins_and_recipe_drift (test_launch_contract.Phase1bManifestTests.test_contract_pins_and_recipe_drift) ... ok
+test_coordinated_image_and_manifest_substitution (test_launch_contract.Phase1bManifestTests.test_coordinated_image_and_manifest_substitution) ... ok
+test_every_manifest_leaf_refused_even_when_reapproved (test_launch_contract.Phase1bManifestTests.test_every_manifest_leaf_refused_even_when_reapproved) ... ok
+test_frozen_section_values (test_launch_contract.Phase1bManifestTests.test_frozen_section_values) ... ok
+test_golden_bundle_passes_only_in_fixture_mode (test_launch_contract.Phase1bManifestTests.test_golden_bundle_passes_only_in_fixture_mode) ... ok
+test_golden_fixtures_regenerate_exactly (test_launch_contract.Phase1bManifestTests.test_golden_fixtures_regenerate_exactly) ... ok
+test_independent_approval_binds_exact_bytes (test_launch_contract.Phase1bManifestTests.test_independent_approval_binds_exact_bytes) ... ok
+test_named_attacks_refused_even_when_reapproved (test_launch_contract.Phase1bManifestTests.test_named_attacks_refused_even_when_reapproved) ... ok
+test_no_placeholder_security_fields (test_launch_contract.Phase1bManifestTests.test_no_placeholder_security_fields) ... ok
+test_strict_json (test_launch_contract.Phase1bManifestTests.test_strict_json) ... ok
+test_bootstrap_record (test_launch_contract.Phase1bPlanTests.test_bootstrap_record) ... ok
+test_every_plan_leaf_refused (test_launch_contract.Phase1bPlanTests.test_every_plan_leaf_refused) ... ok
+test_every_substitution_rejects_bad_values (test_launch_contract.Phase1bPlanTests.test_every_substitution_rejects_bad_values) ... ok
+test_exact_argv_paths_and_resources (test_launch_contract.Phase1bPlanTests.test_exact_argv_paths_and_resources) ... ok
+test_executable_identity_vector (test_launch_contract.Phase1bPlanTests.test_executable_identity_vector) ... ok
+test_golden_plans (test_launch_contract.Phase1bPlanTests.test_golden_plans) ... ok
+test_inner_spec_is_validated_not_clamped (test_launch_contract.Phase1bPlanTests.test_inner_spec_is_validated_not_clamped) ... ok
+test_replacement_cases_compare_actual_identity (test_launch_contract.Phase1bPlanTests.test_replacement_cases_compare_actual_identity) ... ok
+test_serialized_config (test_launch_contract.Phase1bPlanTests.test_serialized_config) ... ok
+test_uid_gid_are_separate_typed_substitutions (test_launch_contract.Phase1bPlanTests.test_uid_gid_are_separate_typed_substitutions) ... ok
+test_vmm_argv_timing_exception (test_launch_contract.Phase1bPlanTests.test_vmm_argv_timing_exception) ... ok
+test_vmm_status_masks (test_launch_contract.Phase1bPlanTests.test_vmm_status_masks) ... ok
+test_work_disk_formula (test_launch_contract.Phase1bPlanTests.test_work_disk_formula) ... ok
+test_all_roles_and_races (test_launch_contract.Phase1bRetainedFdTests.test_all_roles_and_races) ... ok
+test_every_protected_ancestor_is_checked (test_launch_contract.Phase1bRetainedFdTests.test_every_protected_ancestor_is_checked) ... ok
+test_installed_object_requirements (test_launch_contract.Phase1bRetainedFdTests.test_installed_object_requirements) ... ok
+test_retained_fd_exec_needs_no_path_or_proc (test_launch_contract.Phase1bRetainedFdTests.test_retained_fd_exec_needs_no_path_or_proc) ... ok
+test_cold_boot_and_approved_identity_requirements (test_phase1b_requirements.Phase1bTests.test_cold_boot_and_approved_identity_requirements) ... ok
+test_actual_kaslr_seed_function_handles_and_erases_seeds (test_validation.ValidationTests.test_actual_kaslr_seed_function_handles_and_erases_seeds) ... ok
+test_coalesced_markers_keep_their_first_observation (test_validation.ValidationTests.test_coalesced_markers_keep_their_first_observation) ... ok
+test_kernel_patch_requires_both_reviewed_source_hashes (test_validation.ValidationTests.test_kernel_patch_requires_both_reviewed_source_hashes) ... ok
+test_modified_vmm_and_adjacent_checksum_are_rejected (test_validation.ValidationTests.test_modified_vmm_and_adjacent_checksum_are_rejected) ... ok
+test_old_matching_lock_and_archive_cannot_mislabel_new_pin (test_validation.ValidationTests.test_old_matching_lock_and_archive_cannot_mislabel_new_pin) ... ok
+test_diagnostic_bundle_is_rejected_for_acceptance (test_verify.VerifyTests.test_diagnostic_bundle_is_rejected_for_acceptance) ... ok
+test_same_size_corruption_is_rejected (test_verify.VerifyTests.test_same_size_corruption_is_rejected) ... ok
+test_two_identical_builds (test_verify.VerifyTests.test_two_identical_builds) ... ok
+test_unknown_schema_is_rejected (test_verify.VerifyTests.test_unknown_schema_is_rejected) ... ok
+test_artifact_source_swap_refused_before_use (test_vmm_path_race.VmmPathRaceTests.test_artifact_source_swap_refused_before_use) ... ok
+test_source_parent_swap_and_fd_execution (test_vmm_path_race.VmmPathRaceTests.test_source_parent_swap_and_fd_execution) ... ok
+test_unsafe_components_symlinks_and_modified_file_rejected (test_vmm_path_race.VmmPathRaceTests.test_unsafe_components_symlinks_and_modified_file_rejected) ... ok
+test_vm_executes_held_jailer_inode (test_vmm_path_race.VmmPathRaceTests.test_vm_executes_held_jailer_inode) ... ok
+
+----------------------------------------------------------------------
+Ran 113 tests in 2.717s
+
+OK (skipped=9)
