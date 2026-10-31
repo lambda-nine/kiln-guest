@@ -244,6 +244,12 @@ def main():
                     for assertion in ['cmdline','kstack-offset-enabled','kaslr-enabled','memory-initialization','lockdown-confidentiality','kexec-load-absent','kexec-file-absent']:
                         if f'KG_RUNTIME {assertion} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing runtime assertion: {assertion}')
+                    if tap:
+                        for assertion in ['dns-upstream-query-allowed','dns-private-egress-denied',
+                                          'dns-other-resolver-denied','dns-upstream-wrong-port-denied',
+                                          'dns-tenant-egress-denied','dns-tcp-private-denied','dns-tcp-wrong-port-denied']:
+                            if f'KG_TEST {assertion} PASS'.encode() not in v.buf:
+                                raise RuntimeError(f'missing DNS egress assertion: {assertion}')
                     v.until(b'Firecracker exiting successfully',timeout=20)
                     if v.p.wait(timeout=5)!=0: raise RuntimeError('guest shutdown failed')
                     result['integration'][mode]='passed'

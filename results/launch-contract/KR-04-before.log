@@ -1,0 +1,13 @@
+E
+======================================================================
+ERROR: test_filter_precedes_daemon (test_dns_egress.DNSEgressTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/estradafamily/Projects/lambda-nine/kiln-guest/tests/test_dns_egress.py", line 8, in test_filter_precedes_daemon
+    self.assertLess(init.index('install_dns_egress();'),init.index('dns_pid = start_dns'))
+ValueError: substring not found
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)

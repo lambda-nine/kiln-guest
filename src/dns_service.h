@@ -126,6 +126,7 @@ static void dns_restrict(bool test) {
     DNS_REQUIRE(!prctl(PR_CAP_AMBIENT,PR_CAP_AMBIENT_RAISE,CAP_NET_BIND_SERVICE,0,0), "ambient bind");
     dns_filter();
     if (test) {
+        if (option("kiln.net=1")) test_dns_egress();
         dns_probe("dns-root-denied", setuid(0) == -1 && errno == EPERM);
         dns_probe("dns-namespace-denied", unshare(CLONE_NEWUSER) == -1 && errno == EPERM);
         dns_probe("dns-netlink-denied", socket(AF_NETLINK,SOCK_RAW|SOCK_CLOEXEC,0) == -1 && errno == EPERM);

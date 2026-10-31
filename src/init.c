@@ -115,7 +115,9 @@ static void check(const char *name, bool ok) {
     printf("KG_TEST %s %s\n", name, ok ? "PASS" : "FAIL"); fflush(stdout);
     if (!ok) stop(2);
 }
+static void test_dns_egress(void);
 #include "dns_service.h"
+#include "dns_egress.h"
 #include "zero_probe.h"
 static void test_work_disk(void) {
     struct statvfs flags;
@@ -305,6 +307,7 @@ int main(void) {
     }
     check("network-setup", RUN("network-setup") == 0);
     trace("network-setup-done");
+    install_dns_egress();
     dns_pid = start_dns(option("kiln.test=1"));
     bool ready = false;
     for (int i=0; i<100; i++) {
