@@ -37,7 +37,7 @@ class TraceTests(unittest.TestCase):
         for name in ['Image','kernel.config','kiln','rootfs.squashfs']:
             data=name.encode(); (bundle/name).write_bytes(data)
             artifacts[name]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
-        (bundle/'manifest.json').write_text(json.dumps({'schema':1,'artifacts':artifacts}))
+        (bundle/'manifest.json').write_text(json.dumps({'schema':1,'artifacts':artifacts,'launch_contract':__import__('launch_contract').contract()}))
         return bundle
 
     def test_tampered_artifact_prevents_vm_launch(self):

@@ -25,7 +25,7 @@ class VerifyTests(unittest.TestCase):
         for name in ['Image','kernel.config','kiln','rootfs.squashfs']:
             data=('fixture '+name).encode(); (path/name).write_bytes(data)
             artifacts[name]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
-        (path/'manifest.json').write_text(json.dumps({'schema':1,'artifacts':artifacts}))
+        (path/'manifest.json').write_text(json.dumps({'schema':1,'artifacts':artifacts,'launch_contract':__import__('launch_contract').contract()}))
         return path
 
     def call(self,*paths):

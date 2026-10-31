@@ -13,6 +13,7 @@ import tarfile
 import urllib.request
 from inputs import cargo_arguments, cargo_environment, publish_new_directory, sha, vendor_crates, verify_source
 from kernel_policy import validate as validate_kernel_policy
+from launch_contract import contract, CMDLINE, FC_SUFFIX
 
 ROOT = Path(__file__).resolve().parents[1]
 PINS = json.loads((ROOT / 'config/pins.json').read_text())
@@ -181,7 +182,8 @@ def rootfs(work, cache, out, lock):
         (tree/d).mkdir(parents=True,exist_ok=True)
     (tree/'usr/lib').mkdir()
     (tree/'lib').symlink_to('usr/lib')
-    run(['gcc','-static','-Os','-Wall','-Wextra','-Werror','-fstack-protector-strong',
+    (work/'launch_cmdline.h').write_text('#define KG_CMDLINE '+json.dumps(CMDLINE)+'\n#define KG_FC_SUFFIX '+json.dumps(FC_SUFFIX)+'\n')
+    run(['gcc','-include',work/'launch_cmdline.h','-static','-Os','-Wall','-Wextra','-Werror','-fstack-protector-strong',
          '-D_FORTIFY_SOURCE=2',f'-ffile-prefix-map={ROOT}=/src',
          '-Wl,--build-id=none','-o',tree/'init',ROOT/'src/init.c'])
     run(['strip','--strip-all',tree/'init'])
@@ -258,6 +260,7 @@ def assemble(cache, work, out, jobs, lock, source):
         'kiln_commit':PINS['kiln_commit'],'firecracker_version':PINS['firecracker']['version'],
         'source_date_epoch':int(EPOCH),'broker':{'enabled':False,'protocol':None},
         'launch_profile':{'huge_pages':'Transparent'},
+        'launch_contract':contract(),
         'work_disk':{'filesystem':'xfs','mount_options':['nosuid','nodev','noexec','prjquota'],'minimum_mib':512},
         'artifacts':{name:{'sha256':sha(out/name),'bytes':(out/name).stat().st_size}
             for name in ['Image','kernel.config','kiln','rootfs.squashfs']},

@@ -174,16 +174,37 @@ static void network(void) {
     if (ioctl(fd, SIOCADDRT, &route)) die("default route");
     close(fd);
 }
-static void tests(bool net) {
+static void require_runtime(const char *name, bool ok) {
+    printf("KG_RUNTIME %s %s\n", name, ok ? "PASS" : "FAIL");
+    if (!ok) { errno=EPERM; die("runtime launch contract"); }
+}
+static void runtime_contract(void) {
+    char cmd[4096]={0}; FILE *f=fopen("/proc/cmdline","r");
+    if (!f || !fgets(cmd,sizeof(cmd),f)) die("runtime cmdline");
+    fclose(f); cmd[strcspn(cmd,"\r\n")]=0;
+    if (trace_boot) printf("KG_CMDLINE <%s>\n",cmd);
+    require_runtime("cmdline", !strcmp(cmd,KG_CMDLINE KG_FC_SUFFIX) ||
+        !strcmp(cmd,KG_CMDLINE " kiln.test=1" KG_FC_SUFFIX) ||
+        !strcmp(cmd,KG_CMDLINE " kiln.test=1 kiln.net=1" KG_FC_SUFFIX));
     int logsize=klogctl(10,NULL,0);
-    check("kernel-log-bounded", logsize > 0 && logsize <= 1024*1024);
+    require_runtime("kernel-log-bounded", logsize > 0 && logsize <= 1024*1024);
     char *log=calloc(1,(size_t)logsize+1); if (!log) die("kernel log allocation");
-    check("kernel-log-readable", klogctl(3,log,logsize) >= 0);
-    check("kaslr-enabled", strstr(log,"KASLR enabled") != NULL &&
+    require_runtime("kernel-log-readable", klogctl(3,log,logsize) >= 0);
+    require_runtime("kaslr-enabled", strstr(log,"KASLR enabled") != NULL &&
           strstr(log,"KASLR disabled") == NULL);
-    check("memory-initialization", strstr(log,
+    require_runtime("memory-initialization", strstr(log,
           "mem auto-init: stack:all(zero), heap alloc:on, heap free:on") != NULL);
     free(log);
+    char lockdown[128]={0}; f=fopen("/sys/kernel/security/lockdown","r");
+    bool locked=f && fgets(lockdown,sizeof(lockdown),f);
+    if (f) fclose(f);
+    require_runtime("lockdown-confidentiality", locked && strstr(lockdown,"[confidentiality]"));
+    errno=0;
+    require_runtime("kexec-load-absent",syscall(SYS_kexec_load,0,0,NULL,0)==-1 && errno==ENOSYS);
+    errno=0;
+    require_runtime("kexec-file-absent",syscall(SYS_kexec_file_load,-1,-1,0,NULL,0)==-1 && errno==ENOSYS);
+}
+static void tests(bool net) {
     test_dns_status();
     test_work_disk();
     check("kexec-load-absent", syscall(SYS_kexec_load, 0, 0, NULL, 0) == -1 && errno == ENOSYS);
@@ -250,6 +271,7 @@ int main(void) {
     put_if_present("/proc/sys/kernel/kexec_load_disabled", "1\n");
     mountfs("sysfs", "/sys", "sysfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
     mountfs("securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL);
+    runtime_contract();
     /* devtmpfs is mounted by the kernel; refuse a missing console/device tree. */
     if (access("/dev/vdb", F_OK)) die("work disk");
     int null = open("/dev/null", O_RDONLY | O_CLOEXEC);

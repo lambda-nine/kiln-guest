@@ -46,6 +46,22 @@ Boot arguments:
 console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3
 ```
 
+The manifest's canonical `launch_contract` binds the exact command line, vCPU,
+memory, SMT, dirty-page tracking, CPU template absence, ordered drives and
+read-only flags, NIC/vsock absence, and jailer UID/GID, cgroup and seccomp
+settings. It has separate fixed production, offline-test and network-test
+profiles. `scripts/launch_contract.py` rejects all deviations before the test
+launcher allocates resources. Production may select only its production profile;
+test profiles require an explicit test launch. The future backend must validate
+the actual effective settings against the independently approved identity.
+Init checks the exact allowed command line, active KASLR, heap allocation/free
+initialization, lockdown and compiled-out kexec before any kiln work; stack-offset
+randomization is compiled default-on and checked via its exact bound `on` argument.
+There is no independent kernel ABI exposing that static key to PID 1.
+The contract also pins Firecracker's automatically appended `pci=off`, root
+and read-only arguments and its exact early-console MMIO argument; init compares
+the complete observed line, including that suffix.
+
 The manifest's `launch_profile` selects Firecracker machine configuration
 `"huge_pages": "Transparent"`, alongside `"vcpu_count": 1` and
 `"mem_size_mib": 768`. This requests host transparent huge pages for guest RAM;

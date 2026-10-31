@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+from launch_contract import contract, exact
 
 def verify(directory, allow_diagnostic=False):
     root=Path(directory)
@@ -11,6 +12,8 @@ def verify(directory, allow_diagnostic=False):
     if manifest['schema']!=1: raise ValueError('unknown manifest schema')
     if 'diagnostic_only' in manifest and not allow_diagnostic:
         raise ValueError('diagnostic bundle is not an acceptance build')
+    if not allow_diagnostic and not exact(manifest.get('launch_contract'),contract()):
+        raise ValueError('missing or unsupported launch contract')
     if set(manifest['artifacts'])!={'Image','kernel.config','kiln','rootfs.squashfs'}:
         raise ValueError('unexpected artifact set')
     for name, record in manifest['artifacts'].items():

@@ -24,6 +24,7 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from kernel_policy import validate as validate_kernel_policy
 from inputs import publish_new_directory
 from verify import verify as verify_bundle
+from launch_contract import profile, verify_launch, verify_jailer_argv
 
 def run(argv,**kw): return sp.run(list(map(str,argv)),check=True,**kw)
 def sha(path):
@@ -123,12 +124,25 @@ class VM:
                 raise ValueError('invalid density cgroup name')
             if not (Path('/sys/fs/cgroup')/parent_cgroup/'cgroup.procs').is_file():
                 raise ValueError('density cgroup must exist before launch')
+        manifest=verify_bundle(bundle)
+        profile_name='test-network' if net else 'test-offline' if tests else 'production'
+        entry=profile(manifest,profile_name)
+        cfg=entry['firecracker']; settings=entry['jailer']
+        cfg['machine-config']['huge_pages']=memory_backing
+        settings['parent_cgroup']=parent_cgroup
+        # Validate BEFORE jails, work disks, sockets or VMM processes exist.
+        verify_launch(manifest,cfg,settings,profile_name)
         release=cache/'release'
         self.fc=release/'release-v1.17.0-aarch64/firecracker-v1.17.0-aarch64'
         jailer=release/'release-v1.17.0-aarch64/jailer-v1.17.0-aarch64'
         self.base=cache.parent/'test-jails'
         self.jail=self.base/self.fc.name/name
         if self.jail.exists(): raise RuntimeError('existing jail')
+        argv=[jailer,'--id',name,'--exec-file',self.fc,'--uid','10000','--gid','10000',
+              '--cgroup-version','2','--chroot-base-dir',self.base]
+        if parent_cgroup is not None: argv+=['--parent-cgroup',parent_cgroup]
+        argv+=['--','--api-sock','/api.sock','--config-file','/config.json']
+        verify_jailer_argv(manifest,cfg,argv,profile_name)
         self.root=self.jail/'root'; self.root.mkdir(parents=True)
         try:
             for source,dest in [('Image','kernel'),('rootfs.squashfs','rootfs')]:
@@ -136,19 +150,8 @@ class VM:
             work=self.root/'work'
             with work.open('wb') as f: f.truncate(512*1024*1024)
             run(['mkfs.xfs','-q','-f',work]); os.chown(work,10000,10000)
-            cfg={'boot-source':{'kernel_image_path':'/kernel','boot_args':
-                'console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rootfstype=squashfs ro init=/init loglevel=3'+
-                (' kiln.test=1' if tests else '')+(' kiln.net=1' if net else '')},
-                'machine-config':{'vcpu_count':1,'mem_size_mib':768,'smt':False,'huge_pages':memory_backing},
-                'drives':[{'drive_id':'rootfs','path_on_host':'/rootfs','is_root_device':True,'is_read_only':True},
-                          {'drive_id':'work','path_on_host':'/work','is_root_device':False,'is_read_only':False}]}
-            if net: cfg['network-interfaces']=[{'iface_id':'eth0','guest_mac':'06:00:ac:1e:63:02','host_dev_name':'kgtest0'}]
             write(self.root/'config.json',cfg)
             write(out/(name+'.config.json'),cfg)
-            argv=[jailer,'--id',name,'--exec-file',self.fc,'--uid','10000','--gid','10000',
-                  '--cgroup-version','2','--chroot-base-dir',self.base]
-            if parent_cgroup is not None: argv+=['--parent-cgroup',parent_cgroup]
-            argv+=['--','--api-sock','/api.sock','--config-file','/config.json']
             write(out/(name+'.jailer.json'),list(map(str,argv)))
             self.start=time.monotonic_ns()
             self.p=sp.Popen(list(map(str,argv)),stdout=sp.PIPE,stderr=sp.STDOUT,stdin=sp.DEVNULL)
@@ -235,9 +238,12 @@ def main():
                                  'dns-seccomp','dns-root-denied','dns-namespace-denied',
                                  'dns-netlink-denied','dns-policy-readonly','dns-tenant-storage-hidden',
                                  'work-disk-flags','work-direct-exec-denied','overlay-workspace-exec',
-                                 'kaslr-enabled','memory-initialization']:
+                                 'dns-ready']:
                         if f'KG_TEST {name} PASS'.encode() not in v.buf:
                             raise RuntimeError(f'missing security assertion: {name}')
+                    for assertion in ['cmdline','kaslr-enabled','memory-initialization','lockdown-confidentiality','kexec-load-absent','kexec-file-absent']:
+                        if f'KG_RUNTIME {assertion} PASS'.encode() not in v.buf:
+                            raise RuntimeError(f'missing runtime assertion: {assertion}')
                     v.until(b'Firecracker exiting successfully',timeout=20)
                     if v.p.wait(timeout=5)!=0: raise RuntimeError('guest shutdown failed')
                     result['integration'][mode]='passed'

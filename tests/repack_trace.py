@@ -14,12 +14,12 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['bundle','out','work']: p.add_argument('--'+name,type=Path,required=True)
     a=p.parse_args()
-    verify(a.bundle)
+    verify(a.bundle,allow_diagnostic=True)
     a.work.mkdir(parents=True,exist_ok=False); a.out.mkdir(parents=True,exist_ok=False)
     try:
         tree=a.work/'root'
         build.run(['unsquashfs','-no-progress','-d',tree,a.bundle/'rootfs.squashfs'])
-        build.run(['gcc','-static','-Os','-Wall','-Wextra','-Werror','-fstack-protector-strong',
+        build.run(['gcc','-DKG_CMDLINE='+json.dumps(build.CMDLINE),'-DKG_FC_SUFFIX='+json.dumps(build.FC_SUFFIX),'-static','-Os','-Wall','-Wextra','-Werror','-fstack-protector-strong',
                    '-D_FORTIFY_SOURCE=2','-Wl,--build-id=none','-o',tree/'init',build.ROOT/'src/init.c'])
         build.run(['strip','--strip-all',tree/'init'])
         env=os.environ.copy(); env.pop('SOURCE_DATE_EPOCH',None)
@@ -29,6 +29,7 @@ def main():
         for name in ['Image','kernel.config','kiln']: shutil.copyfile(a.bundle/name,a.out/name)
         manifest=json.loads((a.bundle/'manifest.json').read_text())
         (a.out/'base-manifest.json').write_bytes((a.bundle/'manifest.json').read_bytes())
+        manifest['launch_contract']=build.contract()
         manifest['diagnostic_only']='Repacked PID 1; not an independent build'
         manifest['inputs']={'base_manifest_sha256':build.sha(a.bundle/'manifest.json'),
                             'compiler':{'path':shutil.which('gcc'),'sha256':build.sha(Path(shutil.which('gcc')).resolve())},
