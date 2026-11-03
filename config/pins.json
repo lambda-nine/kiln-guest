@@ -22,9 +22,9 @@
     "sha256": "9bf70a7f18ea44094cbb5f70c58f9af129c8214745743db0e68e5502cc2ce773"
   },
   "kiln_source_sha256": "6e9af37419bacd0bb8c7e4903796cc8a9ce5b0f401f41d4dd3353af8d10194af",
-  "kilnd_commit": "fb9034d0024a5f45f3178b13355acf416a6fa0b6",
-  "kilnd_source_sha256": "dd638d8793d65d38ba00967624fd64d0da58433687b41401c61a1ed8f8bf06a0",
-  "broker_sha256": "d4eb4cacc428ce8887a396456456bcb00e2ad5c912eb3fce5393c907962a4f2d",
+  "kilnd_commit": "71fe6c453bcc7e9576f11979a617ecf2ba33ffdd",
+  "kilnd_source_sha256": "5e23b69da19226473656c61cb4943cb17118e68e21ba529606e36d3533803b00",
+  "broker_sha256": "35fad74f7ce0babe5f531accbdee2b19926f632603b0a55de43775d117cc3528",
   "broker_bytes": 2245008,
   "kernel_kaslr_patch": {
     "upstream_path": "arch/arm64/kernel/pi/kaslr_early.c",
