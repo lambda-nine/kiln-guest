@@ -8,6 +8,7 @@
 #include <poll.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +17,7 @@
 #include <sys/mount.h>
 #include <sys/prctl.h>
 #include <sys/reboot.h>
+#include <sys/resource.h>
 #include <sys/signalfd.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -26,8 +28,25 @@
 #include <time.h>
 #include <unistd.h>
 
-static pid_t dns_pid;
+#ifndef BLKROGET
+#define BLKROGET _IO(0x12,94)
+#endif
+#define BROKER "/usr/local/bin/kilnd-guest-broker"
+#define BROKER_STATE "/run/kilnd-broker"
+#define BROKER_PATH "/usr/local/bin:/usr/bin:/usr/sbin"
+#define BROKER_BOOTSTRAP_FD 3
+#define IDENTITY_BYTES 4096
+#define IDENTITY_MAX_RECORD (IDENTITY_BYTES-8)
+
+static pid_t dns_pid, broker_pid;
 static bool trace_boot;
+/* Runtime hardening results, in the broker bootstrap's bit order. */
+enum {
+    HARD_CMDLINE = 1u<<0, HARD_KERNEL_LOG_BOUNDED = 1u<<1, HARD_KASLR = 1u<<2,
+    HARD_MEMORY_INIT = 1u<<3, HARD_KSTACK_OFFSET = 1u<<4, HARD_LOCKDOWN = 1u<<5,
+    HARD_KEXEC_ABSENT = 1u<<6,
+};
+static uint32_t hardening;
 static void trace(const char *phase) {
     if (!trace_boot) return;
     struct timespec now;
@@ -108,7 +127,7 @@ static int redirected(char *const argv[]) {
     }
     close(fd); return rc;
 }
-#define K "/usr/bin/kiln"
+#define K "/usr/local/bin/kiln"
 #define RUN(...) run((char *const[]){K, __VA_ARGS__, NULL})
 #define EXEC(...) redirected((char *const[]){K, "exec", __VA_ARGS__, NULL})
 static void check(const char *name, bool ok) {
@@ -176,9 +195,10 @@ static void network(void) {
     if (ioctl(fd, SIOCADDRT, &route)) die("default route");
     close(fd);
 }
-static void require_runtime(const char *name, bool ok) {
+static void require_runtime(const char *name, bool ok, uint32_t bit) {
     printf("KG_RUNTIME %s %s\n", name, ok ? "PASS" : "FAIL");
     if (!ok) { errno=EPERM; die("runtime launch contract"); }
+    hardening |= bit;
 }
 static void runtime_contract(void) {
     char cmd[4096]={0}; FILE *f=fopen("/proc/cmdline","r");
@@ -187,25 +207,119 @@ static void runtime_contract(void) {
     if (trace_boot) printf("KG_CMDLINE <%s>\n",cmd);
     require_runtime("cmdline", !strcmp(cmd,KG_CMDLINE KG_FC_SUFFIX) ||
         !strcmp(cmd,KG_CMDLINE " kiln.test=1" KG_FC_SUFFIX) ||
-        !strcmp(cmd,KG_CMDLINE " kiln.test=1 kiln.net=1" KG_FC_SUFFIX));
+        !strcmp(cmd,KG_CMDLINE " kiln.test=1 kiln.net=1" KG_FC_SUFFIX), HARD_CMDLINE);
     int logsize=klogctl(10,NULL,0);
-    require_runtime("kernel-log-bounded", logsize > 0 && logsize <= 1024*1024);
+    require_runtime("kernel-log-bounded", logsize > 0 && logsize <= 1024*1024, HARD_KERNEL_LOG_BOUNDED);
     char *log=calloc(1,(size_t)logsize+1); if (!log) die("kernel log allocation");
-    require_runtime("kernel-log-readable", klogctl(3,log,logsize) >= 0);
+    require_runtime("kernel-log-readable", klogctl(3,log,logsize) >= 0, 0);
     require_runtime("kaslr-enabled", strstr(log,"KASLR enabled") != NULL &&
-          strstr(log,"KASLR disabled") == NULL);
+          strstr(log,"KASLR disabled") == NULL, HARD_KASLR);
     require_runtime("memory-initialization", strstr(log,
-          "mem auto-init: stack:all(zero), heap alloc:on, heap free:on") != NULL);
+          "mem auto-init: stack:all(zero), heap alloc:on, heap free:on") != NULL, HARD_MEMORY_INIT);
     free(log);
-    require_runtime("kstack-offset-enabled", option("randomize_kstack_offset=on"));
+    require_runtime("kstack-offset-enabled", option("randomize_kstack_offset=on"), HARD_KSTACK_OFFSET);
     char lockdown[128]={0}; f=fopen("/sys/kernel/security/lockdown","r");
     bool locked=f && fgets(lockdown,sizeof(lockdown),f);
     if (f) fclose(f);
-    require_runtime("lockdown-confidentiality", locked && strstr(lockdown,"[confidentiality]"));
+    require_runtime("lockdown-confidentiality", locked && strstr(lockdown,"[confidentiality]"), HARD_LOCKDOWN);
     errno=0;
-    require_runtime("kexec-load-absent",syscall(SYS_kexec_load,0,0,NULL,0)==-1 && errno==ENOSYS);
+    bool kexec_load=syscall(SYS_kexec_load,0,0,NULL,0)==-1 && errno==ENOSYS;
+    require_runtime("kexec-load-absent",kexec_load,0);
     errno=0;
-    require_runtime("kexec-file-absent",syscall(SYS_kexec_file_load,-1,-1,0,NULL,0)==-1 && errno==ENOSYS);
+    bool kexec_file=syscall(SYS_kexec_file_load,-1,-1,0,NULL,0)==-1 && errno==ENOSYS;
+    require_runtime("kexec-file-absent",kexec_file,0);
+    /* One broker bit covers both: kexec is absent only if neither syscall exists. */
+    if (kexec_load && kexec_file) hardening |= HARD_KEXEC_ABSENT;
+}
+static void read_identity(unsigned char block[IDENTITY_BYTES]) {
+    /* The host's KID1 record: exactly one 4096-byte read-only virtio block device.
+       Init checks only framing and padding; the broker parses the JSON strictly. */
+    int fd=open("/dev/vdc",O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_NOCTTY);
+    if (fd < 0) die("identity open");
+    struct stat st;
+    if (fstat(fd,&st)) die("identity stat");
+    if (!S_ISBLK(st.st_mode)) { errno=ENOTBLK; die("identity device"); }
+    int ro=0;
+    if (ioctl(fd,BLKROGET,&ro)) die("identity read-only query");
+    if (!ro) { errno=EPERM; die("identity device writable"); }
+    size_t got=0;
+    while (got < IDENTITY_BYTES) {
+        ssize_t n=read(fd,block+got,IDENTITY_BYTES-got);
+        if (n < 0 && errno == EINTR) continue;
+        if (n < 0) die("identity read");
+        if (n == 0) { errno=EIO; die("identity short"); }
+        got+=(size_t)n;
+    }
+    unsigned char extra; ssize_t n;
+    do n=read(fd,&extra,1); while (n < 0 && errno == EINTR);
+    if (n < 0) die("identity read");
+    if (n != 0) { errno=EFBIG; die("identity size"); }
+    if (close(fd)) die("identity close");
+    errno=EINVAL;
+    if (memcmp(block,"KID1",4)) die("identity magic");
+    uint32_t length=(uint32_t)block[4]<<24 | (uint32_t)block[5]<<16 | (uint32_t)block[6]<<8 | block[7];
+    if (length < 1 || length > IDENTITY_MAX_RECORD) die("identity length");
+    for (size_t i=8+(size_t)length; i<IDENTITY_BYTES; i++)
+        if (block[i]) die("identity padding");
+}
+static void write_all(int fd, const unsigned char *data, size_t size) {
+    while (size) {
+        ssize_t n=write(fd,data,size);
+        if (n < 0 && errno == EINTR) continue;
+        if (n <= 0) die("broker bootstrap write");
+        data+=n; size-=(size_t)n;
+    }
+}
+static void __attribute__((noreturn)) broker_fail(const char *what) {
+    dprintf(STDERR_FILENO,"KG_FATAL broker setup %s: %s\n",what,strerror(errno));
+    _exit(126);
+}
+static void __attribute__((noreturn)) broker_child(int bootstrap) {
+    /* Fail closed: any setup failure exits the child, and init then powers off. */
+    sigset_t empty; sigemptyset(&empty);
+    if (sigprocmask(SIG_SETMASK,&empty,NULL)) broker_fail("signal mask");
+    if (setsid() < 0) broker_fail("setsid");
+    umask(077);
+    if (chdir(BROKER_STATE)) broker_fail("chdir");
+    if (clearenv() || setenv("PATH",BROKER_PATH,1)) broker_fail("environment");
+    struct rlimit core={0,0}, files={256,256};
+    if (setrlimit(RLIMIT_CORE,&core)) broker_fail("core limit");
+    if (setrlimit(RLIMIT_NOFILE,&files)) broker_fail("descriptor limit");
+    if (prctl(PR_SET_NO_NEW_PRIVS,1,0,0,0)) broker_fail("no_new_privs");
+    if (prctl(PR_SET_DUMPABLE,0,0,0,0)) broker_fail("dumpable");
+    /* The bootstrap pipe becomes fd 3 without CLOEXEC; dup2 onto itself would keep it. */
+    if (bootstrap == BROKER_BOOTSTRAP_FD) {
+        if (fcntl(bootstrap,F_SETFD,0)) broker_fail("bootstrap descriptor");
+    } else if (dup2(bootstrap,BROKER_BOOTSTRAP_FD) != BROKER_BOOTSTRAP_FD) broker_fail("bootstrap descriptor");
+    int null=open("/dev/null",O_RDWR|O_CLOEXEC);
+    if (null < 0 || dup2(null,STDIN_FILENO) < 0 || dup2(null,STDOUT_FILENO) < 0) broker_fail("stdio");
+    /* stderr stays the console. Nothing else above the bootstrap descriptor survives. */
+    if (close_range(BROKER_BOOTSTRAP_FD+1,~0U,0)) broker_fail("close descriptors");
+    execv(BROKER,(char *const[]){"kilnd-guest-broker",NULL});
+    broker_fail("exec");
+}
+static pid_t start_broker(const unsigned char identity[IDENTITY_BYTES]) {
+    /* Private broker state on the fresh /run tmpfs; an existing entry is refused. */
+    if (mkdir(BROKER_STATE,0700)) die("broker state");
+    struct stat st;
+    if (lstat(BROKER_STATE,&st)) die("broker state stat");
+    if (!S_ISDIR(st.st_mode) || st.st_uid != 0 || st.st_gid != 0 || (st.st_mode & 07777) != 0700) {
+        errno=EPERM; die("broker state mode");
+    }
+    int fds[2];
+    if (pipe2(fds,O_CLOEXEC)) die("broker bootstrap pipe");
+    puts("KG_BROKER_START"); fflush(NULL);
+    pid_t p=fork();
+    if (p < 0) die("broker fork");
+    if (!p) broker_child(fds[0]);
+    if (close(fds[0])) die("broker bootstrap close");
+    /* fd 3: 4096 identity bytes, "KGH1", the big-endian hardening mask, then EOF. */
+    const unsigned char header[8]={'K','G','H','1',(unsigned char)(hardening>>24),
+        (unsigned char)(hardening>>16),(unsigned char)(hardening>>8),(unsigned char)hardening};
+    write_all(fds[1],identity,IDENTITY_BYTES);
+    write_all(fds[1],header,sizeof(header));
+    if (close(fds[1])) die("broker bootstrap close");
+    return p;
 }
 static void tests(bool net) {
     test_dns_status();
@@ -294,60 +408,74 @@ int main(void) {
     put("/proc/sys/kernel/dmesg_restrict", "1\n");
     put_if_present("/proc/sys/kernel/unprivileged_bpf_disabled", "1\n");
     loopback();
-    if (option("kiln.net=1")) network();
-    if (trace_boot && option("kiln.zero_probe=1")) zero_probe();
-    trace("first-command-start");
-    check("first-true", RUN("run", "--", "true") == 0);
-    trace("first-command-done");
-    /* Schema 1 benchmark label: the initial one-shot kiln run has exited. No
-       marker grants readiness; schema 2 reports host-validated create_ready and
-       first_tool_result, from a broker flow this boot does not have. */
-    puts("KG_FIRST_COMMAND");
-    const char *dirs[] = {"/run/kiln", "/run/kiln/net", "/run/kiln/net/dns", "/run/kiln/net/leases"};
-    for (size_t i=0; i<sizeof(dirs)/sizeof(dirs[0]); i++) {
-        if (mkdir(dirs[i],0755) && errno != EEXIST) die("DNS runtime directory");
-        if (chmod(dirs[i],0755)) die("DNS runtime directory mode");
-    }
-    check("network-setup", RUN("network-setup") == 0);
-    trace("network-setup-done");
-    install_dns_egress();
-    dns_pid = start_dns(option("kiln.test=1"));
-    bool ready = false;
-    for (int i=0; i<100; i++) {
-        int fd = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0);
-        if (fd < 0) die("DNS probe socket");
-        struct sockaddr_in a = {.sin_family=AF_INET, .sin_port=htons(53)};
-        inet_pton(AF_INET, "10.88.0.1", &a.sin_addr);
-        int rc = connect(fd, (struct sockaddr *)&a, sizeof(a));
-        if (rc && errno == EINPROGRESS) {
-            struct pollfd pollfd = {.fd=fd, .events=POLLOUT};
-            int error=ETIMEDOUT; socklen_t size=sizeof(error);
-            if (poll(&pollfd,1,100)>0 && !getsockopt(fd,SOL_SOCKET,SO_ERROR,&error,&size)) rc=error ? -1 : 0;
-        }
-        close(fd);
-        if (!rc) { ready=true; break; }
-        if (waitpid(dns_pid, NULL, WNOHANG) != 0) die("kiln dns exited");
-        usleep(10000);
-    }
-    check("dns-ready", ready);
-    trace("dns-ready");
-    /* Schema 1 diagnostic: DNS answers. It is not offline-768-v1 readiness, which
-       the host establishes only through the validated broker handshake. */
-    puts("KG_READY");
-    /* Phase 1b broker hook: disabled. No vsock or serial command listener. B5 alone
-       adds the vdc identity reader and supervised broker; until then schema 2 is
-       refused, and no build of this init satisfies offline-768-v1. */
-    if (option("kiln.test=1")) tests(option("kiln.net=1"));
+    const bool test_mode = option("kiln.test=1");
     sigset_t signals; sigemptyset(&signals);
     sigaddset(&signals, SIGTERM); sigaddset(&signals, SIGINT);
     sigaddset(&signals, SIGHUP); sigaddset(&signals, SIGCHLD);
-    if (sigprocmask(SIG_BLOCK, &signals, NULL)) die("sigprocmask");
+    if (!test_mode) {
+        /* Offline production boot (design 5.1): no network, DNS or first command.
+           The broker's Initialize creates the persistent sandbox and runs the smoke
+           true; only the host's validated broker handshake establishes readiness.
+           The broker is the only listener (vsock 5252); serial input stays absent. */
+        unsigned char identity[IDENTITY_BYTES];
+        read_identity(identity);
+        /* Block before fork so no broker exit can precede supervision. */
+        if (sigprocmask(SIG_BLOCK, &signals, NULL)) die("sigprocmask");
+        broker_pid = start_broker(identity);
+    } else {
+        /* kiln.test=1: the fixed integration suite. It powers off from tests(). */
+        if (option("kiln.net=1")) network();
+        if (option("kiln.zero_probe=1")) zero_probe();
+        trace("first-command-start");
+        check("first-true", RUN("run", "--", "true") == 0);
+        trace("first-command-done");
+        /* Schema 1 benchmark label: the initial one-shot kiln run has exited. No
+           marker grants readiness; schema 2 reports host-validated create_ready and
+           first_tool_result, from the broker flow of the production boot. */
+        puts("KG_FIRST_COMMAND");
+        const char *dirs[] = {"/run/kiln", "/run/kiln/net", "/run/kiln/net/dns", "/run/kiln/net/leases"};
+        for (size_t i=0; i<sizeof(dirs)/sizeof(dirs[0]); i++) {
+            if (mkdir(dirs[i],0755) && errno != EEXIST) die("DNS runtime directory");
+            if (chmod(dirs[i],0755)) die("DNS runtime directory mode");
+        }
+        check("network-setup", RUN("network-setup") == 0);
+        trace("network-setup-done");
+        install_dns_egress();
+        dns_pid = start_dns(true);
+        bool ready = false;
+        for (int i=0; i<100; i++) {
+            int fd = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0);
+            if (fd < 0) die("DNS probe socket");
+            struct sockaddr_in a = {.sin_family=AF_INET, .sin_port=htons(53)};
+            inet_pton(AF_INET, "10.88.0.1", &a.sin_addr);
+            int rc = connect(fd, (struct sockaddr *)&a, sizeof(a));
+            if (rc && errno == EINPROGRESS) {
+                struct pollfd pollfd = {.fd=fd, .events=POLLOUT};
+                int error=ETIMEDOUT; socklen_t size=sizeof(error);
+                if (poll(&pollfd,1,100)>0 && !getsockopt(fd,SOL_SOCKET,SO_ERROR,&error,&size)) rc=error ? -1 : 0;
+            }
+            close(fd);
+            if (!rc) { ready=true; break; }
+            if (waitpid(dns_pid, NULL, WNOHANG) != 0) die("kiln dns exited");
+            usleep(10000);
+        }
+        check("dns-ready", ready);
+        trace("dns-ready");
+        /* Schema 1 diagnostic: DNS answers. It is not offline-768-v1 readiness, which
+           the host establishes only through the validated broker handshake. */
+        puts("KG_READY");
+        tests(option("kiln.net=1"));
+    }
+    /* Production only: supervise the broker. It is never restarted, because it
+       may have died around a running command; its death powers the VM off. */
     int sfd = signalfd(-1, &signals, SFD_CLOEXEC);
     if (sfd < 0) die("signalfd");
     for (;;) {
         int status; pid_t p;
-        while ((p=waitpid(-1, &status, WNOHANG)) > 0)
-            if (p == dns_pid) { errno=ECHILD; die("kiln dns died"); }
+        while ((p=waitpid(-1, &status, WNOHANG)) > 0) {
+            if (p == broker_pid) { printf("KG_BROKER_EXIT status=%d\n", status); stop(1); }
+            /* Any other child is an orphan reparented to init: reap it. */
+        }
         struct signalfd_siginfo info;
         if (read(sfd, &info, sizeof(info)) != (ssize_t)sizeof(info)) {
             if (errno == EINTR) continue;

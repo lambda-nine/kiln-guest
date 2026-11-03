@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COMMON = Path(sp.check_output(['git','-C',str(ROOT),'rev-parse','--path-format=absolute','--git-common-dir'],text=True).strip())
 LOCK = COMMON.parent.parent/'.vm-lock'
 KILN_REPO = COMMON.parent.parent/'kiln'
+KILND_REPO = COMMON.parent.parent/'kilnd'
 BUILD_ROOT = '/home/estradafamily.guest/kiln-guest-build'
 
 def release():
@@ -50,12 +51,24 @@ def stage_kiln():
     data=sp.check_output(['git','-C',str(KILN_REPO),'archive','--format=tar',pins['kiln_commit']])
     if hashlib.sha256(data).hexdigest()!=pins['kiln_source_sha256']:
         raise ValueError('kiln export differs from approved source pin')
-    shell('cat > ~/kiln-guest-build/cache/kiln.tar',stdin=io.BytesIO(data))
+    shell('cat > ~/kiln-guest-build/cache/kiln.tar',input=data)
+
+def stage_kilnd():
+    """Export the pinned kilnd commit for the guest broker; `git archive` of a commit is
+    byte-identical on every export. Only approved bytes reach the VM; nothing runs here."""
+    pins=json.loads((ROOT/'config/pins.json').read_text())
+    data=sp.check_output(['git','-C',str(KILND_REPO),'archive','--format=tar',pins['kilnd_commit']])
+    actual=hashlib.sha256(data).hexdigest()
+    if actual!=pins['kilnd_source_sha256']:
+        raise ValueError(f'kilnd export of {pins["kilnd_commit"]} differs from approved source pin (export {actual})')
+    shell('cat > ~/kiln-guest-build/cache/kilnd.tar',input=data)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action',choices=['stage','prepare','configure','build-a','build-b','test','collect','cleanup','command','snapshot','start'])
     parser.add_argument('command',nargs='?')
+    parser.add_argument('--allow-unpinned-broker',action='store_true',
+                        help='build-a/build-b only: the first pinning build (see build.py)')
     args = parser.parse_args()
     while True:
         try: LOCK.mkdir(); break
@@ -111,13 +124,16 @@ def main():
             if args.action == 'prepare':
                 stage_source()
                 stage_kiln()
+                stage_kilnd()
                 cmd='prepare --cache /build/cache --kiln-repo /build/kiln-source'
             elif args.action == 'configure':
                 stage_source()
                 cmd='configure --cache /build/cache --work /build/config-work'
             elif args.action.startswith('build-'):
                 name=args.action[-1]; digest=stage_source()
+                stage_kilnd()
                 cmd=f'build --cache /build/cache --work /build/work-{name} --out /build/bundle-{name} --source-digest {digest}'
+                if args.allow_unpinned_broker: cmd+=' --allow-unpinned-broker'
             else:
                 env='sudo /usr/bin/env PATH=/usr/sbin:/usr/bin:/sbin:/bin '
                 cmd='python3 tests/firecracker.py --bundle ../bundle-a --cache ../cache --out ../results-launch-contract'

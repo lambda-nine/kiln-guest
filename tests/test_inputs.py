@@ -336,6 +336,18 @@ class CargoLockTests(CrateFixture):
         self.assertEqual([p['name'] for p in registry],['a','b'])
         self.assertEqual(local,[{'name':'kiln','version':'0.1.0'}])
 
+    def test_accepts_a_kilnd_workspace_lock(self):
+        """kilnd's lock: path-only workspace members with dependency lists, and
+        platform crates (windows-sys, wasi) that --frozen still requires on Linux."""
+        registry=lambda n,v,deps='': f'[[package]]\nname = "{n}"\nversion = "{v}"\nsource = "{inputs.REGISTRY}"\nchecksum = "{"1"*64}"\n{deps}\n'
+        body=''.join(f'[[package]]\nname = "{n}"\nversion = "0.1.0"\ndependencies = [\n "{d}",\n]\n\n' for n,d in
+                     [('kilnd-guest-broker','kilnd-broker-protocol'),('kilnd-broker-protocol','kilnd-exec-core'),('kilnd-exec-core','libc')])
+        body+=registry('libc','0.2.177')+registry('windows-sys','0.61.2','dependencies = [\n "windows-link",\n]\n')
+        body+=registry('windows-link','0.2.1')+registry('wasi','0.11.1+wasi-snapshot-preview1')
+        registry_packages,local=self.parse(body)
+        self.assertEqual([p['name'] for p in registry_packages],['libc','wasi','windows-link','windows-sys'])
+        self.assertEqual([p['name'] for p in local],['kilnd-broker-protocol','kilnd-exec-core','kilnd-guest-broker'])
+
 @unittest.skipUnless(HAS_TOMLLIB,'tomllib requires Python 3.11+')
 class VendorTests(CrateFixture):
     def test_extraction_produces_checksums_cargo_can_verify(self):
@@ -393,6 +405,18 @@ class VendorTests(CrateFixture):
         self.assertEqual(first,second)
         self.assertEqual(len(calls),1)
         self.assertEqual(list((self.tmp/'work-b/cargo-home').iterdir()),[])
+
+    def test_second_workspace_vendors_into_its_own_fresh_tree(self):
+        """build.py vendors kilnd beside kiln: one work tree, separate vendor/cargo-home."""
+        data=self.crate()
+        kiln,cache,fetcher,calls=self.project([('demo','1.0.0',data)])
+        work=self.tmp/'work'
+        inputs.vendor_crates(kiln,cache,work,fetcher)
+        inputs.vendor_crates(kiln,cache,work/'kilnd-deps',fetcher)
+        self.assertEqual(tree(work/'kilnd-deps/vendor'),tree(work/'vendor'))
+        self.assertEqual(list((work/'kilnd-deps/cargo-home').iterdir()),[])
+        self.assertEqual(len(calls),1)
+        self.assertEqual(inputs.cargo_environment({},work/'kilnd-deps'),{'CARGO_HOME':str(work/'kilnd-deps/cargo-home')})
 
     def test_existing_vendor_or_cargo_home_is_refused(self):
         kiln,cache,fetcher,_=self.project([('demo','1.0.0',self.crate())])
@@ -498,22 +522,92 @@ class BuildScriptTests(Case):
         self.assertNotIn("'--locked'",text)
 
     def test_lock_refuses_toolchain_or_deb_repin(self):
-        lock={'schema':1,'toolchain':{'rustc':'1'},'debs':[{'package':'nft'}],'kiln_source_sha256':'old'}
+        lock={'schema':1,'toolchain':{'rustc':'1'},'debs':[{'package':'nft'}],'kiln_source_sha256':'old','kilnd_source_sha256':'d'}
         for key,value in [('toolchain',{'rustc':'2'}),('debs',[]),('schema',2)]:
             with self.subTest(key):
                 with self.assertRaisesRegex(ValueError,'review an intentional repin'):
-                    build.reconcile_lock(lock,{**lock,key:value},None)
+                    build.reconcile_lock(lock,{**lock,key:value},{})
         extra={**lock,'extra':1}
-        with self.assertRaisesRegex(ValueError,'review an intentional repin'): build.reconcile_lock(extra,lock,None)
+        with self.assertRaisesRegex(ValueError,'review an intentional repin'): build.reconcile_lock(extra,lock,{})
 
-    def test_lock_follows_only_a_reviewed_kiln_pin(self):
-        lock={'schema':1,'toolchain':{},'debs':[],'kiln_source_sha256':'old'}
-        moved={**lock,'kiln_source_sha256':'new'}
-        self.assertEqual(build.reconcile_lock(lock,moved,'new'),moved)
-        self.assertEqual(build.reconcile_lock(lock,lock,None),lock)
-        for pinned in [None,'other']:
-            with self.assertRaisesRegex(ValueError,'kiln source differs'): build.reconcile_lock(lock,moved,pinned)
-        self.assertEqual(build.reconcile_lock(None,moved,None),moved)
+    def test_lock_follows_only_reviewed_kiln_and_kilnd_pins(self):
+        lock={'schema':1,'toolchain':{},'debs':[],'kiln_source_sha256':'old','kilnd_source_sha256':'old-d'}
+        for key,name in [('kiln_source_sha256','kiln'),('kilnd_source_sha256','kilnd')]:
+            with self.subTest(key):
+                moved={**lock,key:'new'}
+                self.assertEqual(build.reconcile_lock(lock,moved,{key:'new'}),moved)
+                self.assertEqual(build.reconcile_lock(lock,lock,{}),lock)
+                for pins in [{},{key:'other'}]:
+                    with self.assertRaisesRegex(ValueError,f'^{name} source differs'): build.reconcile_lock(lock,moved,pins)
+                self.assertEqual(build.reconcile_lock(None,moved,{}),moved)
+
+    def test_lock_gains_kilnd_only_from_its_pin(self):
+        """The pre-B5 lock has no kilnd entry; prepare may add exactly the pinned one."""
+        old={'schema':1,'toolchain':{},'debs':[],'kiln_source_sha256':'k'}
+        current={**old,'kilnd_source_sha256':'d'}
+        self.assertEqual(build.reconcile_lock(old,current,{'kilnd_source_sha256':'d'}),current)
+        with self.assertRaisesRegex(ValueError,'kilnd source differs'): build.reconcile_lock(old,current,{})
+
+    def test_broker_must_match_its_pin_unless_explicitly_unpinned(self):
+        binary=self.tmp/'kilnd-guest-broker'; binary.write_bytes(b'broker')
+        pinned={'broker_sha256':digest(b'broker'),'broker_bytes':6}
+        expected={'sha256':digest(b'broker'),'bytes':6}
+        with mock.patch.dict(build.PINS,pinned):
+            self.assertEqual(build.broker_pin(binary,False),(expected,True))
+            self.assertEqual(build.broker_pin(binary,True),(expected,True))
+        for pins in [{'broker_sha256':'0'*64,'broker_bytes':0},{**pinned,'broker_bytes':7},{**pinned,'broker_sha256':digest(b'other')}]:
+            with self.subTest(pins), mock.patch.dict(build.PINS,pins):
+                with self.assertRaisesRegex(ValueError,'differs from pins.json'): build.broker_pin(binary,False)
+                with contextlib.redirect_stderr(io.StringIO()) as err:
+                    self.assertEqual(build.broker_pin(binary,True),(expected,False))
+                self.assertIn(expected['sha256'],err.getvalue())
+                self.assertIn('UNPINNED BROKER',err.getvalue())
+
+    def test_kilnd_source_needs_matching_pin_lock_and_archive(self):
+        cache=self.tmp/'cache'; cache.mkdir(); (cache/'kilnd.tar').write_bytes(b'kilnd')
+        good=digest(b'kilnd')
+        with mock.patch.dict(build.PINS,{'kilnd_source_sha256':good}):
+            build.validate_kilnd_source(cache,{'kilnd_source_sha256':good})
+            for lock in [{},{'kilnd_source_sha256':'0'*64}]:
+                with self.assertRaisesRegex(ValueError,'kilnd source pin/lock/archive'): build.validate_kilnd_source(cache,lock)
+        with mock.patch.dict(build.PINS,{'kilnd_source_sha256':'0'*64}):
+            with self.assertRaisesRegex(ValueError,'kilnd source pin/lock/archive'):
+                build.validate_kilnd_source(cache,{'kilnd_source_sha256':good})
+
+    def test_static_check_refuses_an_interpreter(self):
+        header='ELF Header:\n  Class: ELF64\n  Machine: AArch64\n'
+        for text,ok in [(header,True),(header+'  INTERP 0x0\n',False),(header.replace('AArch64','X86-64'),False)]:
+            with self.subTest(text), mock.patch.object(build,'output',return_value=text):
+                if ok: build.require_static(Path('b'),'broker')
+                else:
+                    with self.assertRaisesRegex(ValueError,'broker static link failed'): build.require_static(Path('b'),'broker')
+
+    def test_kilnd_provenance_inventories_the_broker_crates(self):
+        kilnd=self.tmp/'work/kilnd'
+        files={'Cargo.toml':b'[workspace]\n','Cargo.lock':b'version = 4\n','crates/kilnd/src/main.rs':b'host only\n',
+               'crates/kilnd-guest-broker/src/main.rs':b'fn main() {}\n','crates/kilnd-guest-broker/Cargo.toml':b'[package]\n',
+               'crates/kilnd-broker-protocol/src/lib.rs':b'p\n','crates/kilnd-exec-core/src/lib.rs':b'e\n'}
+        write_source(kilnd,files)
+        cache=self.tmp/'cache-not-recorded'; cache.mkdir(); (cache/'kilnd.tar').write_bytes(b'archive')
+        result=build.kilnd_provenance(cache,kilnd,{'cargo_lock_sha256':'c'},{'target':build.TARGET})
+        self.assertEqual(result['archive_sha256'],digest(b'archive'))
+        self.assertEqual((result['cargo_lock_sha256'],result['workspace_manifest_sha256']),(digest(b'version = 4\n'),digest(b'[workspace]\n')))
+        self.assertEqual(result['broker_sources'],[{'path':path,'sha256':digest(files[path]),'size':len(files[path])} for path in
+            ['crates/kilnd-broker-protocol/src/lib.rs','crates/kilnd-exec-core/src/lib.rs',
+             'crates/kilnd-guest-broker/Cargo.toml','crates/kilnd-guest-broker/src/main.rs']])
+        self.assertEqual((result['commit'],result['cargo'],result['compiler']),(build.PINS['kilnd_commit'],{'cargo_lock_sha256':'c'},{'target':build.TARGET}))
+        self.assertNotIn(str(self.tmp),json.dumps(result))
+        (kilnd/'crates/kilnd-exec-core/src/link').symlink_to('/etc/passwd')
+        with self.assertRaisesRegex(ValueError,'symlink in kilnd source'): build.kilnd_provenance(cache,kilnd,{},{})
+        shutil.rmtree(kilnd/'crates/kilnd-exec-core')
+        with self.assertRaisesRegex(ValueError,'lacks crates/kilnd-exec-core'): build.kilnd_provenance(cache,kilnd,{},{})
+
+    def test_recorded_compiler_strings_are_work_path_free(self):
+        work=Path('/build/work-a')
+        self.assertEqual(build.remapped(build.rustflags(work),work),
+            '--remap-path-prefix=/build=/build -C target-feature=+crt-static -C strip=symbols -C link-arg=-Wl,--build-id=none')
+        self.assertEqual(build.remapped(f'source.verified-vendor.directory="{work}/kilnd-deps/vendor"',work),
+            'source.verified-vendor.directory="/build/kilnd-deps/vendor"')
 
     def test_provenance_is_complete_and_path_free(self):
         cache=self.tmp/'cache-does-not-appear'; cache.mkdir()
@@ -521,8 +615,10 @@ class BuildScriptTests(Case):
         lock={'debs':[{'package':'nft','sha256':'d'}],'toolchain':{'rustc':'r'}}
         cargo={'cargo_lock_sha256':'c','registry_packages':[],'local_packages':[]}
         source={'digest':'s','files':[]}
-        result=build.input_provenance(cache,lock,source,cargo)
+        kilnd={'commit':build.PINS['kilnd_commit'],'archive_sha256':'k'}
+        result=build.input_provenance(cache,lock,source,cargo,kilnd)
         self.assertEqual(result['kiln'],{'commit':build.PINS['kiln_commit'],'archive_sha256':digest(b'kiln.tar')})
+        self.assertIs(result['kilnd'],kilnd)
         self.assertEqual(result['kernel_archive_sha256'],digest(b'linux.tar.xz'))
         self.assertEqual(result['alpine_archive_sha256'],digest(b'alpine.tar.gz'))
         self.assertEqual((result['build_lock'],result['cargo'],result['source']),(lock,cargo,source))
@@ -536,13 +632,14 @@ class WrapperTests(Case):
         import lima
         self.lima=lima
 
-    def action(self,name):
+    def action(self,name,*extra):
         events=[]
         with mock.patch.object(self.lima,'LOCK',self.tmp/'lock'), \
                 mock.patch.object(self.lima,'stage_source',side_effect=lambda:(events.append('stage'),'f'*64)[1]), \
-                mock.patch.object(self.lima,'stage_kiln'), \
+                mock.patch.object(self.lima,'stage_kiln',side_effect=lambda:events.append('kiln')), \
+                mock.patch.object(self.lima,'stage_kilnd',side_effect=lambda:events.append('kilnd')), \
                 mock.patch.object(self.lima,'shell',side_effect=lambda c,**k:events.append(c)), \
-                mock.patch.object(sys,'argv',['lima.py',name]):
+                mock.patch.object(sys,'argv',['lima.py',name,*extra]):
             self.lima.main()
         self.assertFalse((self.tmp/'lock').exists())
         return events
@@ -551,18 +648,21 @@ class WrapperTests(Case):
         for name,letter in [('build-a','a'),('build-b','b')]:
             with self.subTest(name):
                 events=self.action(name)
-                self.assertEqual(events[0],'stage')
-                self.assertEqual(len(events),2)
-                self.assertIn(f'--work /build/work-{letter} --out /build/bundle-{letter} --source-digest {"f"*64}',events[1])
-                self.assertNotIn('CARGO_HOME',events[1])
+                self.assertEqual(events[:2],['stage','kilnd'])
+                self.assertEqual(len(events),3)
+                self.assertIn(f'--work /build/work-{letter} --out /build/bundle-{letter} --source-digest {"f"*64}',events[2])
+                self.assertNotIn('CARGO_HOME',events[2])
+                self.assertNotIn('unpinned',events[2])
+                self.assertTrue(self.action(name,'--allow-unpinned-broker')[2].endswith(' --allow-unpinned-broker'))
 
     def test_prepare_names_kiln_from_the_common_dir_sibling(self):
         events=self.action('prepare')
-        self.assertEqual(events[0],'stage')
-        self.assertIn('--kiln-repo /build/kiln-source',events[1])
-        self.assertIn('build_environment.py enter',events[1])
-        self.assertNotIn('CARGO_HOME',events[1])
+        self.assertEqual(events[:3],['stage','kiln','kilnd'])
+        self.assertIn('--kiln-repo /build/kiln-source',events[3])
+        self.assertIn('build_environment.py enter',events[3])
+        self.assertNotIn('CARGO_HOME',events[3])
         self.assertEqual(self.lima.LOCK,self.lima.COMMON.parent.parent/'.vm-lock')
+        self.assertEqual(self.lima.KILND_REPO,self.lima.COMMON.parent.parent/'kilnd')
 
     def test_test_action_does_not_restage(self):
         self.assertEqual(len(self.action('test')),1)
@@ -597,6 +697,27 @@ class WrapperTests(Case):
         stage=self.tmp/'build/repo'
         self.assertEqual(inputs.verify_source(stage)['digest'],found)
         self.assertEqual(sorted(tree(stage)),[inputs.MANIFEST,'config/pins.json','scripts/inputs.py'])
+
+    def test_stage_kilnd_exports_only_the_pinned_digest(self):
+        repo=self.tmp/'kilnd'; repo.mkdir()
+        git=lambda *a: subprocess.run(['git','-C',str(repo),*a],check=True,capture_output=True,text=True).stdout.strip()
+        git('init','-q'); (repo/'Cargo.toml').write_text('[workspace]\n'); git('add','.')
+        git('-c','user.name=t','-c','user.email=t@example.invalid','commit','-qm','x')
+        commit=git('rev-parse','HEAD')
+        data=subprocess.run(['git','-C',str(repo),'archive','--format=tar',commit],check=True,capture_output=True).stdout
+        self.assertEqual(data,subprocess.run(['git','-C',str(repo),'archive','--format=tar',commit],check=True,capture_output=True).stdout)
+        checkout=self.tmp/'checkout'
+        received=[]
+        for pinned,ok in [(digest(data),True),('0'*64,False)]:
+            with self.subTest(ok):
+                write_source(checkout,{'config/pins.json':json.dumps({'kilnd_commit':commit,'kilnd_source_sha256':pinned}).encode()})
+                with mock.patch.object(self.lima,'ROOT',checkout),mock.patch.object(self.lima,'KILND_REPO',repo), \
+                        mock.patch.object(self.lima,'shell',side_effect=lambda c,input:received.append((c,input))):
+                    if ok: self.lima.stage_kilnd()
+                    else:
+                        with self.assertRaisesRegex(ValueError,f'differs from approved source pin \\(export {digest(data)}\\)'):
+                            self.lima.stage_kilnd()
+        self.assertEqual(received,[('cat > ~/kiln-guest-build/cache/kilnd.tar',data)])
 
     def test_stage_source_reports_receiver_rejection_without_a_broken_pipe(self):
         with self.fake_limactl('exit 7'), mock.patch.object(self.lima,'shell'), \

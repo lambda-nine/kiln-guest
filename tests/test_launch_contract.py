@@ -287,13 +287,38 @@ class Phase1bLegacyRefusalTests(Phase1bFixtureCase):
         switched=sp.run([sys.executable,str(verify),'--phase1b-fixture',self.approved,str(FIXTURES/'bundle'),str(FIXTURES/'executables')],capture_output=True,text=True)
         self.assertNotEqual(switched.returncode,0)
 
-    def test_init_keeps_broker_disabled_and_markers_diagnostic(self):
+    def test_init_supervises_only_the_broker_and_markers_stay_diagnostic(self):
         source=(ROOT/'src/init.c').read_text()
+        # The broker is the only listener; init opens no vsock and reads no serial input.
         self.assertNotIn('AF_VSOCK',source)
-        self.assertNotIn('/dev/vdc',source)
-        self.assertIn('Phase 1b broker hook: disabled',source)
+        self.assertNotIn('ttyS0',source)
+        self.assertIn('#define BROKER "/usr/local/bin/kilnd-guest-broker"',source)
+        self.assertIn('execv(BROKER,(char *const[]){"kilnd-guest-broker",NULL});',source)
+        self.assertIn('#define K "/usr/local/bin/kiln"',source)
+        self.assertIn('open("/dev/vdc",O_RDONLY|O_CLOEXEC',source)
+        self.assertIn('memcmp(block,"KID1",4)',source)
+        self.assertIn("{'K','G','H','1',",source)
+        self.assertIn('#define BROKER_BOOTSTRAP_FD 3',source)
+        self.assertIn('#define BROKER_PATH "/usr/local/bin:/usr/bin:/usr/sbin"',source)
+        self.assertRegex(source,r'if \(p == broker_pid\) \{ printf\("KG_BROKER_EXIT status=%d\\n", status\); stop\(1\); \}')
+        self.assertEqual(source.count('start_broker('),2)  # definition and the single production call
+        # Production skips the schema 1 network/DNS/first-true flow; test mode keeps it.
+        production=source[source.index('    if (!test_mode) {'):source.index('    } else {\n        /* kiln.test=1')]
+        for absent in ['network-setup','start_dns','first-true','KG_FIRST_COMMAND','KG_READY','network()']:
+            self.assertNotIn(absent,production)
         self.assertRegex(source,r'Schema 1 benchmark label[^/]*\*/\n\s*puts\("KG_FIRST_COMMAND"\)')
         self.assertRegex(source,r'Schema 1 diagnostic[^/]*\*/\n\s*puts\("KG_READY"\)')
+
+    def test_init_hardening_bits_follow_the_broker_order(self):
+        source=(ROOT/'src/init.c').read_text()
+        bits=dict(re.findall(r'(HARD_[A-Z_]+) = 1u<<(\d)',source))
+        self.assertEqual(bits,{'HARD_CMDLINE':'0','HARD_KERNEL_LOG_BOUNDED':'1','HARD_KASLR':'2','HARD_MEMORY_INIT':'3',
+                               'HARD_KSTACK_OFFSET':'4','HARD_LOCKDOWN':'5','HARD_KEXEC_ABSENT':'6'})
+        for check,bit in [('cmdline','HARD_CMDLINE'),('kernel-log-bounded','HARD_KERNEL_LOG_BOUNDED'),
+                          ('kaslr-enabled','HARD_KASLR'),('memory-initialization','HARD_MEMORY_INIT'),
+                          ('kstack-offset-enabled','HARD_KSTACK_OFFSET'),('lockdown-confidentiality','HARD_LOCKDOWN')]:
+            self.assertRegex(source,r'require_runtime\("'+re.escape(check)+r'",[^;]*, '+bit+r'\);')
+        self.assertIn('if (kexec_load && kexec_file) hardening |= HARD_KEXEC_ABSENT;',source)
 
 
 class Phase1bBundleFileTests(Phase1bFixtureCase):

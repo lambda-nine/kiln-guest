@@ -1,14 +1,17 @@
 # kiln-guest
 
-A local, versioned Firecracker guest bundle for **VM outside, kiln inside**.
-Phase 1a's bundle has no kilnd changes and no broker protocol. Phase 1b's contract
-is frozen below, not yet built. No published image is created.
+A versioned Firecracker guest bundle for **VM outside, kiln inside**. Since
+Phase 1b step B5 the image carries kilnd's guest broker (`kilnd-guest-broker`,
+broker protocol 1) built from a pinned kilnd commit. Phase 1b's contract is
+frozen below; its schema 2 production bundle is still refused. Images, bundles
+and releases are never published.
 
 The bundle contains Linux 6.18.56 for aarch64 (4 KiB pages), kiln at
-`00d61c546db7aa67ad283d10c2ca6165ca5f8166`, a read-only squashfs root, and
-the complete resolved kernel configuration. `manifest.json` schema 1 pins
-each artifact's size and SHA-256, kiln's source commit, build-input digests,
-the compatible Firecracker version and the work-disk contract.
+`00d61c546db7aa67ad283d10c2ca6165ca5f8166`, the guest broker, a read-only
+squashfs root, and the complete resolved kernel configuration. `manifest.json`
+schema 1 (the local benchmark format) pins each artifact's size and SHA-256,
+kiln's and kilnd's source commits, the broker record, build-input digests, the
+compatible Firecracker version and the work-disk contract.
 
 ## Contents and boot contract
 
@@ -21,9 +24,11 @@ serial, ext4, squashfs and virtio-vsock. The missing inet nftables family,
 masquerade, reject/inet reject, connection limits, conntrack and NAT are built
 in and exercised through kiln's whole ruleset.
 
-The outer root contains only compiled PID 1, static kiln, nft and its exact
-shared libraries, minimal resolver configuration and the Alpine sandbox
-image. There is no root shell, SSH server, interactive console, package
+The outer root contains only compiled PID 1, static kiln at
+`/usr/local/bin/kiln`, the static guest broker at
+`/usr/local/bin/kilnd-guest-broker`, nft and its exact shared libraries,
+minimal resolver configuration and the Alpine sandbox image. There is one copy
+of each binary. There is no root shell, SSH server, interactive console, package
 manager, or downloaded setup script. The Alpine image *inside the sandbox*
 includes BusyBox and the normal minirootfs tools. Its IDs are shifted by
 2,000,000,000 using `lchown` without dereferencing symlinks; modes, links and
@@ -32,8 +37,12 @@ their maintainer scripts are never run. XFS tools run on the host and are
 unnecessary inside the guest.
 
 Attach `Image`, read-only `rootfs.squashfs` as `/dev/vda`, and a **private**,
-preformatted XFS disk of at least 512 MiB as `/dev/vdb`. Init mounts the work
-disk at `/var/lib/kiln/runs` with `nosuid,nodev,noexec,prjquota`; root stays read-only. Example:
+preformatted XFS disk of at least 512 MiB as `/dev/vdb`. A production boot also
+needs the read-only 4096-byte `KID1` identity drive as `/dev/vdc` and the vsock
+device of the `offline-768-v1` recipe, which only kilnd-helper supplies. The
+schema 1 `launch_contract` production profile has neither, so such a boot stops
+at the identity check and powers off. Init mounts the work disk at
+`/var/lib/kiln/runs` with `nosuid,nodev,noexec,prjquota`; root stays read-only. Example:
 
 ```sh
 truncate -s 512M work.xfs
@@ -73,14 +82,50 @@ can make boots slower without reducing protection. The validation evidence
 records host THP policy and actual VMM huge-page backing for every measured boot.
 See `results/boot-regression/` for controlled comparisons and phase traces.
 
-PID 1 fails closed on mounting, sandbox smoke-test, firewall or DNS startup
-failure. It mounts bounded tmpfs `/run` and `/tmp`, proc/sysfs/cgroup2, creates
-the `/dev/fd` links kiln/nft need, disconnects stdin, sets an explicit minimal
-environment, restricts kernel pointers/dmesg/BPF, supervises DNS, reaps orphan
-children, and handles orderly shutdown. `KG_FIRST_COMMAND` follows completion
-of the initial `kiln run -- true`; `KG_READY` follows a live DNS listener.
-The root-owned `kiln network-setup` command creates the bridge and reconciles
-the ruleset, then exits. Init starts DNS as UID/GID 65532 with only
+In both modes PID 1 fails closed on mounting or runtime-hardening failure. It
+mounts bounded tmpfs `/run` and `/tmp`, proc/sysfs/cgroup2, creates the
+`/dev/fd` links kiln/nft need, disconnects stdin, sets an explicit minimal
+environment (`PATH=/usr/bin:/usr/sbin`, which kiln uses to find `nft`), restricts
+kernel pointers/dmesg/BPF, brings up loopback, reaps orphan children, and handles
+orderly shutdown on SIGTERM, SIGINT or SIGHUP.
+
+**Production boot (offline, broker).** Without `kiln.test=1`, init skips the
+whole network bootstrap (design section 5.1): no `network-setup`, DNS, initial
+`kiln run -- true`, `KG_FIRST_COMMAND` or `KG_READY`. The broker's Initialize
+creates the persistent sandbox and runs the smoke `true`; only the host's
+validated broker handshake establishes readiness. Init then:
+
+- opens `/dev/vdc` read-only (`O_CLOEXEC|O_NOFOLLOW`), requires a read-only block
+  device of exactly 4096 bytes, magic `KID1`, a big-endian u32 length of 1–4088 and
+  all-zero padding after `8+length`. Any failure is `KG_FATAL identity ...` and
+  power-off. Init does not parse the JSON; the broker parses it strictly;
+- creates root-owned `/run/kilnd-broker` with mode 0700 (an existing entry fails);
+- prints `KG_BROKER_START` and forks the broker. The child calls `setsid`, sets
+  umask 077, changes to `/run/kilnd-broker`, clears the environment to exactly
+  `PATH=/usr/local/bin:/usr/bin:/usr/sbin`, sets `RLIMIT_CORE` 0 and
+  `RLIMIT_NOFILE` 256, `no_new_privs` and non-dumpable, points stdin and stdout
+  at `/dev/null`, keeps stderr on the console, closes every descriptor above 3,
+  and executes `/usr/local/bin/kilnd-guest-broker` with no arguments. Any setup
+  failure exits the child, which init treats as broker death;
+- passes the bootstrap on fd 3 (a pipe): the 4096 identity bytes, `KGH1`, a
+  big-endian u32 runtime-hardening mask, then EOF. Bits 0–6 are `cmdline`,
+  `kernel-log-bounded`, `kaslr-enabled`, `memory-initialization`,
+  `kstack-offset-enabled`, `lockdown-confidentiality` and kexec absent (both
+  kexec syscalls). Init dies on any failed check, so a running broker always
+  receives all seven;
+- supervises it: when the broker exits, init prints
+  `KG_BROKER_EXIT status=<raw wait status>` and powers off. It never restarts
+  the broker, which may have died around a running command.
+
+The broker is the only listener (vsock port 5252, host CID 2). Init itself
+opens no vsock and there is no serial command input.
+
+**Test boot.** `kiln.test=1` keeps the schema 1 flow unchanged and powers off
+after the suite; it has no identity drive and starts no broker. Init runs the
+initial `kiln run -- true` (`KG_FIRST_COMMAND` follows its completion), sets up
+the network and DNS, and prints `KG_READY` after a live DNS listener. Those
+markers are schema 1 diagnostics only. The root-owned `kiln network-setup`
+command creates the bridge and reconciles the ruleset, then exits. Init starts DNS as UID/GID 65532 with only
 CAP_NET_BIND_SERVICE in its effective/permitted/inheritable/bounding/ambient
 sets. A separate `kg_dns` nft output chain confines UID 65532 to TCP/UDP
 `1.1.1.1:53` and tracked DNS replies from `10.88.0.1:53` to existing client
@@ -91,11 +136,12 @@ configuration. It applies no-new-privileges and a syscall allowlist, allows only
 clones and AF_INET/AF_UNIX sockets, hides tenant storage and leases, exposes
 read-only policies and proc/sys/run, provides private tmp/devices, and caps
 file descriptors, processes and core dumps. The test mode verifies the live
-post-exec credentials/capabilities and attempts prohibited operations. The
-broker hook remains disabled, with **no vsock or serial command listener**.
+post-exec credentials/capabilities and attempts prohibited operations. DNS
+runs only in test mode; the offline production boot has none.
 
 `kiln.test=1` selects the fixed integration suite, then powers off. This is
-trusted test configuration, not a remote execution interface. `kiln.net=1`
+trusted test configuration, not a remote execution interface. Test mode does not
+exercise the broker; kilnd's B5 tests do, through kilnd-helper. `kiln.net=1`
 adds the fixed test-only `172.30.99.2/30` address and gateway `.1` on `eth0`.
 That addressing is not suitable for multiple concurrent sessions. Production
 Phase 1b must configure per-session transport and addressing; the present
@@ -130,6 +176,30 @@ the Firecracker release against the spike's verified release checksum. Alpine
 is SHA-256 pinned and verified against the pinned Alpine release signing key.
 It exports kiln from the exact commit, with Cargo.lock fixing crate checksums,
 and downloads exact Ubuntu .deb versions from authenticated apt metadata.
+
+The broker comes from the sibling `kilnd` repository. `prepare`, `build-a` and
+`build-b` each run `git archive --format=tar` of `pins.json`'s `kilnd_commit` on
+the host (byte-identical for a commit), refuse an export whose SHA-256 differs
+from `kilnd_source_sha256`, and write it to `~/kiln-guest-build/cache/kilnd.tar`.
+`prepare` records that digest in `build-lock.json` as `kilnd_source_sha256`,
+mirroring kiln's: the lock follows only a reviewed pin. Each build unpacks the
+archive into `work/kilnd`, vendors kilnd's `Cargo.lock` into its own fresh
+`work/kilnd-deps/{vendor,cargo-home}` (every registry crate, including
+platform-only ones such as `windows-sys` that `--frozen` still requires), and
+runs `cargo build -p kilnd-guest-broker --release --target aarch64-unknown-linux-gnu`
+with kiln's flags: `--frozen` against the verified vendor tree, crt-static,
+stripped symbols, no build ID, `--remap-path-prefix` of the work tree, and a
+target directory inside `work/kilnd`. The result must be a static aarch64 ELF
+with no `INTERP`, and its SHA-256 and size must equal `broker_sha256` and
+`broker_bytes`.
+
+Pinning a new broker: commit it in kilnd, set `kilnd_commit` and
+`kilnd_source_sha256` (`git -C ../kilnd archive --format=tar <commit> | shasum -a 256`),
+run `prepare`, then one `build-a --allow-unpinned-broker`. That flag accepts a
+differing broker, prints its digest and size loudly at the broker step and at
+the end, records them in the manifest, and marks the bundle `diagnostic_only`,
+which `verify.py` refuses for acceptance. Review and record the printed values,
+then build `bundle-a` and `bundle-b` afresh without the flag.
 The build executes inside a digest-verified squashfs toolchain rootfs,
 mounted read-only in a private mount namespace and chroot. Its fixed PATH is
 `/opt/rust/bin:/usr/sbin:/usr/bin`; inherited environment and user configuration
@@ -152,6 +222,17 @@ then extracts it afresh. Cargo uses that directory source with `--frozen` and
 file checksums; unpacked registry sources are never shared. Only verified
 compressed downloads may be cached. Inherited Cargo/Rust configuration and
 ancestor Cargo config files cannot silently redirect a build.
+
+The manifest's `broker` record is `{"enabled": true, "protocol": 1, "crate":
+"kilnd-guest-broker", "port": 5252, "kilnd_commit", "sha256", "bytes"}`, and
+the binary is the `kilnd-guest-broker` bundle artifact. `inputs.kilnd` records the
+commit and archive digest, the archive's `Cargo.lock` and root `Cargo.toml`
+digests, a sorted `{path, sha256, size}` inventory of `crates/kilnd-guest-broker`,
+`crates/kilnd-broker-protocol` and `crates/kilnd-exec-core`, every vendored crate
+checksum, and the compiler: exact `rustc -vV`, `RUSTFLAGS` and cargo argv with
+the work path rewritten to `/build` as the compiler's remap does, target and
+profile. The manifest stays schema 1; `build.py --profile offline-768-v1` still
+refuses.
 
 Staging records an exhaustive sorted inventory of ordinary source files,
 including modes, lengths and SHA-256, and checks it against the digest computed
@@ -227,7 +308,15 @@ temporary host nft table permits only public TCP/80 and UDP/53 to 1.1.1.1,
 blocks guest access to host services/private ranges, and NATs only the test
 guest address. Existing firewall tables and forwarding state are preserved.
 
-Boot measurements use case `fc-jailer-kiln-none-768`, tier `strong-isolation`,
+**Retired in B5.** `tests/firecracker.py` no longer measures production boots:
+a B5 production boot needs the identity drive and vsock, prints no
+`KG_FIRST_COMMAND`, and only starts the broker. B5's boot timings are measured
+through kilnd-helper's create-to-READY path. `tests/idle_density.py` is retired
+for the same reason. The paragraph below describes the historical pre-B5
+measurement, whose raw results remain in `results/`; none of its numbers apply to
+a broker bundle.
+
+Historical boot measurements used case `fc-jailer-kiln-none-768`, tier `strong-isolation`,
 one guest at a time, 1 vCPU, 768 MiB, a private 512 MiB XFS disk, no network
 device, two warmups then twenty measured boots, 100 ms idle gap, one Lima
 boot/session, and no cache flush. Monotonic timing starts immediately before
@@ -268,6 +357,16 @@ Landlock are not a hostile multi-tenant boundary on their own. A compromised
 guest must still face host-owned per-session TAP/egress controls and resource
 limits. Do not put provider credentials in this image or tool sandboxes.
 
+The guest broker runs as **guest root, outside kiln's sandbox**, with the full
+root capability set: kiln's namespaces, UID maps, mounts and cgroups need it. Its
+`no_new_privs`, non-dumpable state, empty environment, descriptor and core limits
+narrow accidents, not a compromised broker. It offers only typed
+initialization, validation and kiln execution over vsock, but a broker bug is a
+guest-root compromise, bounded by the VM wall above and nothing else in the
+guest. Its reports, including the hardening mask init passes it, are trusted
+within the session and are not attestation: a compromised guest kernel can
+forge them. Init powers the VM off on broker death instead of restarting it.
+
 The [2026-10-30 re-attack](../reviews/2026-10-30-guest-reattack.md)
 (KR-01/KG-06 and KG-07) confirms both requirements below remain deployment
 blockers; fixing the local launch checker does not implement backend admission.
@@ -300,10 +399,10 @@ diversity; reseeding alone does not satisfy it.
 Phase 1b's `FirecrackerRuntime` must also journal per-session ownership and manifests;
 reserve total guest memory plus VMM overhead and disk; launch dedicated
 jailer identities with outer cgroups/PID isolation; attach a private quota
-disk and host-filtered TAP; and configure per-session addressing. The future
-broker should replace only the disabled init hook, stay outside tool
-sandboxes, use bounded/versioned vsock frames and an image/protocol readiness
-handshake, and supervise cancellation/output drainage. Report ready only
+disk and host-filtered TAP; and configure per-session addressing. The broker
+replaces the formerly disabled init hook; it stays outside tool sandboxes, uses
+bounded/versioned vsock frames and an image/protocol readiness handshake, and
+supervises cancellation/output drainage. Report ready only
 after the broker handshake, not merely a live VMM or a marker: `KG_READY` and
 `KG_FIRST_COMMAND` are schema 1 diagnostics. Guest image version and inner `SandboxSpec.image` are
 separate concepts. Phase 1b follows kilnd Phase 0 and is outside this repo.
@@ -316,7 +415,7 @@ pair is the golden fixture), relay leases, CID, IDs, nonce, work UUID, validated
 inner spec and the verified executable identity vector. The recipe is
 `config/phase1b-contract.json`, pinned by digest in `config/phase1b-inputs.json`,
 and `scripts/phase1b_contract.py` validates strict JSON, spec bindings, the `KID1` identity
-block, VMM argv and `/proc/<vmm>/status`. Schema 1 and its benchmarks are unchanged.
+block, VMM argv and `/proc/<vmm>/status`. Schema 1 remains the local bundle format.
 
 **Production stays disabled.** `build.py --profile offline-768-v1` refuses, and
 `verify.py` refuses schema 2 and fixture material unconditionally. There is no
@@ -324,14 +423,17 @@ fixture switch. `tests/phase1b_fixture.py` alone constructs `FixturePlan` with
 schema `kiln-test-plan-v1` and profile `test-only-b1`, from a
 `kiln-test-manifest-v1` manifest; these cannot become a deployable plan or
 PreparedCreate. Independently approving or relabeling the stand-ins cannot open
-production. The reviewed jailer patch, broker and approved bundle do not exist.
+production. The reviewed jailer patch and approved bundle do not exist; the broker
+is built into the schema 1 image from a pinned kilnd commit (B5).
 Root ownership and protected ancestry are exercised only by the Linux fixtures.
 Schema 2 `inputs` carry digests rather than inventories, because the 4 MiB
 manifest cap cannot hold schema 1's 33 MB record.
 
 `tests/generate_phase1b_fixtures.py` regenerates `tests/fixtures/firecracker/`
 byte for byte; kilnd carries an identical copy in
-`crates/kilnd/tests/fixtures/firecracker/`. `tests/test_launch_contract.py` mutates
+`crates/kilnd/tests/fixtures/firecracker/`. The fixture manifest's `inputs` bind the
+digests of `config/pins.json`, `config/build-lock.json` and `src/init.c`, so any
+change to those files requires regenerating the fixtures and copying them to kilnd. `tests/test_launch_contract.py` mutates
 every manifest and plan leaf, including with a recomputed approval, and every
 identity byte. `conformance.json` is the same corpus used by Rust's production
 strict parser/canonicalizer, spec validator and launch recipe derivation. Its

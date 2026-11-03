@@ -6,6 +6,10 @@ from pathlib import Path
 import sys
 from launch_contract import contract, exact
 
+BROKER='kilnd-guest-broker'
+ARTIFACTS={'Image','kernel.config','kiln',BROKER,'rootfs.squashfs'}
+BROKER_FIELDS={'enabled','protocol','crate','port','kilnd_commit','sha256','bytes'}
+
 def verify(directory, allow_diagnostic=False):
     root=Path(directory)
     manifest=json.loads((root/'manifest.json').read_text())
@@ -18,8 +22,13 @@ def verify(directory, allow_diagnostic=False):
         raise ValueError('diagnostic bundle is not an acceptance build')
     if not allow_diagnostic and not exact(manifest.get('launch_contract'),contract()):
         raise ValueError('missing or unsupported launch contract')
-    if set(manifest['artifacts'])!={'Image','kernel.config','kiln','rootfs.squashfs'}:
+    if set(manifest['artifacts'])!=ARTIFACTS:
         raise ValueError('unexpected artifact set')
+    broker=manifest.get('broker')
+    if not isinstance(broker,dict) or set(broker)!=BROKER_FIELDS or broker['enabled'] is not True \
+            or not exact(broker['protocol'],1) or broker['crate']!=BROKER or not exact(broker['port'],5252) \
+            or {'sha256':broker['sha256'],'bytes':broker['bytes']}!=manifest['artifacts'][BROKER]:
+        raise ValueError('broker record does not match its artifact')
     for name, record in manifest['artifacts'].items():
         path=root/name
         if path.stat().st_size!=record['bytes']: raise ValueError(f'{name}: size mismatch')

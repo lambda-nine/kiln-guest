@@ -34,10 +34,10 @@ class TraceTests(unittest.TestCase):
     def fixture(self,root):
         bundle=root/'bundle'; bundle.mkdir()
         artifacts={}
-        for name in ['Image','kernel.config','kiln','rootfs.squashfs']:
+        for name in ['Image','kernel.config','kiln','kilnd-guest-broker','rootfs.squashfs']:
             data=name.encode(); (bundle/name).write_bytes(data)
             artifacts[name]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
-        (bundle/'manifest.json').write_text(json.dumps({'schema':1,'artifacts':artifacts,'launch_contract':__import__('launch_contract').contract()}))
+        (bundle/'manifest.json').write_text(json.dumps({'schema':1,'artifacts':artifacts,'broker':{'enabled':True,'protocol':1,'crate':'kilnd-guest-broker','port':5252,'kilnd_commit':'0'*40,**artifacts['kilnd-guest-broker']},'launch_contract':__import__('launch_contract').contract()}))
         return bundle
 
     def test_tampered_artifact_prevents_vm_launch(self):

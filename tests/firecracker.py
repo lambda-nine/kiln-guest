@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Sequential jailer integration and 20-boot measurements; no guest broker."""
+"""Sequential jailer integration of the fixed test-mode suite.
+
+The schema 1 production-boot measurement (twenty boots to KG_FIRST_COMMAND) is
+retired: since B5 a production boot requires the vdc identity drive, prints no
+KG_FIRST_COMMAND/KG_READY, and runs only the guest broker. B5's boot timings are
+measured through kilnd-helper's create-to-READY path, which owns the identity
+drive, vsock device and broker handshake. Test mode is unchanged.
+"""
 import argparse
 import hashlib
 import io
 import json
-import math
 import os
 from pathlib import Path
 import select
 import shutil
 import signal
-import statistics
 import subprocess as sp
 import tarfile
 import time
@@ -202,7 +207,7 @@ class VM:
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['bundle','cache','out']: p.add_argument('--'+name,type=Path,required=True)
-    p.add_argument('--runs',type=int,default=20); p.add_argument('--skip-network',action='store_true')
+    p.add_argument('--skip-network',action='store_true')
     a=p.parse_args(); bundle=a.bundle.resolve(); cache=a.cache.resolve(); out=a.out.resolve()
     out.mkdir(parents=True,exist_ok=False)
     manifest=verify_bundle(bundle)
@@ -214,19 +219,20 @@ def main():
             raise ValueError(f'bundle artifact mismatch: {name}')
     release=verify_release(cache)
     before={str(f):sha(f) for f in [Path('/usr/local/bin/kiln'),Path('/usr/local/bin/kilnd')] if f.exists()}
-    conditions={'case':'fc-jailer-kiln-none-768','tier':'strong-isolation','workload':['kiln','run','--','true'],
-        'gap_ms':100,'warmups':2,'runs':a.runs,'l1_sessions':1,'l1_boot_id':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+    conditions={'case':'fc-jailer-kiln-test-suite-768','tier':'strong-isolation','l1_sessions':1,
+        'l1_boot_id':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         'uname':list(os.uname()),'vcpu_count':1,'mem_size_mib':768,'rootfs':'squashfs, read-only',
         'work_disk':'private 512 MiB XFS, nosuid,nodev,noexec,prjquota','uid_gid':10000,'cgroup_version':2,
         'default_seccomp':True,'outer_cgroup_limits':False,'new_pid_namespace':False,
-        'cache_drop':False,'timing':'before Popen(jailer) to serial KG_FIRST_COMMAND after first kiln true exits; staging and teardown excluded',
+        'cache_drop':False,
+        'production_boot_measurement':'retired in B5; measured through kilnd-helper create-to-READY',
         'manifest_sha256':sha(bundle/'manifest.json'),'host_services':'installed kiln/kilnd/DNS/metrics left active; other host applications uncontrolled',
         'huge_pages':memory_backing,
         'host_thp':{name:Path('/sys/kernel/mm/transparent_hugepage/'+name).read_text().strip()
                     for name in ['enabled','defrag']}}
     (out/'manifest.json').write_bytes((bundle/'manifest.json').read_bytes())
     write(out/'conditions.json',conditions)
-    records=[]; result={'integration':{},'egress':'untested'}
+    result={'integration':{},'egress':'untested'}
     try:
         for mode in ['offline','network']:
             if mode=='network' and a.skip_network: continue
@@ -268,21 +274,9 @@ def main():
                 raise
             finally:
                 if tap: tap.__exit__(None,None,None)
-        for i in range(a.runs+2):
-            time.sleep(.1)
-            v=VM(f'boot-{i:02}',bundle,cache,out,memory_backing=memory_backing)
-            try:
-                elapsed=v.until(b'KG_FIRST_COMMAND')
-                v.until(b'KG_READY')
-                record={'schema':1,'kind':'latency','case':conditions['case'],'session':conditions['l1_boot_id'],
-                    'warmup':i<2,'round':i-2,'gap_ms':100,'elapsed_ns':elapsed,'ok':True,
-                    'host_stats':v.host_stats()}
-                records.append(record)
-                with (out/'records.jsonl').open('a') as f: f.write(json.dumps(record,sort_keys=True)+'\n')
-            finally: v.stop()
-        values=sorted(r['elapsed_ns']/1e6 for r in records if not r['warmup'])
-        result['latency_ms']={'n':len(values),'p50':statistics.median(values),'p95_nearest_rank':values[math.ceil(.95*len(values))-1],
-            'min':min(values),'max':max(values),'failures':0}
+        # No production boots here: they need the identity drive and broker, which
+        # only kilnd-helper provides. See the module docstring.
+        result['latency_ms']='retired in B5: measured through kilnd-helper create-to-READY'
     finally:
         after={path:sha(Path(path)) for path in before}
         result['installed_binaries_unchanged']=before==after

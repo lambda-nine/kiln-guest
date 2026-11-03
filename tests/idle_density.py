@@ -4,6 +4,10 @@
 Never overcommit the shared L1 without a boundary. Five fully resident 768 MiB
 guests cannot safely fit beside the L1 kernel/services in this 4 GiB host.
 Record a contained capacity failure instead of risking those services.
+
+Retired for B5 bundles: it waits for a production boot's schema 1 KG_READY, which
+the offline broker boot no longer prints, and it cannot supply the identity
+drive. Density for B5 is measured through kilnd-helper.
 """
 import argparse
 import json
@@ -38,6 +42,8 @@ def main():
     p.add_argument('--proof',type=Path,help='verified single-VM density.json required before a five-VM attempt')
     a=p.parse_args(); bundle=a.bundle.resolve(); cache=a.cache.resolve(); out=a.out.resolve()
     manifest=verify(bundle); fc.verify_release(cache)
+    if manifest.get('broker',{}).get('enabled') is True:
+        raise SystemExit('idle_density.py: production boots of broker bundles need kilnd-helper (identity drive, vsock)')
     if a.count==5:
         if a.proof is None: raise ValueError('five-VM run requires single-VM charging proof')
         proof=json.loads(a.proof.read_text())
