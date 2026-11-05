@@ -68,6 +68,7 @@ packages listed in `config/build-lock.json`, delete
 not the one recorded in `results/`.
 
 ## Overview
+
 A versioned Firecracker guest bundle for **VM outside, kiln inside**. Since
 Phase 1b step B5 the image carries kilnd's guest broker (`kilnd-guest-broker`,
 broker protocol 1) built from a pinned kilnd commit. Phase 1b's contract is
