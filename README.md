@@ -1,5 +1,73 @@
 # kiln-guest
 
+Build scripts, init program and tests for a Firecracker guest image that runs
+[kiln](https://github.com/lambda-nine/kiln) **inside a microVM** ("VM outside,
+kiln inside"). The scripts fetch pinned sources (a Linux kernel, an Alpine
+root filesystem, Ubuntu nftables packages, kiln and kilnd's guest broker),
+verify them, and build a reproducible aarch64 bundle: kernel, read-only
+squashfs root and a manifest that pins every artifact.
+
+**Status: experimental, Phase 1b.** The image is used only by kilnd's
+Firecracker test deployments; that backend is disabled for production, and
+backend admission of an approved manifest is not implemented. Built images,
+bundles and releases are not published. Builds and measurements have run only
+under nested virtualization in a Lima VM on Apple silicon. It is **not a
+boundary for hostile multi-tenant workloads.** Report vulnerabilities
+privately as described in [SECURITY.md](SECURITY.md).
+
+Licensed under [Apache-2.0](LICENSE), except `src/kernel-kaslr-early.c`
+(GPL-2.0-only, a modified Linux file). The build downloads third-party
+software under other licenses, and **a built image is not redistributable
+under Apache-2.0 alone**; see [THIRD-PARTY.md](THIRD-PARTY.md).
+
+## Lambda IX repositories
+
+| Repository | What it is |
+|------------|------------|
+| [kiln](https://github.com/lambda-nine/kiln) | Shared-kernel Linux sandbox runtime (namespaces, cgroups v2, seccomp, Landlock, nftables); runs inside this guest |
+| [kilnd](https://github.com/lambda-nine/kilnd) | Per-node control daemon with a gRPC API. Its Firecracker backend boots this image, and its `kilnd-guest-broker` crate is built into it |
+| **kiln-guest** (this repository) | The guest image build |
+| [kiln-harness](https://github.com/lambda-nine/kiln-harness) | Provider-neutral agent loop on top of kilnd's API |
+
+## Quickstart
+
+Unprivileged tests run on Linux or macOS with Python 3.12+; VM and root-only
+cases skip themselves:
+
+```sh
+git clone https://github.com/lambda-nine/kiln-guest
+cd kiln-guest
+python3 -m unittest discover -s tests
+```
+
+A full build needs Linux aarch64 with KVM. The supported setup is kiln's Lima
+VM (Apple silicon Mac with nested virtualization; see kiln's README, "Dev
+setup (macOS)") with `kiln`, `kilnd` and `kiln-guest` cloned side by side,
+because `scripts/lima.py` reads the pinned kiln and kilnd commits from the
+sibling checkouts:
+
+```sh
+mkdir -p ~/Projects/lambda-nine && cd ~/Projects/lambda-nine
+git clone https://github.com/lambda-nine/kiln
+git clone https://github.com/lambda-nine/kilnd
+git clone https://github.com/lambda-nine/kiln-guest
+# create and start kiln's Lima VM from kiln/lima.yaml first
+cd kiln-guest
+python3 scripts/lima.py stage
+python3 scripts/lima.py prepare
+```
+
+`prepare` downloads and verifies every pinned input. Builds then run inside a
+squashfs snapshot of the build VM's toolchain, pinned by digest in
+`config/build-environment.json`. Another VM's toolchain produces a different
+snapshot, so a first build elsewhere needs its own pin: install the toolchain
+packages listed in `config/build-lock.json`, delete
+`config/build-environment.json` (the snapshot refuses to overwrite a pin), run
+`python3 scripts/lima.py snapshot`, review the new pin, then continue with
+[Build](#build). A bundle built that way is a new, locally pinned artifact,
+not the one recorded in `results/`.
+
+## Overview
 A versioned Firecracker guest bundle for **VM outside, kiln inside**. Since
 Phase 1b step B5 the image carries kilnd's guest broker (`kilnd-guest-broker`,
 broker protocol 1) built from a pinned kilnd commit. Phase 1b's contract is
@@ -80,7 +148,8 @@ sensitive to host backing-page faults. THP avoids changing the kernel or its
 security policy. It is an allocation hint, so memory pressure or host THP policy
 can make boots slower without reducing protection. The validation evidence
 records host THP policy and actual VMM huge-page backing for every measured boot.
-See `results/boot-regression/` for controlled comparisons and phase traces.
+See `results/boot-regression/REPORT.md` for the controlled comparisons; the raw
+phase traces are in Git history ([results/README.md](results/README.md)).
 
 In both modes PID 1 fails closed on mounting or runtime-hardening failure. It
 mounts bounded tmpfs `/run` and `/tmp`, proc/sysfs/cgroup2, creates the
@@ -258,13 +327,15 @@ retain the verified cache for offline recovery. Kernel timestamp controls
 follow the [kernel reproducibility guidance](https://docs.kernel.org/kbuild/reproducible-builds.html).
 
 Artifacts are retained locally in `dist/bundle-a` and `dist/bundle-b` after
-collection; they are intentionally not checked into Git. Their manifests and
-raw test evidence are checked into `results/`. Writable XFS disks are created
+collection; they are intentionally not checked into Git. Curated summaries of
+their test evidence are in `results/`; the raw manifests, logs and traces are
+in Git history ([results/README.md](results/README.md)). Writable XFS disks are created
 per test and are not bundle artifacts: UUIDs, metadata times and allocator
 state are intentionally fresh rather than reproducible tenant state.
 
-The original baseline evidence remains in `results/`. Hardening build logs,
-complete manifests and byte-comparison results are under `results/hardening/`.
+The original baseline summary remains in `results/`. Hardening build logs,
+complete manifests and byte-comparison results were under `results/hardening/`
+and are now in Git history.
 `results/hardening/reproducibility.json` records the new independent full-build
 outcome; only a successful comparison supports a reproducibility claim. Both
 builds must compile the complete kernel and rootfs in separate clean work trees.
@@ -313,7 +384,7 @@ a B5 production boot needs the identity drive and vsock, prints no
 `KG_FIRST_COMMAND`, and only starts the broker. B5's boot timings are measured
 through kilnd-helper's create-to-READY path. `tests/idle_density.py` is retired
 for the same reason. The paragraph below describes the historical pre-B5
-measurement, whose raw results remain in `results/`; none of its numbers apply to
+measurement, whose summary remains in `results/`; none of its numbers apply to
 a broker bundle.
 
 Historical boot measurements used case `fc-jailer-kiln-none-768`, tier `strong-isolation`,
@@ -324,7 +395,8 @@ spawning jailer and ends when serial delivers `KG_FIRST_COMMAND`, after the
 initial kiln true exits. Staging/formatting and teardown are outside timing;
 kernel startup, mounts and initial sandbox lifecycle are included. DNS and
 network bootstrap happen after that marker. p95 uses nearest rank. These are
-nested virtualization measurements on mini-one, not bare-metal results or
+nested virtualization measurements on the development Mac mini (Apple M4, in
+Lima), not bare-metal results or
 an end-to-end kilnd backend benchmark. The test jailer has no extra outer
 cgroup limits or new PID namespace; Phase 1b must add those production limits.
 
@@ -339,11 +411,12 @@ artifact hashes before launch and archives the manifest and raw timestamped
 serial observations, including on failure.
 
 See `results/test-results.json`, `results/conditions.json`, `results/records.jsonl`
-and console logs for the measured outcome. No steady-state speed claim is
+and the console logs in Git history for the measured outcome. No steady-state speed claim is
 made; kiln remains experimental and has not been professionally audited.
 
-The hardening run's raw console logs, conditions, records and test outcome are
-under `results/hardening/validation/`. That run uses the case, gap, measured
+The hardening run's conditions and test outcome are under
+`results/hardening/validation/`; its raw console logs and records are in Git
+history. That run uses the case, gap, measured
 count, warmups, L1 sessions, cache policy and timing boundaries above. Its
 `test-results.json` contains the measured values; no earlier baseline number
 is presented as a result for the hardened bundle. Installed kiln/kilnd hashes
@@ -367,8 +440,8 @@ guest. Its reports, including the hardening mask init passes it, are trusted
 within the session and are not attestation: a compromised guest kernel can
 forge them. Init powers the VM off on broker death instead of restarting it.
 
-The [2026-10-30 re-attack](../reviews/2026-10-30-guest-reattack.md)
-(KR-01/KG-06 and KG-07) confirms both requirements below remain deployment
+The 2026-10-30 re-attack review (`2026-10-30-guest-reattack.md`, not published;
+KR-01/KG-06 and KG-07) confirms both requirements below remain deployment
 blockers; fixing the local launch checker does not implement backend admission.
 
 KG-06 is a hard Phase 1b admission requirement: the host must pin an independently approved manifest digest
@@ -454,7 +527,7 @@ chain, its capability masks and the handoff. Raw evidence, including the measure
 Firecracker suffix for this topology, is in `results/phase1b-b1/`.
 
 Source basis: [Firecracker custom image documentation](https://github.com/firecracker-microvm/firecracker/blob/v1.17.0/docs/rootfs-and-kernel-setup.md),
-the sibling spike report `research/2026-10-30-firecracker-spike.md`, and kiln's
+an unpublished Firecracker feasibility spike, and kiln's
 README/agent notes at the source pin.
 
 ## Kernel security policy
@@ -486,8 +559,8 @@ claimed. Kernel Kconfig evidence is preserved in
 security baseline derived from kiln's needs, not an exhaustive kernel audit.
 
 Firecracker 1.17 supplies a 64-byte host-CSPRNG `rng-seed`, while Linux arm64's
-early KASLR expects a separate `kaslr-seed` or RNDR. mini-one's nested guest has
-no RNDR. The reviewed local replacement `src/kernel-kaslr-early.c` retains the
+early KASLR expects a separate `kaslr-seed` or RNDR. The development host's
+nested guest has no RNDR. The reviewed local replacement `src/kernel-kaslr-early.c` retains the
 standard seed's priority, otherwise consumes and erases eight bytes from an
 exactly 64-byte RNG seed. The remaining 56 CSPRNG output bytes seed the
 kernel RNG; Linux subsequently removes that property. Both the upstream file
@@ -497,4 +570,12 @@ erasure and remaining bytes; guest tests require `KASLR enabled` in the kernel
 log. The earlier seedless boot is retained as negative evidence. This local
 kernel change needs review whenever the kernel or VMM is upgraded.
 See [Firecracker's FDT implementation](https://github.com/firecracker-microvm/firecracker/blob/v1.17.0/src/vmm/src/arch/aarch64/fdt.rs)
-and `results/hardening/kaslr-seed-contract.txt` for the input contract.
+and `results/boot-regression/KASLR-ASSESSMENT.md` for the assessment (the full
+input contract, `results/hardening/kaslr-seed-contract.txt`, is in Git history).
+
+## License
+
+Copyright 2026 Stephen Estrada. Licensed under the
+[Apache License, Version 2.0](LICENSE), except `src/kernel-kaslr-early.c`,
+which is GPL-2.0-only. See [THIRD-PARTY.md](THIRD-PARTY.md) for what the build
+downloads and what redistributing a built image involves.

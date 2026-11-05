@@ -6,7 +6,7 @@ or install over them. Acquire the sibling `.vm-lock` directory before each VM
 session; `scripts/lima.py` manages ownership and releases it even on failure.
 Keep all Linux build trees in `~/kiln-guest-build`, outside mounted checkouts.
 
-The repository has a private GitHub remote (`lambda-nine/kiln-guest`). Never
+The GitHub remote is `lambda-nine/kiln-guest`. Never
 publish images, bundles or releases, and do not change kilnd from here. Commits
 use Stephen Estrada <stcrestrada@gmail.com>, no trailers.
 
@@ -17,5 +17,6 @@ pinned kilnd commit and supervised by init, is the only listener.
 
 Validate config requirements, two independent full builds, integration through
 the jailer, and twenty measured boots before changing reproducibility or
-performance claims. Preserve raw results; give case, idle gap, measured count,
+performance claims. Preserve raw results locally (`results/` is ignored; track
+only curated summaries, with `git add -f`); give case, idle gap, measured count,
 warmups, L1 sessions, cache policy and timing boundaries with every number.

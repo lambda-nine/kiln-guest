@@ -721,6 +721,7 @@ class WrapperTests(Case):
 
     def test_stage_source_reports_receiver_rejection_without_a_broken_pipe(self):
         with self.fake_limactl('exit 7'), mock.patch.object(self.lima,'shell'), \
+                mock.patch.object(self.lima,'BUILD_ROOT',str(self.tmp/'build')), \
                 mock.patch.object(self.lima,'ROOT',self.tmp/'checkout'):
             write_source(self.tmp/'checkout',{'scripts/inputs.py':b'x\n','big':b'x'*(4*1024*1024)})
             with self.assertRaisesRegex(RuntimeError,'staging failed'): self.lima.stage_source()

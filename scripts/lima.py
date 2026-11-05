@@ -21,7 +21,16 @@ COMMON = Path(sp.check_output(['git','-C',str(ROOT),'rev-parse','--path-format=a
 LOCK = COMMON.parent.parent/'.vm-lock'
 KILN_REPO = COMMON.parent.parent/'kiln'
 KILND_REPO = COMMON.parent.parent/'kilnd'
-BUILD_ROOT = '/home/estradafamily.guest/kiln-guest-build'
+BUILD_ROOT = None  # ~/kiln-guest-build in the VM, resolved on first use
+
+def build_root():
+    global BUILD_ROOT
+    if BUILD_ROOT is None:
+        home = sp.check_output(['limactl','shell','--workdir','/tmp','kiln','sh','-c','printf %s "$HOME"'],text=True)
+        if not home.startswith('/') or '\n' in home:
+            raise RuntimeError(f'unexpected VM home directory {home!r}')
+        BUILD_ROOT = f'{home}/kiln-guest-build'
+    return BUILD_ROOT
 
 def release():
     if (LOCK/'owner').exists() and (LOCK/'owner').read_text() == f'Guest launch contract {os.getpid()}\n':
@@ -35,7 +44,7 @@ def stage_source():
     shell('mkdir -p ~/kiln-guest-build/cache')
     inventory = source_inventory(ROOT); digest = inventory_digest(inventory)
     p = sp.Popen(['limactl','shell','--workdir','/tmp','kiln','sudo','python3','-I','-c',
-                  (ROOT/'scripts/inputs.py').read_text(),'stage',f'{BUILD_ROOT}/repo',digest],stdin=sp.PIPE)
+                  (ROOT/'scripts/inputs.py').read_text(),'stage',f'{build_root()}/repo',digest],stdin=sp.PIPE)
     try:
         write_archive(ROOT,p.stdin,inventory)
     except BrokenPipeError: pass
