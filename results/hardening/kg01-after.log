@@ -1,8 +1,0 @@
-offline:
-KG_TEST kexec-load-absent PASS
-KG_TEST kexec-file-absent PASS
-KG_TEST kexec-sysctl-compiled-out PASS
-network:
-KG_TEST kexec-load-absent PASS
-KG_TEST kexec-file-absent PASS
-KG_TEST kexec-sysctl-compiled-out PASS

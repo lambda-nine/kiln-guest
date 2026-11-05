@@ -1,7 +1,7 @@
 time="2026-10-31T06:18:23-04:00" level=info msg="Using the existing instance `kiln`"
 time="2026-10-31T06:18:23-04:00" level=info msg="Starting the instance `kiln` with internal VM driver `vz`"
-time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] hostagent socket created at /Users/estradafamily/.lima/kiln/ha.sock"
-time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] Starting VZ (hint: to watch the boot progress, see `/Users/estradafamily/.lima/kiln/serial*.log`)"
+time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] hostagent socket created at /Users/<user>/.lima/kiln/ha.sock"
+time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] Starting VZ (hint: to watch the boot progress, see `/Users/<user>/.lima/kiln/serial*.log`)"
 time="2026-10-31T06:18:24-04:00" level=info msg="[hostagent] [VZ] - vm state change: running"
 time="2026-10-31T06:18:31-04:00" level=info msg="[hostagent] SSH server does not seem to be running on vsock port, using usernet forwarder"
 time="2026-10-31T06:18:32-04:00" level=info msg="SSH Local Port: 60876"
@@ -33,7 +33,7 @@ time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 
 time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.1:5353"
 time="2026-10-31T06:18:32-04:00" level=info msg="[hostagent] Not forwarding UDP 127.0.0.1:5353"
 time="2026-10-31T06:18:35-04:00" level=info msg="READY. Run `limactl shell kiln` to open the shell."
-{"stage": "/home/estradafamily.guest/kiln-guest-build/repo", "digest": "c278b766cfb935c27239db55fd2fd500181c1bc0b79b5b745ced9ca8b59ec875"}
+{"stage": "/home/<user>.guest/kiln-guest-build/repo", "digest": "c278b766cfb935c27239db55fd2fd500181c1bc0b79b5b745ced9ca8b59ec875"}
 B1 source inventory: c278b766cfb935c27239db55fd2fd500181c1bc0b79b5b745ced9ca8b59ec875
 test_canonical_rejects_constructed_float_and_deep_values (test_b1_conformance.B1ConformanceTests.test_canonical_rejects_constructed_float_and_deep_values) ... ok
 test_fixture_mode_poc_cannot_make_production_plan (test_b1_conformance.B1ConformanceTests.test_fixture_mode_poc_cannot_make_production_plan) ... ok

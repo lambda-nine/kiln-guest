@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "<checkout>/scripts/kernel_policy.py", line 27, in <module>
-    print(json.dumps(validate(a.config), sort_keys=True))
-  File "<checkout>/scripts/kernel_policy.py", line 20, in validate
-    raise ValueError('kernel security policy: ' + '; '.join(errors))
-ValueError: kernel security policy: KEXEC_FILE: forbidden, got y; KEXEC_CORE: forbidden, got y

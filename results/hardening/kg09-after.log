@@ -1,8 +1,0 @@
-offline:
-KG_TEST work-disk-flags PASS
-KG_TEST work-direct-exec-denied PASS
-KG_TEST overlay-workspace-exec PASS
-network:
-KG_TEST work-disk-flags PASS
-KG_TEST work-direct-exec-denied PASS
-KG_TEST overlay-workspace-exec PASS

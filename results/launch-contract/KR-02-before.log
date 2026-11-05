@@ -1,8 +1,0 @@
-{
-  "dpkg_deb_recorded": false,
-  "fake_was_executed": false,
-  "gate_differences": {},
-  "selected_dpkg_deb": "/tmp/kg-build-tool-gap-vzv47342/dpkg-deb",
-  "selected_dpkg_deb_is_fake": true,
-  "toolchain_gate_passed": true
-}

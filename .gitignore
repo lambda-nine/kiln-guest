@@ -1,3 +1,7 @@
 /dist/
+/target/
 __pycache__/
 *.pyc
+# Raw VM run evidence (boot logs, traces, manifests) stays local. The curated
+# summaries under results/ are tracked; add a new one with `git add -f`.
+/results/

@@ -1,7 +1,0 @@
-{
-  "vmm_pids": [],
-  "tap_absent": true,
-  "nft_table_absent": true,
-  "session_roots_remaining": [],
-  "vm_lock_released": true
-}
