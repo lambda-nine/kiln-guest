@@ -1,4 +1,4 @@
-# KG-04/05 after. Recorded 2026-10-30T20:04:55Z on Darwin arm64 against the uncommitted worktree based on a599132; no VM session, no guest build.
+# KG-04/05 after. Recorded 2026-10-30T20:04:55Z on Darwin arm64 against the uncommitted worktree based on ae3e655; no VM session, no guest build.
 # Linux-only: renameat2 is not exercised here. test_real_exchange is skipped on this host; stage tests inject a portable, non-atomic exchange and the first-stage path uses os.replace.
 
 $ python3 --version; python3 -m unittest -v tests.test_inputs tests.test_verify   # host python: tomllib tests skip

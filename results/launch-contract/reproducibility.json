@@ -17,7 +17,7 @@
       "sha256": "d73081a2029b502d21627a63762c407791eae18a6646aa955b133a15984e39a0"
     }
   },
-  "build_source_commit": "ad9d0e1",
+  "build_source_commit": "55d6731",
   "byte_equal": {
     "Image": true,
     "kernel.config": true,

@@ -10,7 +10,7 @@
   "manifest_sha256": "a62d227c56d95151a4ef0868a40cceb401d4670fd92d8c0f08f4313c0f14ae86",
   "portable_negative_tests_passed": 9,
   "reviewer": "Codex gpt-6-astra",
-  "source_commit": "8803e81",
+  "source_commit": "5d409f8",
   "source_inventory_sha256": "a3f840cd500939f333cb7195eec1775224b27ebf100dda5ee352fc598a2bfa68",
   "verdict": "ready to close; no remaining concrete findings",
   "verified": [

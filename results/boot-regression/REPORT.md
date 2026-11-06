@@ -18,10 +18,10 @@ kilnd binary or service is replaced by this task.
 ## Isolation and timing evidence
 
 The seven hardening commits were read alongside README, the prior acceptance
-and conditions, and the original break-it review. `31c0cff` enabled allocation
-and free initialization. `a599132` removed kexec; `7b56893` fixed Cargo/staging
-provenance; `6d42725` changed kiln and confined DNS; `d116ddb` added noexec;
-`db87487` documented future admission/restore blockers. `79482f0` added the
+and conditions, and the original break-it review. `67c119b` enabled allocation
+and free initialization. `ae3e655` removed kexec; `6a85553` fixed Cargo/staging
+provenance; `13b7c49` changed kiln and confined DNS; `39d2434` added noexec;
+`f8242ea` documented future admission/restore blockers. `19bf65b` added the
 KASLR compatibility replacement and full evidence. DNS/network bootstrap is
 still after KG_FIRST_COMMAND. The only serial-timer implementation change
 retains a marker's first observation even if reads coalesce. It cannot explain
@@ -115,11 +115,11 @@ locate the delay in the same pre-clock interval; host load is uncontrolled.
 
 ## Builds, policy and integration
 
-Two new full builds of corrected source 8803e81 independently unpacked and
+Two new full builds of corrected source 5d409f8 independently unpacked and
 compiled the entire kernel and fresh verified Cargo sources in work-a and
 work-b. VM cmp and host read-bytes comparisons matched all four artifacts
 and the complete manifests exactly. Build logs and manifests are retained.
-The first full build pair at 0a625e2 is retained separately as superseded
+The first full build pair at 935408e is retained separately as superseded
 evidence; after review changes the corrected source was fully rebuilt twice.
 
 Both corrected manifests SHA-256:
@@ -146,7 +146,7 @@ quota and egress tests. Installed kiln/kilnd binary hashes are unchanged
 during validation. Host and native test suites pass; their platform-specific
 skips are recorded. Dedicated negative aggregation tests also pass.
 
-Source fixes are 0a625e2 and 8803e81, authored by Stephen Estrada without
+Source fixes are 935408e and 5d409f8, authored by Stephen Estrada without
 trailers, on fix/guest-boot-regression. No remote or image was published;
 the review branch is retained rather than integrating another checkout.
 

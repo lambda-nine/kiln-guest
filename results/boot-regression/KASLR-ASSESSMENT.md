@@ -1,6 +1,6 @@
 # KASLR compatibility assessment — Linux 6.18.56 / Firecracker 1.17.0
 
-The replacement was introduced in 79482f0, after 31c0cff enabled KASLR.
+The replacement was introduced in 19bf65b, after 67c119b enabled KASLR.
 It changes only get_kaslr_seed() in arch/arm64/kernel/pi/kaslr_early.c.
 The standard, exactly eight-byte kaslr-seed property retains priority. If
 missing or malformed, the function accepts only an exactly 64-byte rng-seed,

@@ -57,7 +57,7 @@
         "phase1b-before.log",
         "phase1b-after.log"
       ],
-      "commit": "ad9d0e1"
+      "commit": "55d6731"
     },
     "KR-01": {
       "checks": [
@@ -66,7 +66,7 @@
         "runtime-negative/heap-off.console.log",
         "validation/integration-network.console.log"
       ],
-      "commit": "9a93b04"
+      "commit": "0bb7d71"
     },
     "KR-02": {
       "checks": [
@@ -75,7 +75,7 @@
         "KR-02-after.log",
         "toolchain-write-denied.log"
       ],
-      "commit": "da097b3"
+      "commit": "5d2976b"
     },
     "KR-03": {
       "checks": [
@@ -83,14 +83,14 @@
         "policy.json",
         "validation/integration-offline.console.log"
       ],
-      "commit": "b03b6ec"
+      "commit": "c6cda5d"
     },
     "KR-04": {
       "checks": [
         "test_dns_egress.py",
         "validation/integration-network.console.log"
       ],
-      "commit": "0f120a7"
+      "commit": "f566c8d"
     }
   },
   "reproducibility": {
@@ -112,7 +112,7 @@
         "sha256": "d73081a2029b502d21627a63762c407791eae18a6646aa955b133a15984e39a0"
       }
     },
-    "build_source_commit": "ad9d0e1",
+    "build_source_commit": "55d6731",
     "byte_equal": {
       "Image": true,
       "kernel.config": true,

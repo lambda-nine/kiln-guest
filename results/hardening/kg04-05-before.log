@@ -1,6 +1,6 @@
 # KG-04/05 baseline. Recorded 2026-10-30T20:04:30Z on Darwin arm64; no VM session in this step.
 
-$ python3 /Users/estradafamily/Projects/lambda-nine/reviews/poc-guest/stale-stage.py   # models extract-over-existing in the wrapper at a599132
+$ python3 /Users/estradafamily/Projects/lambda-nine/reviews/poc-guest/stale-stage.py   # models extract-over-existing in the wrapper at ae3e655
 README=current
 DELETED_INPUT_RETAINED=true
 STALE_CONTENT=CONFIG_STALE_INPUT=y
