@@ -48,7 +48,7 @@
   "evidence_notes": [
     "Raw failed initial trials and diagnostic boots retained separately; only validation/records.jsonl is the acceptance boot dataset.",
     "The first validation attempt refused because build B was not published yet; validation.log records the completed successful sequence.",
-    "No remote, push, installed service replacement, or new Daybreak task."
+    "No remote, push, installed service replacement, or new break-it review task."
   ],
   "findings": {
     "KG-06/KG-07 documentation": {

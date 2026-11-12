@@ -1,4 +1,4 @@
-"""Daybreak B1 PoCs and the cross-language conformance contract."""
+"""Break-it B1 PoCs and the cross-language conformance contract."""
 import copy
 import inspect
 import json
