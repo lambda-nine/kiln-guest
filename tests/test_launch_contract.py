@@ -488,6 +488,13 @@ class Phase1bPlanTests(Phase1bFixtureCase):
             with self.assertRaises(ValueError,msg=paths): self.prepared(mutated(read_only,('inner_spec','writable_paths'),paths))
         for paths in [['/data'],['/workspace/雪'],['/a/-flag'],['/'+'a'*1023],['/p%d'%i for i in range(16)]]:
             self.prepared(mutated(read_only,('inner_spec','writable_paths'),paths))
+        # kilnd refuses paths over filesystems kiln mounts itself, component-wise.
+        for path in ['/proc','/proc/self','/sys','/sys/fs/cgroup','/dev/pts','/dev/null','/dev/shmx/y']:
+            with self.subTest(refused=path), self.assertRaises(ValueError):
+                self.prepared(mutated(read_only,('inner_spec','writable_paths'),[path]))
+        for path in ['/dev','/dev/shm','/dev/shm/x','/procx','/system','/devices']:
+            with self.subTest(allowed=path):
+                self.prepared(mutated(read_only,('inner_spec','writable_paths'),[path]))
         with self.assertRaises(ValueError): self.prepared(mutated(self.subs,('inner_spec','labels'),{'a':'b'}))
         self.assertEqual(self.prepared(mutated(self.subs,('inner_spec','memory_bytes'),1))['launch']['reservation']['memory_bytes'],896*MIB)
 

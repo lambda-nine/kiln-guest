@@ -294,12 +294,24 @@ def _lease(value, name, kind, policy):
 
 
 def _writable_path(path, policy):
-    """Mirror kilnd's validate_writable_path, including its byte and count limits."""
+    """Mirror kilnd's validate_writable_path, including its byte and count limits and its
+    refusal of paths over filesystems kiln mounts itself."""
     if (not isinstance(path, str) or len(path.encode('utf-8')) > policy['admission']['max_writable_path_bytes']
             or path == '/' or not path.startswith('/') or any(ord(c) < 32 or 127 <= ord(c) < 160 for c in path)):
         raise ValueError('invalid writable path')
     if any(part in ('', '.', '..') for part in path[1:].split('/')):
         raise ValueError('invalid writable path')
+    if _under_runtime_mount(path):
+        raise ValueError('invalid writable path')
+
+
+def _under_runtime_mount(path):
+    """Mirror kilnd's under_runtime_mount: kiln mounts its own filesystems at /proc, /sys and
+    /dev (all refused) except /dev itself and /dev/shm. Component-wise, so /procx is ordinary."""
+    components = path[1:].split('/')
+    if components[0] in ('proc', 'sys'):
+        return True
+    return components[0] == 'dev' and len(components) > 1 and components[1] != 'shm'
 
 
 def _inner_spec(spec, policy):
